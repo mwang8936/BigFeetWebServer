@@ -5,7 +5,6 @@ export class DatabaseError extends CustomError {
 	statusCode = HttpCode.INTERNAL_SERVER_ERROR;
 	constructor(public error: QueryFailedError) {
 		super();
-		console.log(error.driverError);
 		if ((error.driverError.code = 'ER_DUP_ENTRY')) {
 			this.statusCode = HttpCode.CONFLICT;
 			const sqlMessage = error.driverError.sqlMessage as string;
@@ -22,8 +21,7 @@ export class DatabaseError extends CustomError {
 		Object.setPrototypeOf(this, DatabaseError.prototype);
 	}
 	formatErrors() {
-		if (this.statusCode == HttpCode.CONFLICT)
-			return `${this.error.message}`;
+		if (this.statusCode == HttpCode.CONFLICT) return `${this.error.message}`;
 		else return 'A database error occurred.';
 	}
 }

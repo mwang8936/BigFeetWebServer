@@ -35,21 +35,9 @@ export const UpdateEmployeeValidation = celebrate(
 			gender: genderValidation,
 			role: roleValidation,
 			permissions: permissionsValidation,
-			body_rate: Joi.number()
-				.positive()
-				.precision(2)
-				.max(99.99)
-				.allow(null),
-			feet_rate: Joi.number()
-				.positive()
-				.precision(2)
-				.max(99.99)
-				.allow(null),
-			per_hour: Joi.number()
-				.positive()
-				.precision(2)
-				.max(99.99)
-				.allow(null),
+			body_rate: Joi.number().precision(2).min(0).max(99.99).allow(null),
+			feet_rate: Joi.number().precision(2).min(0).max(99.99).allow(null),
+			per_hour: Joi.number().precision(2).min(0).max(99.99).allow(null),
 		}).min(1),
 	},
 	{ abortEarly: false },
@@ -76,21 +64,9 @@ export const AddEmployeeValidation = celebrate(
 			gender: genderValidation.required(),
 			role: roleValidation.required(),
 			permissions: permissionsValidation.required(),
-			body_rate: Joi.number()
-				.positive()
-				.precision(2)
-				.max(99.99)
-				.allow(null),
-			feet_rate: Joi.number()
-				.positive()
-				.precision(2)
-				.max(99.99)
-				.allow(null),
-			per_hour: Joi.number()
-				.positive()
-				.precision(2)
-				.max(99.99)
-				.allow(null),
+			body_rate: Joi.number().precision(2).min(0).max(99.99).allow(null),
+			feet_rate: Joi.number().precision(2).min(0).max(99.99).allow(null),
+			per_hour: Joi.number().precision(2).min(0).max(99.99).allow(null),
 		}),
 	},
 	{ abortEarly: false },

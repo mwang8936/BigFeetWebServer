@@ -21,14 +21,14 @@ router
 	.route('/')
 	.get(authorize([Permissions.PERMISSION_GET_VIP_PACKAGE]), getVipPackages);
 router
-	.route('/:phone_number')
+	.route('/:serial')
 	.get(
 		authorize([Permissions.PERMISSION_GET_VIP_PACKAGE]),
 		GetVipPackageValidation,
 		getVipPackage
 	);
 router
-	.route('/:phone_number')
+	.route('/:serial')
 	.patch(
 		authorize([Permissions.PERMISSION_UPDATE_VIP_PACKAGE]),
 		UpdateVipPackageValidation,
@@ -42,7 +42,7 @@ router
 		addVipPackage
 	);
 router
-	.route('/:phone_number')
+	.route('/:serial')
 	.delete(
 		authorize([Permissions.PERMISSION_DELETE_VIP_PACKAGE]),
 		DeleteVipPackageValidation,

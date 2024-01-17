@@ -13,3 +13,13 @@ export const UpdateProfileValidation = celebrate(
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
 );
+
+export const SignProfileScheduleValidation = celebrate(
+	{
+		[Segments.PARAMS]: Joi.object().keys({
+			date: Joi.date().iso().required(),
+		}),
+	},
+	{ abortEarly: false },
+	{ mode: Modes.FULL }
+);

@@ -1,7 +1,7 @@
 import {
+	Between,
 	FindOptionsWhere,
 	In,
-	IsNull,
 	LessThanOrEqual,
 	MoreThanOrEqual,
 } from 'typeorm';
@@ -11,16 +11,19 @@ import { VipPackage } from '../models/vip-package.models';
 export const getSchedules = async (
 	fromDate?: Date,
 	toDate?: Date,
-	employeeIds?: (number | null)[]
+	employeeIds?: number[]
 ) => {
 	const whereCondition: FindOptionsWhere<Schedule>[] = [];
-	fromDate && whereCondition.push({ date: MoreThanOrEqual(fromDate) });
-	toDate && whereCondition.push({ date: LessThanOrEqual(toDate) });
+	if (fromDate && toDate) {
+		whereCondition.push({ date: Between(fromDate, toDate) });
+	} else if (fromDate) {
+		whereCondition.push({ date: MoreThanOrEqual(fromDate) });
+	} else if (toDate) {
+		toDate && whereCondition.push({ date: LessThanOrEqual(toDate) });
+	}
 	employeeIds &&
 		whereCondition.push({
-			employee: {
-				employee_id: In(employeeIds),
-			},
+			employee_id: In(employeeIds),
 		});
 
 	return await Schedule.find({
@@ -31,70 +34,62 @@ export const getSchedules = async (
 	});
 };
 
-export const getSchedule = async (date: Date, employeeId: number | null) => {
+export const getSchedule = async (date: Date, employeeId: number) => {
 	return await Schedule.findOne({
 		where: {
 			date,
-			employee: {
-				employee_id: employeeId == null ? IsNull() : employeeId,
-			},
+			employee_id: employeeId,
 		},
 	});
 };
 
 export const updateSchedule = async (
 	date: Date,
-	employeeId: number | null,
+	employeeId: number,
 	isWorking?: boolean,
 	start?: Date | null,
 	end?: Date | null,
-	vipPackages?: VipPackage[] | null,
-	signed?: boolean
+	vipPackages?: VipPackage[]
 ) => {
 	const schedule = Schedule.create({
 		is_working: isWorking,
 		start,
 		end,
 		vip_packages: vipPackages,
-		signed,
 	});
 
 	return await Schedule.update(
 		{
 			date,
-			employee:
-				employeeId == null
-					? IsNull()
-					: {
-							employee_id: employeeId,
-					  },
+			employee_id: employeeId,
 		},
 		schedule
 	);
 };
 
-export const createSchedule = async (date: Date, employeeId: number | null) => {
+export const createSchedule = async (
+	date: Date,
+	employeeId: number,
+	isWorking?: boolean,
+	start?: Date | null,
+	end?: Date | null,
+	vipPackages?: VipPackage[]
+) => {
 	const schedule = Schedule.create({
 		date,
-		employee:
-			employeeId == null
-				? null
-				: {
-						employee_id: employeeId,
-				  },
+		employee_id: employeeId,
+		is_working: isWorking,
+		start,
+		end,
+		vip_packages: vipPackages,
 	});
 
 	return await schedule.save();
 };
 
-export const deleteSchedule = async (date: Date, employeeId: number | null) => {
+export const deleteSchedule = async (date: Date, employeeId: number) => {
 	return await Schedule.delete({
 		date,
-		employee:
-			employeeId == null
-				? IsNull()
-				: {
-						employee_id: employeeId,
-				  },
+		employee_id: employeeId,
 	});
 };

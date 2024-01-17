@@ -46,8 +46,8 @@ export class Service extends BaseEntity {
 
 	@Column({
 		type: 'decimal',
-		precision: 3,
-		scale: 2,
+		precision: 2,
+		scale: 1,
 		unsigned: true,
 		default: 0,
 	})
@@ -55,12 +55,21 @@ export class Service extends BaseEntity {
 
 	@Column({
 		type: 'decimal',
-		precision: 3,
-		scale: 2,
+		precision: 2,
+		scale: 1,
 		unsigned: true,
 		default: 0,
 	})
 	feet: number;
+
+	@Column({
+		type: 'decimal',
+		precision: 2,
+		scale: 1,
+		unsigned: true,
+		default: 0,
+	})
+	accupuncture: number;
 
 	@Column({
 		type: 'enum',

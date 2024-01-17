@@ -10,7 +10,8 @@ export const getServices: RequestHandler = async (
 	try {
 		const services = await ServiceServices.getServices();
 
-		res.status(HttpCode.OK)
+		res
+			.status(HttpCode.OK)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(services));
 	} catch (err) {
@@ -29,11 +30,13 @@ export const getService: RequestHandler = async (
 		const service = await ServiceServices.getService(serviceId);
 
 		if (service) {
-			res.status(HttpCode.OK)
+			res
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(service));
 		} else {
-			res.status(HttpCode.NOT_FOUND)
+			res
+				.status(HttpCode.NOT_FOUND)
 				.header('Content-Type', 'application/json')
 				.send();
 		}
@@ -58,15 +61,18 @@ export const updateService: RequestHandler = async (
 			req.body.money,
 			req.body.body,
 			req.body.feet,
+			req.body.accupuncture,
 			req.body.color
 		);
 
 		if (!updated.affected) {
-			res.status(HttpCode.NOT_MODIFIED)
+			res
+				.status(HttpCode.NOT_MODIFIED)
 				.header('Content-Type', 'application/json')
 				.send();
 		} else {
-			res.status(HttpCode.NO_CONTENT)
+			res
+				.status(HttpCode.NO_CONTENT)
 				.header('Content-Type', 'application/json')
 				.send();
 		}
@@ -88,10 +94,12 @@ export const addService: RequestHandler = async (
 			req.body.money,
 			req.body.color,
 			req.body.body,
-			req.body.feet
+			req.body.feet,
+			req.body.accupuncture
 		);
 
-		res.status(HttpCode.CREATED)
+		res
+			.status(HttpCode.CREATED)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(service));
 	} catch (err) {
@@ -110,11 +118,13 @@ export const deleteService: RequestHandler = async (
 		const updated = await ServiceServices.deleteService(serviceId);
 
 		if (!updated.affected) {
-			res.status(HttpCode.NOT_MODIFIED)
+			res
+				.status(HttpCode.NOT_MODIFIED)
 				.header('Content-Type', 'application/json')
 				.send();
 		} else {
-			res.status(HttpCode.NO_CONTENT)
+			res
+				.status(HttpCode.NO_CONTENT)
 				.header('Content-Type', 'application/json')
 				.send();
 		}

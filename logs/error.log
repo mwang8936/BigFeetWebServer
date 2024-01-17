@@ -6994,3 +6994,526 @@
 2023-10-12 14:57:42:5742 [31merror[39m: [31mAuthentication Error: jwt expired[39m
 2023-10-12 16:42:40:4240 [31merror[39m: [31mAuthentication Error: jwt expired[39m
 2023-10-12 16:42:41:4241 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2023-11-28 21:56:09:569 [31merror[39m: [31mError during data source initialization. connect ECONNREFUSED 127.0.0.1:3306[39m
+2023-11-28 22:28:30:2830 [31merror[39m: [31mError during data source initialization. ER_NOT_SUPPORTED_AUTH_MODE: Client does not support authentication protocol requested by server; consider upgrading MySQL client[39m
+2023-11-28 22:30:09:309 [31merror[39m: [31mError during data source initialization. ER_NOT_SUPPORTED_AUTH_MODE: Client does not support authentication protocol requested by server; consider upgrading MySQL client[39m
+2023-11-28 22:32:35:3235 [31merror[39m: [31mError during data source initialization. ER_BAD_DB_ERROR: Unknown database 'bfc_db'[39m
+2023-11-28 22:34:02:342 [31merror[39m: [31mUsername could not be found.[39m
+2023-11-30 14:32:23:3223 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2023-11-30 14:33:42:3342 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2023-11-30 14:40:38:4038 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2023-11-30 14:42:48:4248 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2023-11-30 14:44:09:449 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2023-11-30 14:44:20:4420 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2023-11-30 14:44:34:4434 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2023-11-30 14:44:45:4445 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2023-11-30 15:06:33:633 [31merror[39m: [31mbody: "date" must be in YYYY-MM-DD format[39m
+2023-11-30 15:06:34:634 [31merror[39m: [31mbody: "date" must be in YYYY-MM-DD format[39m
+2023-11-30 15:06:34:634 [31merror[39m: [31mbody: "date" must be in YYYY-MM-DD format[39m
+2023-11-30 15:06:36:636 [31merror[39m: [31mbody: "date" must be in YYYY-MM-DD format[39m
+2023-11-30 15:07:23:723 [31merror[39m: [31mbody: "date" must be in YYYY-MM-DD format[39m
+2023-11-30 15:13:20:1320 [31merror[39m: [31mbody: "date" must be in YYYY-MM-DD format[39m
+2023-11-30 18:25:01:251 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2023-11-30 18:25:22:2522 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2023-11-30 18:25:45:2545 [31merror[39m: [31mError during data source initialization. Entity metadata for Reservation#service was not found. Check if you specified a correct entity object and if it's connected in the connection options.[39m
+2023-11-30 18:26:03:263 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2023-11-30 18:26:17:2617 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2023-11-30 18:32:48:3248 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2023-11-30 18:35:27:3527 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2023-11-30 18:50:59:5059 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2023-11-30 23:36:33:3633 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2023-11-30 23:36:33:3633 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2023-11-30 23:36:34:3634 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2023-11-30 23:36:35:3635 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2023-11-30 23:36:35:3635 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2023-11-30 23:36:35:3635 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2023-11-30 23:39:24:3924 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-11-30 23:41:33:4133 [31merror[39m: [31mER_NO_DEFAULT_FOR_FIELD: Field 'phone_number' doesn't have a default value[39m
+2023-11-30 23:41:33:4133 [31merror[39m: [31mUnhandled Promise[39m
+2023-11-30 23:55:42:5542 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-11-30 23:57:38:5738 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-11-30 23:57:51:5751 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-11-30 23:58:16:5816 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-11-30 23:58:50:5850 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-11-30 23:59:08:598 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-11-30 23:59:51:5951 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-12-01 00:00:22:022 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-12-01 00:00:44:044 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-12-01 00:00:52:052 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-12-01 00:02:44:244 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-12-01 00:03:10:310 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-12-01 00:05:29:529 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-12-01 00:05:54:554 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-12-01 00:07:05:75 [31merror[39m: [31mbody: "reserved_time" is not allowed[39m
+2023-12-01 00:10:26:1026 [31merror[39m: [31mER_NO_DEFAULT_FOR_FIELD: Field 'phone_number' doesn't have a default value[39m
+2023-12-01 00:10:26:1026 [31merror[39m: [31mUnhandled Promise[39m
+2023-12-01 00:14:48:1448 [31merror[39m: [31mUnhandled Promise[39m
+2023-12-01 00:15:29:1529 [31merror[39m: [31mUnhandled Promise[39m
+2023-12-01 00:18:13:1813 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2023-12-01 00:20:41:2041 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2023-12-01 00:21:39:2139 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2023-12-01 00:22:35:2235 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2023-12-01 00:25:22:2522 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2023-12-01 00:26:11:2611 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2023-12-01 00:27:19:2719 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2023-12-01 00:28:04:284 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2023-12-01 00:29:59:2959 [31merror[39m: [31mCannot create property 'employee_id' on number '6'[39m
+2023-12-01 00:30:34:3034 [31merror[39m: [31mCannot create property 'employee_id' on number '6'[39m
+2023-12-01 00:30:34:3034 [31merror[39m: [31mUnhandled Promise[39m
+2023-12-01 00:30:48:3048 [31merror[39m: [31mUnhandled Promise[39m
+2024-01-01 17:02:14:214 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-01 17:02:14:214 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-01 20:18:04:184 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-01 20:18:04:184 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:34:2834 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:34:2834 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:34:2834 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:34:2834 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:34:2834 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:34:2834 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:34:2834 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:34:2834 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:34:2834 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:35:2835 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:36:2836 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:37:2837 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:38:2838 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:46:2846 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:46:2846 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-02 20:28:57:2857 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 20:28:57:2857 [31merror[39m: [31mUnhandled Promise[39m
+2024-01-02 20:31:22:3122 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 20:32:43:3243 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 20:33:29:3329 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 20:33:55:3355 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 20:34:21:3421 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 20:40:05:405 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 20:52:12:5212 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 20:54:42:5442 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 20:55:11:5511 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 20:56:29:5629 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 20:58:00:580 [31merror[39m: [31mCannot create property 'employee_id' on number '3'[39m
+2024-01-02 21:01:33:133 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 21:03:12:312 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 21:04:29:429 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 21:07:26:726 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 21:10:46:1046 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 21:14:45:1445 [31merror[39m: [31mER_NO_DEFAULT_FOR_FIELD: Field 'schedule_employee_id' doesn't have a default value[39m
+2024-01-02 21:15:07:157 [31merror[39m: [31mER_NO_DEFAULT_FOR_FIELD: Field 'schedule_employee_id' doesn't have a default value[39m
+2024-01-02 21:21:50:2150 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 21:25:04:254 [31merror[39m: [31mER_NO_DEFAULT_FOR_FIELD: Field 'schedule_employee_id' doesn't have a default value[39m
+2024-01-02 21:26:00:260 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 21:27:07:277 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 21:28:02:282 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 21:28:42:2842 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 21:37:54:3754 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:39:39:3939 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:40:31:4031 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:41:12:4112 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:42:52:4252 [31merror[39m: [31mError during data source initialization. ER_BAD_DB_ERROR: Unknown database 'bfc_db'[39m
+2024-01-02 21:43:29:4329 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:44:24:4424 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:44:41:4441 [31merror[39m: [31mError during data source initialization. Entity metadata for Service#reservations was not found. Check if you specified a correct entity object and if it's connected in the connection options.[39m
+2024-01-02 21:45:01:451 [31merror[39m: [31mError during data source initialization. Entity metadata for Reservation#schedule was not found. Check if you specified a correct entity object and if it's connected in the connection options.[39m
+2024-01-02 21:45:18:4518 [31merror[39m: [31mError during data source initialization. Entity metadata for Reservation#schedule was not found. Check if you specified a correct entity object and if it's connected in the connection options.[39m
+2024-01-02 21:45:32:4532 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:46:01:461 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:46:44:4644 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:49:24:4924 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:49:57:4957 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:53:12:5312 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:53:28:5328 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:55:00:550 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:56:25:5625 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:58:12:5812 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:58:19:5819 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 21:59:37:5937 [31merror[39m: [31mError during data source initialization. Entity metadata for Reservation#customer was not found. Check if you specified a correct entity object and if it's connected in the connection options.[39m
+2024-01-02 21:59:45:5945 [31merror[39m: [31mError during data source initialization. Entity metadata for Service#reservations was not found. Check if you specified a correct entity object and if it's connected in the connection options.[39m
+2024-01-02 21:59:58:5958 [31merror[39m: [31mError during data source initialization. Entity metadata for Schedule#reservations was not found. Check if you specified a correct entity object and if it's connected in the connection options.[39m
+2024-01-02 22:00:06:06 [31merror[39m: [31mError during data source initialization. Entity metadata for Reservation#service was not found. Check if you specified a correct entity object and if it's connected in the connection options.[39m
+2024-01-02 22:00:13:013 [31merror[39m: [31mError during data source initialization. Entity metadata for Reservation#customer was not found. Check if you specified a correct entity object and if it's connected in the connection options.[39m
+2024-01-02 22:00:20:020 [31merror[39m: [31mError during data source initialization. Entity metadata for Schedule#vip_packages was not found. Check if you specified a correct entity object and if it's connected in the connection options.[39m
+2024-01-02 22:00:28:028 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 22:00:53:053 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 22:04:37:437 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 22:08:29:829 [31merror[39m: [31mError during data source initialization. Referenced column employee_id was not found in entity Schedule[39m
+2024-01-02 22:08:45:845 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2024-01-02 22:09:31:931 [31merror[39m: [31mError during data source initialization. Referenced column schedule_employee_id was not found in entity Schedule[39m
+2024-01-02 22:10:33:1033 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2024-01-02 22:22:14:2214 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'vippackagessold' already exists[39m
+2024-01-02 22:24:51:2451 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 22:25:39:2539 [31merror[39m: [31mCannot create property 'employee_id' on number '1'[39m
+2024-01-02 22:27:21:2721 [31merror[39m: [31mUser with username already exists.[39m
+2024-01-02 22:28:57:2857 [31merror[39m: [31mUser with username already exists.[39m
+2024-01-02 22:32:16:3216 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 22:32:33:3233 [31merror[39m: [31mError during data source initialization. Referenced column employee was not found in entity Schedule[39m
+2024-01-02 22:36:16:3616 [31merror[39m: [31mUser with username already exists.[39m
+2024-01-03 11:33:23:3323 [31merror[39m: [31mstart: must have hours, minutes, seconds, and milliseconds set to 0.[39m
+2024-01-03 11:33:23:3323 [31merror[39m: [31mstart: must have hours, minutes, seconds, and milliseconds set to 0.[39m
+2024-01-03 21:31:19:3119 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-03 21:31:19:3119 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-03 21:31:21:3121 [31merror[39m: [31m[][39m
+2024-01-03 21:31:21:3121 [31merror[39m: [31m[][39m
+2024-01-03 21:38:53:3853 [31merror[39m: [31mER_DUP_ENTRY: Duplicate entry '2024-01-04-1' for key 'schedules.PRIMARY'[39m
+2024-01-03 22:57:13:5713 [31merror[39m: [31mschedule.date.toLocaleDateString is not a function[39m
+2024-01-03 22:57:13:5713 [31merror[39m: [31mschedule.date.toLocaleDateString is not a function[39m
+2024-01-03 22:58:18:5818 [31merror[39m: [31mschedule.date.toLocaleTimeString is not a function[39m
+2024-01-03 22:58:18:5818 [31merror[39m: [31mschedule.date.toLocaleTimeString is not a function[39m
+2024-01-03 22:59:27:5927 [31merror[39m: [31mschedule.date.getUTCHours is not a function[39m
+2024-01-03 22:59:27:5927 [31merror[39m: [31mschedule.date.getUTCHours is not a function[39m
+2024-01-03 23:01:00:10 [31merror[39m: [31mschedule.date.getUTCHours is not a function[39m
+2024-01-03 23:01:00:10 [31merror[39m: [31mschedule.date.getUTCHours is not a function[39m
+2024-01-03 23:01:10:110 [31merror[39m: [31mschedule.date.setUTCHours is not a function[39m
+2024-01-03 23:01:10:110 [31merror[39m: [31mschedule.date.setUTCHours is not a function[39m
+2024-01-03 23:01:29:129 [31merror[39m: [31mschedule.date.setUTCHours is not a function[39m
+2024-01-03 23:33:23:3323 [31merror[39m: [31mER_DUP_ENTRY: Duplicate entry '2024-01-03-2' for key 'schedules.PRIMARY'[39m
+2024-01-03 23:33:28:3328 [31merror[39m: [31mER_DUP_ENTRY: Duplicate entry '2024-01-03-2' for key 'schedules.PRIMARY'[39m
+2024-01-03 23:33:37:3337 [31merror[39m: [31mER_DUP_ENTRY: Duplicate entry '2024-01-03-2' for key 'schedules.PRIMARY'[39m
+2024-01-03 23:34:41:3441 [31merror[39m: [31mER_DUP_ENTRY: Duplicate entry '2024-01-03-2' for key 'schedules.PRIMARY'[39m
+2024-01-03 23:34:46:3446 [31merror[39m: [31mER_DUP_ENTRY: Duplicate entry '2024-01-03-1' for key 'schedules.PRIMARY'[39m
+2024-01-03 23:35:18:3518 [31merror[39m: [31mER_DUP_ENTRY: Duplicate entry '2024-01-03-1' for key 'schedules.PRIMARY'[39m
+2024-01-03 23:36:37:3637 [31merror[39m: [31mER_DUP_ENTRY: Duplicate entry '2024-01-04-1' for key 'schedules.PRIMARY'[39m
+2024-01-04 21:44:02:442 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-04 21:44:02:442 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-05 17:44:38:4438 [31merror[39m: [31mbody: "message" is not allowed to be empty[39m
+2024-01-05 20:25:46:2546 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:25:46:2546 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:29:03:293 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:29:03:293 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:29:03:293 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:29:03:293 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:29:45:2945 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:29:45:2945 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:29:56:2956 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:29:56:2956 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:30:08:308 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:30:08:308 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:30:33:3033 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:30:33:3033 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:30:42:3042 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:30:42:3042 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:30:46:3046 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:30:46:3046 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:42:24:4224 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:43:01:431 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:44:43:4443 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:46:41:4641 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:47:05:475 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:47:25:4725 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:47:33:4733 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:47:53:4753 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:49:38:4938 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:49:50:4950 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 20:54:59:5459 [31merror[39m: [31mbody: "reserved_date" is required[39m
+2024-01-05 21:54:34:5434 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-05 21:54:34:5434 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-07 14:18:49:1849 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-07 14:18:49:1849 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-07 16:05:37:537 [31merror[39m: [31mbody: "reserved_employee" is not allowed[39m
+2024-01-07 16:31:38:3138 [31merror[39m: [31mER_NO_DEFAULT_FOR_FIELD: Field 'phone_number' doesn't have a default value[39m
+2024-01-07 16:32:10:3210 [31merror[39m: [31mER_NO_DEFAULT_FOR_FIELD: Field 'phone_number' doesn't have a default value[39m
+2024-01-07 17:22:41:2241 [31merror[39m: [31mProperty "schedule.date" was not found in "Reservation". Make sure your query is correct.[39m
+2024-01-07 17:26:06:266 [31merror[39m: [31mbody: "employee_id" missing required peer "reserved_date"[39m
+2024-01-07 17:26:23:2623 [31merror[39m: [31mbody: "employee_id" missing required peer "reserved_date"[39m
+2024-01-07 17:27:22:2722 [31merror[39m: [31mProperty "schedule.employee_id" was not found in "Reservation". Make sure your query is correct.[39m
+2024-01-07 17:27:36:2736 [31merror[39m: [31mProperty "schedule.employee_id" was not found in "Reservation". Make sure your query is correct.[39m
+2024-01-07 17:28:22:2822 [31merror[39m: [31mProperty "schedule.employee_id" was not found in "Reservation". Make sure your query is correct.[39m
+2024-01-07 17:29:03:293 [31merror[39m: [31mProperty "schedule.employee_id" was not found in "Reservation". Make sure your query is correct.[39m
+2024-01-07 17:30:31:3031 [31merror[39m: [31mProperty "schedule.employee_id" was not found in "Reservation". Make sure your query is correct.[39m
+2024-01-07 17:32:08:328 [31merror[39m: [31mProperty "schedule.employee_id" was not found in "Reservation". Make sure your query is correct.[39m
+2024-01-07 17:34:56:3456 [31merror[39m: [31mProperty "schedule.employee_id" was not found in "Reservation". Make sure your query is correct.[39m
+2024-01-07 17:35:34:3534 [31merror[39m: [31mProperty "schedule.employee_id" was not found in "Reservation". Make sure your query is correct.[39m
+2024-01-08 15:44:58:4458 [31merror[39m: [31m[[39m
+[31m  'params: "date" must be in ISO 8601 date format',[39m
+[31m  'body: "end" date references "ref:start" which must have a valid date format',[39m
+[31m  'body: "end" missing required peer "start"'[39m
+[31m][39m
+2024-01-08 17:54:16:5416 [31merror[39m: [31m[[39m
+[31m  'params: "date" must be in ISO 8601 date format',[39m
+[31m  'body: "end" date references "ref:start" which must have a valid date format',[39m
+[31m  'body: "end" missing required peer "start"'[39m
+[31m][39m
+2024-01-08 18:03:47:347 [31merror[39m: [31mER_DUP_ENTRY: Duplicate entry '2024-01-09-3' for key 'schedules.PRIMARY'[39m
+2024-01-08 18:11:50:1150 [31merror[39m: [31mER_DUP_ENTRY: Duplicate entry '2024-01-11-2' for key 'schedules.PRIMARY'[39m
+2024-01-08 18:15:50:1550 [31merror[39m: [31mbody: "end" must be greater than "ref:start"[39m
+2024-01-08 18:17:05:175 [31merror[39m: [31m[[39m
+[31m  'params: "date" must be in ISO 8601 date format',[39m
+[31m  'body: "end" must be greater than "ref:start"'[39m
+[31m][39m
+2024-01-08 18:18:09:189 [31merror[39m: [31mparams: "date" must be in ISO 8601 date format[39m
+2024-01-08 18:26:51:2651 [31merror[39m: [31mparams: "date" must be in ISO 8601 date format[39m
+2024-01-08 22:06:34:634 [31merror[39m: [31mbody: "date" is required[39m
+2024-01-09 16:05:12:512 [31merror[39m: [31mError during data source initialization. ER_TABLE_EXISTS_ERROR: Table 'services' already exists[39m
+2024-01-09 16:06:18:618 [31merror[39m: [31mER_BAD_FIELD_ERROR: Unknown column 'Schedule__reservations__service.accupuncture' in 'field list'[39m
+2024-01-09 16:06:18:618 [31merror[39m: [31mER_BAD_FIELD_ERROR: Unknown column 'Service.accupuncture' in 'field list'[39m
+2024-01-09 16:06:18:618 [31merror[39m: [31mER_BAD_FIELD_ERROR: Unknown column 'Schedule__reservations__service.accupuncture' in 'field list'[39m
+2024-01-09 16:06:18:618 [31merror[39m: [31mER_BAD_FIELD_ERROR: Unknown column 'Service.accupuncture' in 'field list'[39m
+2024-01-09 16:06:49:649 [31merror[39m: [31mER_BAD_FIELD_ERROR: Unknown column 'Schedule__reservations__service.accupuncture' in 'field list'[39m
+2024-01-09 16:06:49:649 [31merror[39m: [31mER_BAD_FIELD_ERROR: Unknown column 'Service.accupuncture' in 'field list'[39m
+2024-01-09 16:06:49:649 [31merror[39m: [31mER_BAD_FIELD_ERROR: Unknown column 'Schedule__reservations__service.accupuncture' in 'field list'[39m
+2024-01-09 16:06:49:649 [31merror[39m: [31mER_BAD_FIELD_ERROR: Unknown column 'Service.accupuncture' in 'field list'[39m
+2024-01-09 16:13:40:1340 [31merror[39m: [31mER_BAD_FIELD_ERROR: Unknown column 'Schedule__reservations__service.accupuncture' in 'field list'[39m
+2024-01-09 16:13:40:1340 [31merror[39m: [31mER_BAD_FIELD_ERROR: Unknown column 'Schedule__reservations__service.accupuncture' in 'field list'[39m
+2024-01-09 18:05:39:539 [31merror[39m: [31mUser with username already exists.[39m
+2024-01-09 18:06:14:614 [31merror[39m: [31mUser with username already exists.[39m
+2024-01-09 18:09:08:98 [31merror[39m: [31mUser with username already exists.[39m
+2024-01-10 21:40:49:4049 [31merror[39m: [31mbody: "phone_number" length must be 10 characters long[39m
+2024-01-10 23:33:22:3322 [31merror[39m: [31mquery: "end" must be greater than "ref:start"[39m
+2024-01-10 23:34:35:3435 [31merror[39m: [31mquery: "end" must be greater than "ref:start"[39m
+2024-01-10 23:36:12:3612 [31merror[39m: [31mquery: "end" must be greater than "ref:start"[39m
+2024-01-10 23:36:48:3648 [31merror[39m: [31mquery: "end" must be greater than "ref:start"[39m
+2024-01-10 23:40:44:4044 [31merror[39m: [31mquery: "end" must be greater than "ref:start"[39m
+2024-01-10 23:41:33:4133 [31merror[39m: [31mquery: "end" must be greater than "ref:start"[39m
+2024-01-10 23:42:24:4224 [31merror[39m: [31mquery: "end" must be greater than "ref:start"[39m
+2024-01-10 23:44:39:4439 [31merror[39m: [31mquery: "end" must be greater than "ref:start"[39m
+2024-01-10 23:46:46:4646 [31merror[39m: [31mquery: "end" must be greater than "ref:start"[39m
+2024-01-11 16:36:51:3651 [31merror[39m: [31mForbidden Error: Missing Permission[39m
+2024-01-11 16:38:59:3859 [31merror[39m: [31m[[39m
+[31m  'body: "permissions[20]" must be one of [GET CUSTOMER PERMISSION, UPDATE CUSTOMER PERMISSION, ADD CUSTOMER PERMISSION, DELETE CUSTOMER PERMISSION, GET EMPLOYEE PERMISSION, UPDATE EMPLOYEE PERMISSION, ADD EMPLOYEE PERMISSION, DELETE EMPLOYEE PERMISSION, GET SCHEDULE PERMISSION, UPDATE SCHEDULE PERMISSION, ADD SCHEDULE PERMISSION, DELETE SCHEDULE PERMISSION, GET SERVICE PERMISSION, UPDATE SERVICE PERMISSION, ADD SERVICE PERMISSION, DELETE SERVICE PERMISSION, GET RESERVATION PERMISSION, UPDATE RESERVATION PERMISSION, ADD RESERVATION PERMISSION, DELETE RESERVATION PERMISSION]',[39m
+[31m  'body: "permissions[21]" must be one of [GET CUSTOMER PERMISSION, UPDATE CUSTOMER PERMISSION, ADD CUSTOMER PERMISSION, DELETE CUSTOMER PERMISSION, GET EMPLOYEE PERMISSION, UPDATE EMPLOYEE PERMISSION, ADD EMPLOYEE PERMISSION, DELETE EMPLOYEE PERMISSION, GET SCHEDULE PERMISSION, UPDATE SCHEDULE PERMISSION, ADD SCHEDULE PERMISSION, DELETE SCHEDULE PERMISSION, GET SERVICE PERMISSION, UPDATE SERVICE PERMISSION, ADD SERVICE PERMISSION, DELETE SERVICE PERMISSION, GET RESERVATION PERMISSION, UPDATE RESERVATION PERMISSION, ADD RESERVATION PERMISSION, DELETE RESERVATION PERMISSION]',[39m
+[31m  'body: "permissions[22]" must be one of [GET CUSTOMER PERMISSION, UPDATE CUSTOMER PERMISSION, ADD CUSTOMER PERMISSION, DELETE CUSTOMER PERMISSION, GET EMPLOYEE PERMISSION, UPDATE EMPLOYEE PERMISSION, ADD EMPLOYEE PERMISSION, DELETE EMPLOYEE PERMISSION, GET SCHEDULE PERMISSION, UPDATE SCHEDULE PERMISSION, ADD SCHEDULE PERMISSION, DELETE SCHEDULE PERMISSION, GET SERVICE PERMISSION, UPDATE SERVICE PERMISSION, ADD SERVICE PERMISSION, DELETE SERVICE PERMISSION, GET RESERVATION PERMISSION, UPDATE RESERVATION PERMISSION, ADD RESERVATION PERMISSION, DELETE RESERVATION PERMISSION]',[39m
+[31m  'body: "permissions[23]" must be one of [GET CUSTOMER PERMISSION, UPDATE CUSTOMER PERMISSION, ADD CUSTOMER PERMISSION, DELETE CUSTOMER PERMISSION, GET EMPLOYEE PERMISSION, UPDATE EMPLOYEE PERMISSION, ADD EMPLOYEE PERMISSION, DELETE EMPLOYEE PERMISSION, GET SCHEDULE PERMISSION, UPDATE SCHEDULE PERMISSION, ADD SCHEDULE PERMISSION, DELETE SCHEDULE PERMISSION, GET SERVICE PERMISSION, UPDATE SERVICE PERMISSION, ADD SERVICE PERMISSION, DELETE SERVICE PERMISSION, GET RESERVATION PERMISSION, UPDATE RESERVATION PERMISSION, ADD RESERVATION PERMISSION, DELETE RESERVATION PERMISSION]'[39m
+[31m][39m
+2024-01-11 16:40:44:4044 [31merror[39m: [31mForbidden Error: Missing Permission[39m
+2024-01-11 16:40:57:4057 [31merror[39m: [31mER_NO_DEFAULT_FOR_FIELD: Field 'schedulesDate' doesn't have a default value[39m
+2024-01-11 17:22:01:221 [31merror[39m: [31mER_NO_DEFAULT_FOR_FIELD: Field 'schedulesDate' doesn't have a default value[39m
+2024-01-11 17:23:41:2341 [31merror[39m: [31mER_NO_DEFAULT_FOR_FIELD: Field 'schedulesDate' doesn't have a default value[39m
+2024-01-11 17:37:50:3750 [31merror[39m: [31mUser with username: 'WGong' already exists.[39m
+2024-01-11 17:39:41:3941 [31merror[39m: [31mER_NO_DEFAULT_FOR_FIELD: Field 'schedulesDate' doesn't have a default value[39m
+2024-01-12 17:09:40:940 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-12 17:09:40:940 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-12 17:13:59:1359 [31merror[39m: [31mbody: "value" must have at least 1 key[39m
+2024-01-12 17:14:06:146 [31merror[39m: [31mbody: "value" must have at least 1 key[39m
+2024-01-13 00:22:03:223 [31merror[39m: [31mbody: "value" must have at least 1 key[39m
+2024-01-13 00:26:07:267 [31merror[39m: [31mER_DUP_ENTRY: Duplicate entry 'BD' for key 'services.IDX_2587a9656bef66364bf1feefec'[39m
+2024-01-13 12:45:06:456 [31merror[39m: [31mbody: "value" must have at least 1 key[39m
+2024-01-13 12:45:17:4517 [31merror[39m: [31mbody: "value" must have at least 1 key[39m
+2024-01-13 17:14:56:1456 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-13 17:14:56:1456 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-13 23:31:06:316 [31merror[39m: [31mbody: "body_rate" must be a positive number[39m
+2024-01-13 23:41:34:4134 [31merror[39m: [31mER_DUP_ENTRY: Duplicate entry 'BD' for key 'services.IDX_2587a9656bef66364bf1feefec'[39m
+2024-01-14 10:56:40:5640 [31merror[39m: [31mER_NO_DEFAULT_FOR_FIELD: Field 'schedulesDate' doesn't have a default value[39m
+2024-01-14 10:56:46:5646 [31merror[39m: [31mER_NO_DEFAULT_FOR_FIELD: Field 'schedulesDate' doesn't have a default value[39m
+2024-01-14 10:57:07:577 [31merror[39m: [31mER_NO_DEFAULT_FOR_FIELD: Field 'schedulesDate' doesn't have a default value[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:55:3955 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:56:3956 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:56:3956 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:56:3956 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:56:3956 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:56:3956 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:56:3956 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:56:3956 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:56:3956 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:56:3956 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:56:3956 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:56:3956 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:56:3956 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:56:3956 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:39:56:3956 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:44:10:4410 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-14 18:46:10:4610 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 17:41:17:4117 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 17:41:17:4117 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 17:42:02:422 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 17:42:02:422 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 17:42:05:425 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 17:42:05:425 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 17:42:29:4229 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 17:42:29:4229 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 17:42:49:4249 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 17:42:49:4249 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 17:52:38:5238 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 17:52:38:5238 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 17:52:56:5256 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 18:00:28:028 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 18:00:28:028 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 18:07:11:711 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 18:07:11:711 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 18:07:56:756 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 18:07:56:756 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 18:09:47:947 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 18:09:47:947 [31merror[39m: [31mAuthentication Error: jwt expired[39m
+2024-01-16 18:16:44:1644 [31merror[39m: [31mAuthentication Error: jwt expired[39m

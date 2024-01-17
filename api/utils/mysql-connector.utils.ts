@@ -15,19 +15,18 @@ export const init = async () => {
 };
 
 export const destroy = async () => {
-	if (AppDataSource.isInitialized) {
-		AppDataSource.destroy()
-			.then(() => {
-				Logger.debug(
-					`Disconnected from MYSQL DB: ${AppDataSource.options.database}`
-				);
-				process.exit(0);
-			})
-			.catch((err) => {
-				Logger.error('Error during data source disconnection.', err);
-				throw new Error('Error disconnecting from DB');
-			});
-	} else {
-		Logger.debug('Database connection never initialized.');
+	try {
+		if (AppDataSource.isInitialized) {
+			await AppDataSource.destroy();
+			Logger.debug(
+				`Disconnected from MYSQL DB: ${AppDataSource.options.database}`
+			);
+		} else {
+			Logger.debug('Database connection never initialized.');
+		}
+		process.exit(0);
+	} catch (err) {
+		Logger.error('Error during data source disconnection.', err);
+		process.exit(1); // Exit with a non-zero code to indicate failure
 	}
 };

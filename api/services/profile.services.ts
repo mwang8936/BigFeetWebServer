@@ -30,9 +30,7 @@ export const getProfile = async (employeeId: number) => {
 export const getProfileSchedules = async (employeeId: number) => {
 	return await Schedule.find({
 		where: {
-			employee: {
-				employee_id: employeeId,
-			},
+			employee_id: employeeId,
 		},
 		order: {
 			date: 'DESC',
@@ -56,5 +54,19 @@ export const updateProfile = async (
 			is_active: true,
 		},
 		employee
+	);
+};
+
+export const signProfileSchedule = async (date: Date, employeeId: number) => {
+	const schedule = Schedule.create({
+		signed: true,
+	});
+
+	return await Schedule.update(
+		{
+			date,
+			employee_id: employeeId,
+		},
+		schedule
 	);
 };

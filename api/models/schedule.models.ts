@@ -20,18 +20,18 @@ export class Schedule extends BaseEntity {
 	})
 	date: Date;
 
-	@PrimaryColumn({ type: 'integer', name: 's_employee_id' })
+	@PrimaryColumn()
+	employee_id: number;
+
 	@ManyToOne(() => Employee, (employee) => employee.schedules, {
 		onUpdate: 'CASCADE',
 		onDelete: 'CASCADE',
 		eager: true,
-		nullable: true,
 	})
 	@JoinColumn({
-		name: 's_employee_id',
-		referencedColumnName: 'employee_id',
+		name: 'employee_id',
 	})
-	employee: Employee | null;
+	employee: Employee;
 
 	@Column({
 		name: 'working',
@@ -53,17 +53,15 @@ export class Schedule extends BaseEntity {
 
 	@OneToMany(() => Reservation, (reservation) => reservation.schedule, {
 		eager: true,
-		nullable: true,
 	})
-	reservations: Reservation[] | null;
+	reservations: Reservation[];
 
 	@ManyToMany(() => VipPackage, (vipPackage) => vipPackage.schedules, {
 		cascade: true,
 		eager: true,
-		nullable: true,
 	})
 	@JoinTable()
-	vip_packages: VipPackage[] | null;
+	vip_packages: VipPackage[];
 
 	@Column({
 		default: false,

@@ -12,11 +12,14 @@ const AppDataSource = new DataSource({
 	type: 'mysql',
 	host: MY_SQL_DATA_SOURCES.DB_HOST,
 	port: MY_SQL_DATA_SOURCES.DB_PORT,
+	timezone: '-08:00',
 	username: MY_SQL_DATA_SOURCES.DB_USER,
 	password: MY_SQL_DATA_SOURCES.DB_PASSWORD,
 	database: MY_SQL_DATA_SOURCES.DB_DATABASE,
-	entities: [Customer, Employee, Service, Reservation, Schedule, VipPackage],
-	synchronize: ENV_VARIABLES.NODE_ENV == 'development',
+	entities: [Employee, Schedule, Reservation, Service, Customer, VipPackage],
+	// logging: ENV_VARIABLES.NODE_ENV == 'development',
+	//synchronize: ENV_VARIABLES.NODE_ENV == 'development',
+	//dropSchema: ENV_VARIABLES.NODE_ENV == 'development',
 });
 
 export default AppDataSource;

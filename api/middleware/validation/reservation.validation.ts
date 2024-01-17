@@ -1,19 +1,13 @@
 import { celebrate, Joi, Segments, Modes } from 'celebrate';
-import JoiDate from '@joi/date';
 import { genderValidation, tipMethodValidation } from './enum.validation';
 
 export const GetReservationsValidation = celebrate(
 	{
 		[Segments.QUERY]: Joi.object()
 			.keys({
-				start: Joi.extend(JoiDate).date().format('YYYY-MM-DD'),
-				end: Joi.extend(JoiDate)
-					.date()
-					.format('YYYY-MM-DD')
-					.greater(Joi.ref('start')),
-				employee_ids: Joi.array().items(
-					Joi.number().integer().positive().allow(null)
-				),
+				start: Joi.date().iso(),
+				end: Joi.date().iso().greater(Joi.ref('start')),
+				employee_ids: Joi.array().items(Joi.number().integer().positive()),
 			})
 			.with('start', 'end')
 			.with('end', 'start'),
@@ -38,9 +32,8 @@ export const UpdateReservationValidation = celebrate(
 			reservation_id: Joi.number().integer().positive().required(),
 		}),
 		[Segments.BODY]: Joi.object({
-			date: Joi.extend(JoiDate).date().format('YYYY-MM-DD'),
-			employee_id: Joi.number().integer().positive().allow(null),
-			reserved_time: Joi.extend(JoiDate).date().format('hh:mm'),
+			reserved_date: Joi.date().iso(),
+			employee_id: Joi.number().integer().positive(),
 			service_id: Joi.number().integer().positive(),
 			phone_number: Joi.string()
 				.length(10)
@@ -48,29 +41,15 @@ export const UpdateReservationValidation = celebrate(
 				.allow(null),
 			customer_name: Joi.string().trim().min(1).max(60).allow(null),
 			notes: Joi.string().trim().min(1).allow(null),
-			requested_gender: genderValidation,
+			requested_gender: genderValidation.allow(null),
 			requested_employee: Joi.boolean(),
 			cash: Joi.number().positive().precision(2).max(999.99).allow(null),
-			machine: Joi.number()
-				.positive()
-				.precision(2)
-				.max(999.99)
-				.allow(null),
+			machine: Joi.number().positive().precision(2).max(999.99).allow(null),
 			vip: Joi.number().positive().precision(2).max(999.99).allow(null),
-			tips: Joi.number()
-				.positive()
-				.precision(3)
-				.max(9999.999)
-				.allow(null),
+			tips: Joi.number().positive().precision(3).max(9999.99).allow(null),
 			tip_method: tipMethodValidation.allow(null),
-			is_completed: Joi.boolean(),
 			message: Joi.string().trim().min(1).allow(null),
-			updated_by: Joi.string()
-				.trim()
-				.min(1)
-				.max(30)
-				.alphanum()
-				.required(),
+			updated_by: Joi.string().trim().min(1).max(30).alphanum().required(),
 		})
 			.min(2)
 			.with('customer_name', 'phone_number')
@@ -83,19 +62,18 @@ export const UpdateReservationValidation = celebrate(
 
 export const AddReservationValidation = celebrate({
 	[Segments.BODY]: Joi.object({
-		date: Joi.extend(JoiDate).date().format('YYYY-MM-DD').required(),
-		employee_id: Joi.number().integer().positive().allow(null).required(),
-		reserved_time: Joi.extend(JoiDate).date().format('hh:mm').required(),
+		reserved_date: Joi.date().iso().required(),
+		employee_id: Joi.number().integer().positive().required(),
 		service_id: Joi.number().integer().positive().required(),
 		created_by: Joi.string().trim().min(1).max(30).alphanum().required(),
 		phone_number: Joi.string()
 			.length(10)
 			.pattern(/^[0-9]+$/),
 		customer_name: Joi.string().trim().min(1).max(60),
-		notes: Joi.string().trim().min(1).allow(null),
+		notes: Joi.string().trim().min(1),
 		requested_gender: genderValidation,
 		requested_employee: Joi.boolean(),
-		message: Joi.string().trim().min(1).allow(null),
+		message: Joi.string().trim().min(1),
 	})
 		.with('customer_name', 'phone_number')
 		.with('notes', 'customer_name')

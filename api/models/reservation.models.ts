@@ -24,14 +24,20 @@ export class Reservation extends BaseEntity {
 	})
 	@JoinColumn([
 		{ name: 'date', referencedColumnName: 'date' },
-		{ name: 'r_employee_id', referencedColumnName: 'employee' },
+		{ name: 'employee_id', referencedColumnName: 'employee_id' },
 	])
 	schedule: Schedule;
 
+	@Column()
+	employee_id: number;
+
+	@Column()
+	date: Date;
+
 	@Column({
-		type: 'time',
+		type: 'datetime',
 	})
-	reserved_time: Date;
+	reserved_date: Date;
 
 	@ManyToOne(() => Service, (service) => service.reservations, {
 		onUpdate: 'CASCADE',
@@ -96,8 +102,8 @@ export class Reservation extends BaseEntity {
 
 	@Column({
 		type: 'decimal',
-		precision: 7,
-		scale: 3,
+		precision: 6,
+		scale: 2,
 		unsigned: true,
 		nullable: true,
 	})
@@ -109,12 +115,6 @@ export class Reservation extends BaseEntity {
 		nullable: true,
 	})
 	tip_method: TipMethod | null;
-
-	@Column({
-		name: 'completed',
-		default: false,
-	})
-	is_completed: boolean;
 
 	@Column({
 		type: 'text',

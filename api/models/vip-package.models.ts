@@ -11,21 +11,19 @@ import { Schedule } from './schedule.models';
 @Entity('VipPackagesSold')
 export class VipPackage extends BaseEntity {
 	@PrimaryColumn({
-		type: 'integer',
-		width: 6,
-		unsigned: true,
+		length: 6,
 	})
-	serial: number;
+	serial: string;
 
 	@Column({
 		type: 'decimal',
-		precision: 5,
+		precision: 8,
 		scale: 2,
 		unsigned: true,
 	})
 	amount: number;
 
-	@ManyToMany(() => Schedule, (schedule) => schedule.vip_packages)
+	@ManyToMany(() => Schedule)
 	@JoinTable()
 	schedules: Schedule[];
 }

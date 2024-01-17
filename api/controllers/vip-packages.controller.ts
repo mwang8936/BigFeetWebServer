@@ -1,6 +1,7 @@
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as VipPackagesServices from '../services/vip-package.services';
+import { setTimeToZero } from '../utils/date.utils';
 
 export const getVipPackages: RequestHandler = async (
 	req: Request,
@@ -10,7 +11,8 @@ export const getVipPackages: RequestHandler = async (
 	try {
 		const vipPackages = await VipPackagesServices.getVipPackages();
 
-		res.status(HttpCode.OK)
+		res
+			.status(HttpCode.OK)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(vipPackages));
 	} catch (err) {
@@ -24,16 +26,18 @@ export const getVipPackage: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const serial = parseInt(req.params.serial);
-
-		const vipPackage = await VipPackagesServices.getVipPackage(serial);
+		const vipPackage = await VipPackagesServices.getVipPackage(
+			req.params.serial
+		);
 
 		if (vipPackage) {
-			res.status(HttpCode.OK)
+			res
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(vipPackage));
 		} else {
-			res.status(HttpCode.NOT_FOUND)
+			res
+				.status(HttpCode.NOT_FOUND)
 				.header('Content-Type', 'application/json')
 				.send();
 		}
@@ -48,19 +52,25 @@ export const updateVipPackage: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const serial = parseInt(req.params.serial);
+		const schedules: { date: Date; employee_id: number }[] = req.body.schedules;
+		schedules.forEach(
+			(schedule) => (schedule.date = setTimeToZero(schedule.date))
+		);
 
 		const updated = await VipPackagesServices.updateVipPackage(
-			serial,
-			req.body.amount
+			req.params.serial,
+			req.body.amount,
+			schedules
 		);
 
 		if (!updated.affected) {
-			res.status(HttpCode.NOT_MODIFIED)
+			res
+				.status(HttpCode.NOT_MODIFIED)
 				.header('Content-Type', 'application/json')
 				.send();
 		} else {
-			res.status(HttpCode.NO_CONTENT)
+			res
+				.status(HttpCode.NO_CONTENT)
 				.header('Content-Type', 'application/json')
 				.send();
 		}
@@ -75,12 +85,19 @@ export const addVipPackage: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const vipPackage = await VipPackagesServices.createVipPackage(
-			req.body.serial,
-			req.body.amount
+		const schedules: { date: Date; employee_id: number }[] = req.body.schedules;
+		schedules.forEach(
+			(schedule) => (schedule.date = setTimeToZero(schedule.date))
 		);
 
-		res.status(HttpCode.CREATED)
+		const vipPackage = await VipPackagesServices.createVipPackage(
+			req.body.serial,
+			req.body.amount,
+			schedules
+		);
+
+		res
+			.status(HttpCode.CREATED)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(vipPackage));
 	} catch (err) {
@@ -94,16 +111,18 @@ export const deleteVipPackage: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const serial = parseInt(req.params.serial);
-
-		const updated = await VipPackagesServices.deleteVipPackage(serial);
+		const updated = await VipPackagesServices.deleteVipPackage(
+			req.params.serial
+		);
 
 		if (!updated.affected) {
-			res.status(HttpCode.NOT_MODIFIED)
+			res
+				.status(HttpCode.NOT_MODIFIED)
 				.header('Content-Type', 'application/json')
 				.send();
 		} else {
-			res.status(HttpCode.NO_CONTENT)
+			res
+				.status(HttpCode.NO_CONTENT)
 				.header('Content-Type', 'application/json')
 				.send();
 		}
