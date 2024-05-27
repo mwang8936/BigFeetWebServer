@@ -28,6 +28,7 @@ export const updateEmployee = async (
 	permissions?: Permissions[],
 	bodyRate?: number | null,
 	feetRate?: number | null,
+	acupunctureRate?: number | null,
 	perHour?: number | null
 ) => {
 	const employee = Employee.create({
@@ -40,6 +41,7 @@ export const updateEmployee = async (
 		permissions: permissions,
 		body_rate: bodyRate,
 		feet_rate: feetRate,
+		acupuncture_rate: acupunctureRate,
 		per_hour: perHour,
 	});
 
@@ -62,6 +64,7 @@ export const createEmployee = async (
 	permissions: Permissions[],
 	bodyRate?: number | null,
 	feetRate?: number | null,
+	acupunctureRate?: number | null,
 	perHour?: number | null
 ) => {
 	const employee = Employee.create({
@@ -74,6 +77,7 @@ export const createEmployee = async (
 		permissions: permissions,
 		body_rate: bodyRate,
 		feet_rate: feetRate,
+		acupuncture_rate: acupunctureRate,
 		per_hour: perHour,
 	});
 

@@ -11,7 +11,8 @@ export const getEmployees: RequestHandler = async (
 	try {
 		const employees = await EmployeeServices.getEmployees();
 
-		res.status(HttpCode.OK)
+		res
+			.status(HttpCode.OK)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(employees));
 	} catch (err) {
@@ -30,11 +31,13 @@ export const getEmployee: RequestHandler = async (
 		const employee = await EmployeeServices.getEmployee(employeeId);
 
 		if (employee) {
-			res.status(HttpCode.OK)
+			res
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(employee));
 		} else {
-			res.status(HttpCode.NOT_FOUND)
+			res
+				.status(HttpCode.NOT_FOUND)
 				.header('Content-Type', 'application/json')
 				.send();
 		}
@@ -61,15 +64,18 @@ export const updateEmployee: RequestHandler = async (
 			req.body.permissions,
 			req.body.body_rate,
 			req.body.feet_rate,
+			req.body.acupuncture_rate,
 			req.body.per_hour
 		);
 
 		if (!updated.affected) {
-			res.status(HttpCode.NOT_MODIFIED)
+			res
+				.status(HttpCode.NOT_MODIFIED)
 				.header('Content-Type', 'application/json')
 				.send();
 		} else {
-			res.status(HttpCode.NO_CONTENT)
+			res
+				.status(HttpCode.NO_CONTENT)
 				.header('Content-Type', 'application/json')
 				.send();
 		}
@@ -96,13 +102,15 @@ export const addEmployee: RequestHandler = async (
 			req.body.permissions,
 			req.body.body_rate,
 			req.body.feet_rate,
+			req.body.acupuncture_rate,
 			req.body.per_hour
 		);
 
 		const respEmployee = Object(employee);
 		delete respEmployee['password'];
 
-		res.status(HttpCode.CREATED)
+		res
+			.status(HttpCode.CREATED)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(respEmployee));
 	} catch (err) {
@@ -121,11 +129,13 @@ export const deleteEmployee: RequestHandler = async (
 		const updated = await EmployeeServices.deleteEmployee(employeeId);
 
 		if (!updated.affected) {
-			res.status(HttpCode.NOT_MODIFIED)
+			res
+				.status(HttpCode.NOT_MODIFIED)
 				.header('Content-Type', 'application/json')
 				.send();
 		} else {
-			res.status(HttpCode.NO_CONTENT)
+			res
+				.status(HttpCode.NO_CONTENT)
 				.header('Content-Type', 'application/json')
 				.send();
 		}

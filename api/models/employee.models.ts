@@ -80,6 +80,15 @@ export class Employee extends BaseEntity {
 		unsigned: true,
 		nullable: true,
 	})
+	acupuncture_rate: number | null;
+
+	@Column({
+		type: 'decimal',
+		precision: 4,
+		scale: 2,
+		unsigned: true,
+		nullable: true,
+	})
 	per_hour: number | null;
 
 	@Column({

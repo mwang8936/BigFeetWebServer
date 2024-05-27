@@ -18,8 +18,8 @@ const AppDataSource = new DataSource({
 	database: MY_SQL_DATA_SOURCES.DB_DATABASE,
 	entities: [Employee, Schedule, Reservation, Service, Customer, VipPackage],
 	// logging: ENV_VARIABLES.NODE_ENV == 'development',
-	//synchronize: ENV_VARIABLES.NODE_ENV == 'development',
-	//dropSchema: ENV_VARIABLES.NODE_ENV == 'development',
+	// synchronize: ENV_VARIABLES.NODE_ENV == 'development',
+	// dropSchema: ENV_VARIABLES.NODE_ENV == 'development',
 });
 
 export default AppDataSource;
