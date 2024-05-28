@@ -26,7 +26,7 @@ export const updateService = async (
 	money?: number,
 	body?: number,
 	feet?: number,
-	accupuncture?: number,
+	acupuncture?: number,
 	color?: ServiceColor
 ) => {
 	const service = Service.create({
@@ -37,7 +37,7 @@ export const updateService = async (
 		money: money,
 		body: body,
 		feet: feet,
-		accupuncture: accupuncture,
+		acupuncture: acupuncture,
 		color: color,
 	});
 
@@ -58,7 +58,7 @@ export const createService = async (
 	color: ServiceColor,
 	body?: number,
 	feet?: number,
-	accupuncture?: number
+	acupuncture?: number
 ) => {
 	const service = Service.create({
 		service_name: serviceName,
@@ -67,7 +67,7 @@ export const createService = async (
 		money: money,
 		body: body,
 		feet: feet,
-		accupuncture: accupuncture,
+		acupuncture: acupuncture,
 		color: color,
 	});
 

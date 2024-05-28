@@ -69,7 +69,7 @@ export class Service extends BaseEntity {
 		unsigned: true,
 		default: 0,
 	})
-	accupuncture: number;
+	acupuncture: number;
 
 	@Column({
 		type: 'enum',
