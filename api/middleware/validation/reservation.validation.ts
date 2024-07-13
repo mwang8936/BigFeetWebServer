@@ -53,8 +53,7 @@ export const UpdateReservationValidation = celebrate(
 		})
 			.min(2)
 			.with('customer_name', 'phone_number')
-			.with('notes', 'customer_name')
-			.with('notes', 'phone_number'),
+			.with('notes', ['phone_number', 'customer_name']),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -65,7 +64,6 @@ export const AddReservationValidation = celebrate({
 		reserved_date: Joi.date().iso().required(),
 		employee_id: Joi.number().integer().positive().required(),
 		service_id: Joi.number().integer().positive().required(),
-		created_by: Joi.string().trim().min(1).max(30).alphanum().required(),
 		phone_number: Joi.string()
 			.length(10)
 			.pattern(/^[0-9]+$/),
@@ -74,10 +72,10 @@ export const AddReservationValidation = celebrate({
 		requested_gender: genderValidation,
 		requested_employee: Joi.boolean(),
 		message: Joi.string().trim().min(1),
+		created_by: Joi.string().trim().min(1).max(30).alphanum().required(),
 	})
 		.with('customer_name', 'phone_number')
-		.with('notes', 'customer_name')
-		.with('notes', 'phone_number'),
+		.with('notes', ['phone_number', 'customer_name']),
 });
 
 export const DeleteReservationValidation = celebrate(

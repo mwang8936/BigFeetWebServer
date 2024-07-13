@@ -18,7 +18,7 @@ export class Schedule extends BaseEntity {
 	@PrimaryColumn({
 		type: 'date',
 	})
-	date: Date;
+	date: string;
 
 	@PrimaryColumn()
 	employee_id: number;

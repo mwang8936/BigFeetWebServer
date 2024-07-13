@@ -3,7 +3,7 @@ import { HttpCode } from '../exceptions/custom-error';
 import * as EmployeeServices from '../services/employee.services';
 import * as ScheduleServices from '../services/schedule.services';
 import { VipPackage } from '../models/vip-package.models';
-import { convertDateToPSTDateTime, setTimeToZero } from '../utils/date.utils';
+import { formatDateToYYYYMMDD, validateDateString } from '../utils/date.utils';
 
 export const getSchedules: RequestHandler = async (
 	req: Request,
@@ -11,12 +11,8 @@ export const getSchedules: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const start: Date | undefined = (req.query.start as string)
-			? new Date(req.query.start as string)
-			: undefined;
-		const end: Date | undefined = (req.query.end as string)
-			? new Date(req.query.end as string)
-			: undefined;
+		const start: string | undefined = req.query.start as string | undefined;
+		const end: string | undefined = req.query.end as string | undefined;
 		const employeeIds: number[] | undefined = (req.query
 			.employee_ids as string[])
 			? (req.query.employee_ids as string[]).map((employee_id) =>
@@ -28,10 +24,6 @@ export const getSchedules: RequestHandler = async (
 			start,
 			end,
 			employeeIds
-		);
-
-		schedules.forEach(
-			(schedule) => (schedule.date = convertDateToPSTDateTime(schedule.date))
 		);
 
 		res
@@ -49,13 +41,12 @@ export const getSchedule: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const date = setTimeToZero(new Date(req.params.date));
+		const date = formatDateToYYYYMMDD(req.params.date);
 		const employeeId = parseInt(req.params.employee_id);
 
 		const schedule = await ScheduleServices.getSchedule(date, employeeId);
 
 		if (schedule) {
-			schedule.date = convertDateToPSTDateTime(schedule.date);
 			res
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
@@ -77,34 +68,35 @@ export const updateSchedule: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const date = setTimeToZero(new Date(req.params.date));
+		const date = formatDateToYYYYMMDD(req.params.date);
 		const employeeId = parseInt(req.params.employee_id);
 
-		const updated = await ScheduleServices.updateSchedule(
+		const start =
+			req.body.start === null
+				? null
+				: validateDateString(req.body.start as string | undefined);
+		const end =
+			req.body.end === null
+				? null
+				: validateDateString(req.body.end as string | undefined);
+
+		const schedule = await ScheduleServices.updateSchedule(
 			date,
 			employeeId,
 			req.body.is_working,
-			req.body.start === undefined
-				? undefined
-				: req.body.start === null
-				? null
-				: new Date(req.body.start),
-			req.body.end === undefined
-				? undefined
-				: req.body.end === null
-				? null
-				: new Date(req.body.end),
+			start,
+			end,
 			req.body.vip_packages as VipPackage[]
 		);
 
-		if (!updated.affected) {
+		if (schedule) {
 			res
-				.status(HttpCode.NOT_MODIFIED)
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
-				.send();
+				.send(JSON.stringify(schedule));
 		} else {
 			res
-				.status(HttpCode.NO_CONTENT)
+				.status(HttpCode.NOT_MODIFIED)
 				.header('Content-Type', 'application/json')
 				.send();
 		}
@@ -119,20 +111,23 @@ export const addSchedule: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
+		const date = formatDateToYYYYMMDD(req.body.date);
+
+		const start =
+			req.body.start === null
+				? null
+				: validateDateString(req.body.start as string | undefined);
+		const end =
+			req.body.end === null
+				? null
+				: validateDateString(req.body.end as string | undefined);
+
 		const schedule = await ScheduleServices.createSchedule(
-			new Date(req.body.date),
+			date,
 			req.body.employee_id,
 			req.body.is_working,
-			req.body.start === undefined
-				? undefined
-				: req.body.start === null
-				? null
-				: new Date(req.body.start),
-			req.body.end === undefined
-				? undefined
-				: req.body.end === null
-				? null
-				: new Date(req.body.end),
+			start,
+			end,
 			req.body.vip_packages as VipPackage[]
 		);
 
@@ -158,19 +153,19 @@ export const deleteSchedule: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const date = setTimeToZero(new Date(req.params.date));
+		const date = formatDateToYYYYMMDD(req.params.date);
 		const employeeId = parseInt(req.params.employee_id);
 
-		const updated = await ScheduleServices.deleteSchedule(date, employeeId);
+		const schedule = await ScheduleServices.deleteSchedule(date, employeeId);
 
-		if (!updated.affected) {
+		if (schedule) {
 			res
-				.status(HttpCode.NOT_MODIFIED)
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
-				.send();
+				.send(JSON.stringify(schedule));
 		} else {
 			res
-				.status(HttpCode.NO_CONTENT)
+				.status(HttpCode.NOT_MODIFIED)
 				.header('Content-Type', 'application/json')
 				.send();
 		}

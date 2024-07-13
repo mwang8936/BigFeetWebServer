@@ -1,8 +1,7 @@
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as ReservationServices from '../services/reservation.services';
-import * as ScheduleServices from '../services/schedule.services';
-import { convertDateToPSTDateTime, setTimeToZero } from '../utils/date.utils';
+import { formatDateToYYYYMMDD, validateDateString } from '../utils/date.utils';
 
 export const getReservations: RequestHandler = async (
 	req: Request,
@@ -10,12 +9,12 @@ export const getReservations: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const start: Date | undefined = (req.query.start as string)
-			? new Date(req.query.start as string)
-			: undefined;
-		const end: Date | undefined = (req.query.end as string)
-			? new Date(req.query.end as string)
-			: undefined;
+		const start: Date | undefined = validateDateString(
+			req.query.start as string | undefined
+		);
+		const end: Date | undefined = validateDateString(
+			req.query.end as string | undefined
+		);
 		const employeeIds: number[] | undefined = (req.query
 			.employee_ids as string[])
 			? (req.query.employee_ids as string[]).map((employee_id) =>
@@ -72,25 +71,18 @@ export const updateReservation: RequestHandler = async (
 	try {
 		const reservationId = parseInt(req.params.reservation_id);
 
-		const date: Date | undefined = (req.body.reserved_date as string)
-			? new Date(req.body.reserved_date as string)
+		const reservedDate: Date | undefined = validateDateString(
+			req.body.reserved_date
+		);
+		const date: string | undefined = reservedDate
+			? formatDateToYYYYMMDD(req.body.reserved_date)
 			: undefined;
 		const employeeId: number | undefined = req.body.employee_id;
 
-		if (employeeId && date) {
-			const schedule = await ScheduleServices.getSchedule(
-				setTimeToZero(date),
-				employeeId
-			);
-
-			if (!schedule) {
-				await ScheduleServices.createSchedule(date, employeeId);
-			}
-		}
-
-		const updated = await ReservationServices.updateReservation(
+		const reservation = await ReservationServices.updateReservation(
 			reservationId,
 			req.body.updated_by,
+			reservedDate,
 			date,
 			employeeId,
 			req.body.service_id,
@@ -107,38 +99,16 @@ export const updateReservation: RequestHandler = async (
 			req.body.message
 		);
 
-		if (!updated.affected) {
+		if (reservation) {
+			res
+				.status(HttpCode.OK)
+				.header('Content-Type', 'application/json')
+				.send(JSON.stringify(reservation.schedule));
+		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)
 				.header('Content-Type', 'application/json')
 				.send();
-		} else {
-			const reservation = await ReservationServices.getReservation(
-				reservationId
-			);
-			if (reservation) {
-				const schedule = await ScheduleServices.getSchedule(
-					reservation.date,
-					reservation.employee_id
-				);
-				if (schedule) {
-					schedule.date = convertDateToPSTDateTime(schedule.date);
-					res
-						.status(HttpCode.CREATED)
-						.header('Content-Type', 'application/json')
-						.send(JSON.stringify(schedule));
-				} else {
-					res
-						.status(HttpCode.NO_CONTENT)
-						.header('Content-Type', 'application/json')
-						.send();
-				}
-			} else {
-				res
-					.status(HttpCode.NO_CONTENT)
-					.header('Content-Type', 'application/json')
-					.send();
-			}
 		}
 	} catch (err) {
 		next(err);
@@ -151,23 +121,14 @@ export const addReservation: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const date = new Date(req.body.reserved_date);
+		const reservedDate = new Date(req.body.reserved_date);
+		const date = formatDateToYYYYMMDD(req.body.reserved_date);
 		const employeeId = req.body.employee_id;
 
-		if (employeeId) {
-			const schedule = await ScheduleServices.getSchedule(
-				setTimeToZero(date),
-				employeeId
-			);
-
-			if (!schedule) {
-				await ScheduleServices.createSchedule(date, employeeId);
-			}
-		}
-
-		await ReservationServices.createReservation(
-			employeeId,
+		const reservation = await ReservationServices.createReservation(
+			reservedDate,
 			date,
+			employeeId,
 			req.body.service_id,
 			req.body.created_by,
 			req.body.phone_number,
@@ -178,19 +139,12 @@ export const addReservation: RequestHandler = async (
 			req.body.message
 		);
 
-		const schedule = await ScheduleServices.getSchedule(
-			setTimeToZero(date),
-			employeeId
-		);
-
-		if (schedule) {
-			schedule.date = convertDateToPSTDateTime(schedule.date);
-		}
+		console.log(reservation);
 
 		res
 			.status(HttpCode.CREATED)
 			.header('Content-Type', 'application/json')
-			.send(JSON.stringify(schedule));
+			.send(JSON.stringify(reservation.schedule));
 	} catch (err) {
 		next(err);
 	}
@@ -204,16 +158,18 @@ export const deleteReservation: RequestHandler = async (
 	try {
 		const reservationId = parseInt(req.params.reservation_id);
 
-		const updated = await ReservationServices.deleteReservation(reservationId);
+		const reservation = await ReservationServices.deleteReservation(
+			reservationId
+		);
 
-		if (!updated.affected) {
+		if (reservation) {
 			res
-				.status(HttpCode.NOT_MODIFIED)
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
-				.send();
+				.send(JSON.stringify(reservation));
 		} else {
 			res
-				.status(HttpCode.NO_CONTENT)
+				.status(HttpCode.NOT_MODIFIED)
 				.header('Content-Type', 'application/json')
 				.send();
 		}

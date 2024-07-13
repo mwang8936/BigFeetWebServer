@@ -27,6 +27,7 @@ export const updateService = async (
 	body?: number,
 	feet?: number,
 	acupuncture?: number,
+	bedRequired?: boolean,
 	color?: ServiceColor
 ) => {
 	const service = Service.create({
@@ -38,6 +39,7 @@ export const updateService = async (
 		body: body,
 		feet: feet,
 		acupuncture: acupuncture,
+		bed_required: bedRequired,
 		color: color,
 	});
 
@@ -55,6 +57,7 @@ export const createService = async (
 	shorthand: string,
 	time: number,
 	money: number,
+	bedRequired: boolean,
 	color: ServiceColor,
 	body?: number,
 	feet?: number,
@@ -68,6 +71,7 @@ export const createService = async (
 		body: body,
 		feet: feet,
 		acupuncture: acupuncture,
+		bed_required: bedRequired,
 		color: color,
 	});
 

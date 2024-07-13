@@ -57,16 +57,18 @@ export const updateProfile = async (
 	);
 };
 
-export const signProfileSchedule = async (date: Date, employeeId: number) => {
-	const schedule = Schedule.create({
-		signed: true,
-	});
-
-	return await Schedule.update(
-		{
+export const signProfileSchedule = async (date: string, employeeId: number) => {
+	const schedule = await Schedule.findOne({
+		where: {
 			date,
 			employee_id: employeeId,
 		},
-		schedule
-	);
+	});
+
+	if (schedule) {
+		schedule.signed = true;
+		return schedule.save();
+	} else {
+		return null;
+	}
 };

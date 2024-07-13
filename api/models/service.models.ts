@@ -73,7 +73,7 @@ export class Service extends BaseEntity {
 
 	@Column({
 		type: 'boolean',
-		default: 'false',
+		default: false,
 	})
 	bed_required: boolean;
 

@@ -4,10 +4,11 @@ import {
 	Between,
 	FindOptionsWhere,
 	In,
-	IsNull,
 	LessThanOrEqual,
 	MoreThanOrEqual,
 } from 'typeorm';
+import { Service } from '../models/service.models';
+import { Customer } from '../models/customer.models';
 
 export const getReservations = async (
 	fromDate?: Date,
@@ -27,7 +28,7 @@ export const getReservations = async (
 			employee_id: In(employeeIds),
 		});
 
-	return await Reservation.find({
+	return Reservation.find({
 		where: whereCondition,
 		order: {
 			reserved_date: 'ASC',
@@ -36,7 +37,7 @@ export const getReservations = async (
 };
 
 export const getReservation = async (reservationId: number) => {
-	return await Reservation.findOne({
+	return Reservation.findOne({
 		where: {
 			reservation_id: reservationId,
 		},
@@ -47,6 +48,7 @@ export const updateReservation = async (
 	reservationId: number,
 	updatedBy: string,
 	reservedDate?: Date,
+	date?: string,
 	employeeId?: number,
 	serviceId?: number,
 	phoneNumber?: string | null,
@@ -61,43 +63,123 @@ export const updateReservation = async (
 	tipMethod?: TipMethod | null,
 	message?: string | null
 ) => {
-	const customer =
-		phoneNumber === null
-			? null
-			: {
-					phone_number: phoneNumber,
-					customer_name: customerName,
-					notes,
-			  };
+	const reservation = await getReservation(reservationId);
 
-	const reservation = await Reservation.create({
-		date: reservedDate,
-		employee_id: employeeId,
-		reserved_date: reservedDate,
-		service: {
-			service_id: serviceId,
-		},
-		customer,
-		requested_gender: requestedGender,
-		requested_employee: requestedEmployee,
-		cash,
-		machine,
-		vip,
-		tips,
-		tip_method: tipMethod,
-		message,
-		updated_by: updatedBy,
-	});
+	if (reservation) {
+		const updates: Partial<Reservation> = {};
 
-	return await Reservation.update(
-		{ reservation_id: reservationId },
-		reservation
-	);
+		updates.updated_by = updatedBy;
+
+		if (reservedDate !== undefined) {
+			updates.reserved_date = reservedDate;
+		}
+
+		if (date !== undefined) {
+			updates.date = date;
+		}
+
+		if (employeeId !== undefined) {
+			updates.employee_id = employeeId;
+		}
+
+		if (serviceId !== undefined) {
+			const service = await Service.findOne({
+				where: {
+					service_id: serviceId,
+				},
+			});
+
+			if (service) {
+				updates.service = service;
+			}
+		}
+
+		if (
+			phoneNumber !== undefined ||
+			customerName !== undefined ||
+			notes !== undefined
+		) {
+			if (phoneNumber === null) {
+				updates.customer = null;
+			} else {
+				let customer = await Customer.findOne({
+					where: {
+						phone_number: phoneNumber,
+					},
+				});
+
+				if (customer) {
+					const customer_updates: Partial<Customer> = {};
+
+					if (phoneNumber !== undefined) {
+						customer_updates.phone_number = phoneNumber;
+					}
+
+					if (customerName !== undefined) {
+						customer_updates.customer_name = customerName;
+					}
+
+					if (notes !== undefined) {
+						customer_updates.notes = notes;
+					}
+
+					Object.assign(customer, customer_updates);
+				} else {
+					customer = Customer.create({
+						phone_number: phoneNumber,
+						customer_name: customerName,
+						notes,
+					});
+				}
+
+				updates.customer = customer;
+			}
+		}
+
+		if (requestedGender !== undefined) {
+			updates.requested_gender = requestedGender;
+		}
+
+		if (requestedEmployee !== undefined) {
+			updates.requested_employee = requestedEmployee;
+		}
+
+		if (cash !== undefined) {
+			updates.cash = cash;
+		}
+
+		if (machine !== undefined) {
+			updates.machine = machine;
+		}
+
+		if (vip !== undefined) {
+			updates.vip = vip;
+		}
+
+		if (tips !== undefined) {
+			updates.tips = tips;
+		}
+
+		if (tipMethod !== undefined) {
+			updates.tip_method = tipMethod;
+		}
+
+		if (message !== undefined) {
+			updates.message = message;
+		}
+
+		Object.assign(reservation, updates);
+
+		return reservation.save();
+	} else {
+		return null;
+	}
 };
 
 export const createReservation = async (
-	employeeId: number,
 	reservedDate: Date,
+	date: string,
+	employeeId: number,
 	serviceId: number,
 	createdBy: string,
 	phoneNumber?: string | null,
@@ -107,21 +189,28 @@ export const createReservation = async (
 	requestedEmployee?: boolean,
 	message?: string | null
 ) => {
-	const customer =
-		phoneNumber && customerName
-			? {
-					phone_number: phoneNumber,
-					customer_name: customerName,
-					notes,
-			  }
-			: null;
-	const reservation = Reservation.create({
-		date: reservedDate,
-		employee_id: employeeId,
-		reserved_date: reservedDate,
-		service: {
+	let customer = null;
+	if (phoneNumber && customerName) {
+		customer = Customer.create({
+			phone_number: phoneNumber,
+			customer_name: customerName,
+			notes,
+		});
+	}
+
+	const service = await Service.findOne({
+		where: {
 			service_id: serviceId,
 		},
+	});
+
+	if (!service) throw Error;
+
+	const reservation = Reservation.create({
+		reserved_date: reservedDate,
+		date,
+		employee_id: employeeId,
+		service,
 		customer,
 		requested_gender: requestedGender,
 		requested_employee: requestedEmployee,
@@ -130,11 +219,15 @@ export const createReservation = async (
 		created_by: createdBy,
 	});
 
-	return await reservation.save();
+	return reservation.save();
 };
 
 export const deleteReservation = async (reservationId: number) => {
-	return await Reservation.delete({
-		reservation_id: reservationId,
-	});
+	const reservation = await getReservation(reservationId);
+
+	if (reservation) {
+		return reservation.remove();
+	} else {
+		return null;
+	}
 };

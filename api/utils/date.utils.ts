@@ -15,3 +15,28 @@ export function setTimeToZero(date: Date): Date {
 
 	return noTimeDate;
 }
+
+export function validateDateString(
+	isoDateString: string | undefined
+): Date | undefined {
+	if (!isoDateString) {
+		return undefined;
+	}
+
+	const date = new Date(isoDateString);
+
+	if (isNaN(date.getTime())) {
+		return undefined;
+	} else {
+		return date;
+	}
+}
+
+export function formatDateToYYYYMMDD(isoDateString: string): string {
+	const date = new Date(isoDateString);
+
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+	const day = String(date.getDate()).padStart(2, '0');
+	return `${year}-${month}-${day}`;
+}

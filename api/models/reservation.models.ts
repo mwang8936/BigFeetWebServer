@@ -7,16 +7,27 @@ import {
 	PrimaryGeneratedColumn,
 	ManyToOne,
 	JoinColumn,
+	BeforeUpdate,
+	BeforeInsert,
+	AfterInsert,
+	AfterUpdate,
 } from 'typeorm';
 import { Service } from './service.models';
 import { Customer } from './customer.models';
 import { Gender, TipMethod } from './enums';
 import { Schedule } from './schedule.models';
 
+import * as ScheduleServices from '../services/schedule.services';
+
 @Entity('Reservations')
 export class Reservation extends BaseEntity {
 	@PrimaryGeneratedColumn()
 	reservation_id: number;
+
+	@Column({
+		type: 'datetime',
+	})
+	reserved_date: Date;
 
 	@ManyToOne(() => Schedule, (schedule) => schedule.reservations, {
 		onUpdate: 'CASCADE',
@@ -29,15 +40,10 @@ export class Reservation extends BaseEntity {
 	schedule: Schedule;
 
 	@Column()
-	employee_id: number;
+	date: string;
 
 	@Column()
-	date: Date;
-
-	@Column({
-		type: 'datetime',
-	})
-	reserved_date: Date;
+	employee_id: number;
 
 	@ManyToOne(() => Service, (service) => service.reservations, {
 		onUpdate: 'CASCADE',
@@ -139,4 +145,34 @@ export class Reservation extends BaseEntity {
 
 	@UpdateDateColumn()
 	updated_at: Date;
+
+	@BeforeInsert()
+	@BeforeUpdate()
+	async ensureScheduleExists() {
+		const { employee_id, date } = this;
+
+		let schedule = await ScheduleServices.getSchedule(date, employee_id);
+
+		if (!schedule) {
+			schedule = await ScheduleServices.createSchedule(date, employee_id);
+		}
+
+		if (schedule) {
+			this.schedule = schedule;
+		}
+	}
+
+	@AfterInsert()
+	@AfterUpdate()
+	async attachSchedule() {
+		const { employee_id, date } = this;
+
+		const schedule = await ScheduleServices.getSchedule(date, employee_id);
+
+		if (schedule) {
+			const newReservation = { ...this };
+			schedule.reservations.push(newReservation);
+			this.schedule = schedule;
+		}
+	}
 }

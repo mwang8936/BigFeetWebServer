@@ -9,8 +9,8 @@ import { Schedule } from '../models/schedule.models';
 import { VipPackage } from '../models/vip-package.models';
 
 export const getSchedules = async (
-	fromDate?: Date,
-	toDate?: Date,
+	fromDate?: string,
+	toDate?: string,
 	employeeIds?: number[]
 ) => {
 	const whereCondition: FindOptionsWhere<Schedule>[] = [];
@@ -19,14 +19,14 @@ export const getSchedules = async (
 	} else if (fromDate) {
 		whereCondition.push({ date: MoreThanOrEqual(fromDate) });
 	} else if (toDate) {
-		toDate && whereCondition.push({ date: LessThanOrEqual(toDate) });
+		whereCondition.push({ date: LessThanOrEqual(toDate) });
 	}
 	employeeIds &&
 		whereCondition.push({
 			employee_id: In(employeeIds),
 		});
 
-	return await Schedule.find({
+	return Schedule.find({
 		where: whereCondition,
 		order: {
 			date: 'DESC',
@@ -34,8 +34,8 @@ export const getSchedules = async (
 	});
 };
 
-export const getSchedule = async (date: Date, employeeId: number) => {
-	return await Schedule.findOne({
+export const getSchedule = async (date: string, employeeId: number) => {
+	return Schedule.findOne({
 		where: {
 			date,
 			employee_id: employeeId,
@@ -44,31 +44,44 @@ export const getSchedule = async (date: Date, employeeId: number) => {
 };
 
 export const updateSchedule = async (
-	date: Date,
+	date: string,
 	employeeId: number,
 	isWorking?: boolean,
 	start?: Date | null,
 	end?: Date | null,
 	vipPackages?: VipPackage[]
 ) => {
-	const schedule = Schedule.create({
-		is_working: isWorking,
-		start,
-		end,
-		vip_packages: vipPackages,
-	});
+	const schedule = await getSchedule(date, employeeId);
 
-	return await Schedule.update(
-		{
-			date,
-			employee_id: employeeId,
-		},
-		schedule
-	);
+	if (schedule) {
+		const updates: Partial<Schedule> = {};
+
+		if (isWorking !== undefined) {
+			updates.is_working = isWorking;
+		}
+
+		if (start !== undefined) {
+			updates.start = start;
+		}
+
+		if (end !== undefined) {
+			updates.end = end;
+		}
+
+		if (vipPackages !== undefined) {
+			updates.vip_packages = vipPackages;
+		}
+
+		Object.assign(schedule, updates);
+
+		return schedule.save();
+	} else {
+		return null;
+	}
 };
 
 export const createSchedule = async (
-	date: Date,
+	date: string,
 	employeeId: number,
 	isWorking?: boolean,
 	start?: Date | null,
@@ -87,9 +100,12 @@ export const createSchedule = async (
 	return await schedule.save();
 };
 
-export const deleteSchedule = async (date: Date, employeeId: number) => {
-	return await Schedule.delete({
-		date,
-		employee_id: employeeId,
-	});
+export const deleteSchedule = async (date: string, employeeId: number) => {
+	const schedule = await getSchedule(date, employeeId);
+
+	if (schedule) {
+		return schedule.remove();
+	} else {
+		return null;
+	}
 };
