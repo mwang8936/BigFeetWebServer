@@ -72,6 +72,12 @@ export class Service extends BaseEntity {
 	acupuncture: number;
 
 	@Column({
+		type: 'boolean',
+		default: 'false',
+	})
+	bed_required: boolean;
+
+	@Column({
 		type: 'enum',
 		enum: ServiceColor,
 	})

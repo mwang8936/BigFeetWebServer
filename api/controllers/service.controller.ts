@@ -62,6 +62,7 @@ export const updateService: RequestHandler = async (
 			req.body.body,
 			req.body.feet,
 			req.body.acupuncture,
+			req.body.bed_required,
 			req.body.color
 		);
 
@@ -92,6 +93,7 @@ export const addService: RequestHandler = async (
 			req.body.shorthand,
 			req.body.time,
 			req.body.money,
+			req.body.bed_required,
 			req.body.color,
 			req.body.body,
 			req.body.feet,
