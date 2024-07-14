@@ -4,7 +4,7 @@ import * as ScheduleServices from '../services/schedule.services';
 import * as ProfileServices from '../services/profile.services';
 import { AuthorizationError } from '../exceptions/authorization-error';
 import { validateToken } from '../utils/jwt.utils';
-import { setTimeToZero } from '../utils/date.utils';
+import { formatDateToYYYYMMDD, setTimeToZero } from '../utils/date.utils';
 
 export const getProfile: RequestHandler = async (
 	req: Request,
@@ -121,24 +121,24 @@ export const signProfileSchedule: RequestHandler = async (
 		const decodedToken = await validateToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
-		const date = setTimeToZero(new Date(req.params.date));
+		const date = formatDateToYYYYMMDD(req.params.date);
 
-		const schedule = await ScheduleServices.getSchedule(date, employeeId);
+		let schedule = await ScheduleServices.getSchedule(date, employeeId);
 
 		if (!schedule) {
 			await ScheduleServices.createSchedule(date, employeeId);
 		}
 
-		const updated = await ProfileServices.signProfileSchedule(date, employeeId);
+		schedule = await ProfileServices.signProfileSchedule(date, employeeId);
 
-		if (!updated.affected) {
+		if (schedule) {
 			res
-				.status(HttpCode.NOT_MODIFIED)
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
-				.send();
+				.send(JSON.stringify(schedule));
 		} else {
 			res
-				.status(HttpCode.NO_CONTENT)
+				.status(HttpCode.NOT_MODIFIED)
 				.header('Content-Type', 'application/json')
 				.send();
 		}
