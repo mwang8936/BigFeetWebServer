@@ -1,11 +1,11 @@
 import { Customer } from '../models/customer.models';
 
 export const getCustomers = async () => {
-	return await Customer.find();
+	return Customer.find();
 };
 
 export const getCustomer = async (phoneNumber: string) => {
-	return await Customer.findOne({
+	return Customer.findOne({
 		where: {
 			phone_number: phoneNumber,
 		},
@@ -17,17 +17,25 @@ export const updateCustomer = async (
 	customerName?: string,
 	notes?: string | null
 ) => {
-	const customer = Customer.create({
-		customer_name: customerName,
-		notes,
-	});
+	const customer = await getCustomer(phoneNumber);
 
-	return await Customer.update(
-		{
-			phone_number: phoneNumber,
-		},
-		customer
-	);
+	if (customer) {
+		const updates: Partial<Customer> = {};
+
+		if (customerName !== undefined) {
+			updates.customer_name = customerName;
+		}
+
+		if (notes !== undefined) {
+			updates.notes = notes;
+		}
+
+		Object.assign(customer, updates);
+
+		return customer.save();
+	} else {
+		return null;
+	}
 };
 
 export const createCustomer = async (
@@ -41,9 +49,15 @@ export const createCustomer = async (
 		notes,
 	});
 
-	return await customer.save();
+	return customer.save();
 };
 
 export const deleteCustomer = async (phoneNumber: string) => {
-	return await Customer.delete({ phone_number: phoneNumber });
+	const customer = await getCustomer(phoneNumber);
+
+	if (customer) {
+		return customer.remove();
+	} else {
+		return null;
+	}
 };

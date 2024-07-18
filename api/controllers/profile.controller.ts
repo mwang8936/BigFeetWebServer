@@ -83,20 +83,20 @@ export const updateProfile: RequestHandler = async (
 		const decodedToken = await validateToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
-		const updated = await ProfileServices.updateProfile(
+		const profile = await ProfileServices.updateProfile(
 			employeeId,
 			req.body.language,
 			req.body.dark_mode
 		);
 
-		if (!updated.affected) {
+		if (profile) {
 			res
-				.status(HttpCode.NOT_MODIFIED)
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
-				.send();
+				.send(JSON.stringify(profile));
 		} else {
 			res
-				.status(HttpCode.NO_CONTENT)
+				.status(HttpCode.NOT_FOUND)
 				.header('Content-Type', 'application/json')
 				.send();
 		}

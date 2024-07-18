@@ -53,7 +53,7 @@ export const updateService: RequestHandler = async (
 	try {
 		const serviceId = parseInt(req.params.service_id);
 
-		const updated = await ServiceServices.updateService(
+		const service = await ServiceServices.updateService(
 			serviceId,
 			req.body.service_name,
 			req.body.shorthand,
@@ -66,14 +66,14 @@ export const updateService: RequestHandler = async (
 			req.body.color
 		);
 
-		if (!updated.affected) {
+		if (service) {
 			res
-				.status(HttpCode.NOT_MODIFIED)
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
-				.send();
+				.send(JSON.stringify(service));
 		} else {
 			res
-				.status(HttpCode.NO_CONTENT)
+				.status(HttpCode.NOT_FOUND)
 				.header('Content-Type', 'application/json')
 				.send();
 		}
@@ -117,16 +117,16 @@ export const deleteService: RequestHandler = async (
 	try {
 		const serviceId = parseInt(req.params.service_id);
 
-		const updated = await ServiceServices.deleteService(serviceId);
+		const service = await ServiceServices.deleteService(serviceId);
 
-		if (!updated.affected) {
+		if (service) {
 			res
-				.status(HttpCode.NOT_MODIFIED)
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
-				.send();
+				.send(JSON.stringify(service));
 		} else {
 			res
-				.status(HttpCode.NO_CONTENT)
+				.status(HttpCode.NOT_FOUND)
 				.header('Content-Type', 'application/json')
 				.send();
 		}

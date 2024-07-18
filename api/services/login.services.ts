@@ -1,7 +1,7 @@
 import { Employee } from '../models/employee.models';
 
 export const getUserInfo = async (username: string) => {
-	return await Employee.findOne({
+	return Employee.findOne({
 		where: {
 			username: username,
 			is_active: true,

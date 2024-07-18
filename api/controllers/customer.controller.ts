@@ -10,7 +10,8 @@ export const getCustomers: RequestHandler = async (
 	try {
 		const customers = await CustomerServices.getCustomers();
 
-		res.status(HttpCode.OK)
+		res
+			.status(HttpCode.OK)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(customers));
 	} catch (err) {
@@ -29,11 +30,13 @@ export const getCustomer: RequestHandler = async (
 		const customer = await CustomerServices.getCustomer(phoneNumber);
 
 		if (customer) {
-			res.status(HttpCode.OK)
+			res
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(customer));
 		} else {
-			res.status(HttpCode.NOT_FOUND)
+			res
+				.status(HttpCode.NOT_FOUND)
 				.header('Content-Type', 'application/json')
 				.send();
 		}
@@ -50,18 +53,20 @@ export const updateCustomer: RequestHandler = async (
 	try {
 		const phoneNumber = req.params.phone_number;
 
-		const updated = await CustomerServices.updateCustomer(
+		const customer = await CustomerServices.updateCustomer(
 			phoneNumber,
 			req.body.customer_name,
 			req.body.notes
 		);
 
-		if (!updated.affected) {
-			res.status(HttpCode.NOT_MODIFIED)
+		if (customer) {
+			res
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
-				.send();
+				.send(JSON.stringify(customer));
 		} else {
-			res.status(HttpCode.NO_CONTENT)
+			res
+				.status(HttpCode.NOT_FOUND)
 				.header('Content-Type', 'application/json')
 				.send();
 		}
@@ -82,7 +87,8 @@ export const addCustomer: RequestHandler = async (
 			req.body.notes
 		);
 
-		res.status(HttpCode.CREATED)
+		res
+			.status(HttpCode.CREATED)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(customer));
 	} catch (err) {
@@ -98,14 +104,16 @@ export const deleteCustomer: RequestHandler = async (
 	try {
 		const phoneNumber = req.params.phone_number;
 
-		const updated = await CustomerServices.deleteCustomer(phoneNumber);
+		const customer = await CustomerServices.deleteCustomer(phoneNumber);
 
-		if (!updated.affected) {
-			res.status(HttpCode.NOT_MODIFIED)
+		if (customer) {
+			res
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
-				.send();
+				.send(JSON.stringify(customer));
 		} else {
-			res.status(HttpCode.NO_CONTENT)
+			res
+				.status(HttpCode.NOT_FOUND)
 				.header('Content-Type', 'application/json')
 				.send();
 		}

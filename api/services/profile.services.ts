@@ -3,7 +3,7 @@ import { Language } from '../models/enums';
 import { Schedule } from '../models/schedule.models';
 
 export const getProfile = async (employeeId: number) => {
-	return await Employee.findOne({
+	return Employee.findOne({
 		select: {
 			employee_id: true,
 			username: true,
@@ -28,7 +28,7 @@ export const getProfile = async (employeeId: number) => {
 };
 
 export const getProfileSchedules = async (employeeId: number) => {
-	return await Schedule.find({
+	return Schedule.find({
 		where: {
 			employee_id: employeeId,
 		},
@@ -43,18 +43,25 @@ export const updateProfile = async (
 	language?: Language,
 	darkMode?: boolean
 ) => {
-	const employee = Employee.create({
-		language: language,
-		dark_mode: darkMode,
-	});
+	const profile = await getProfile(employeeId);
 
-	return await Employee.update(
-		{
-			employee_id: employeeId,
-			is_active: true,
-		},
-		employee
-	);
+	if (profile) {
+		const updates: Partial<Employee> = {};
+
+		if (language !== undefined) {
+			updates.language = language;
+		}
+
+		if (darkMode !== undefined) {
+			updates.dark_mode = darkMode;
+		}
+
+		Object.assign(profile, updates);
+
+		return profile.save();
+	} else {
+		return null;
+	}
 };
 
 export const signProfileSchedule = async (date: string, employeeId: number) => {

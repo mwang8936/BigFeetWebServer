@@ -54,7 +54,7 @@ export const updateEmployee: RequestHandler = async (
 	try {
 		const employeeId = parseInt(req.params.employee_id);
 
-		const updated = await EmployeeServices.updateEmployee(
+		const employee = await EmployeeServices.updateEmployee(
 			employeeId,
 			req.body.username,
 			req.body.first_name,
@@ -68,14 +68,14 @@ export const updateEmployee: RequestHandler = async (
 			req.body.per_hour
 		);
 
-		if (!updated.affected) {
+		if (employee) {
 			res
-				.status(HttpCode.NOT_MODIFIED)
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
-				.send();
+				.send(JSON.stringify(employee));
 		} else {
 			res
-				.status(HttpCode.NO_CONTENT)
+				.status(HttpCode.NOT_FOUND)
 				.header('Content-Type', 'application/json')
 				.send();
 		}
@@ -126,16 +126,16 @@ export const deleteEmployee: RequestHandler = async (
 	try {
 		const employeeId = parseInt(req.params.employee_id);
 
-		const updated = await EmployeeServices.deleteEmployee(employeeId);
+		const employee = await EmployeeServices.deleteEmployee(employeeId);
 
-		if (!updated.affected) {
+		if (employee) {
 			res
-				.status(HttpCode.NOT_MODIFIED)
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
-				.send();
+				.send(JSON.stringify(employee));
 		} else {
 			res
-				.status(HttpCode.NO_CONTENT)
+				.status(HttpCode.NOT_FOUND)
 				.header('Content-Type', 'application/json')
 				.send();
 		}
