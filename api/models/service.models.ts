@@ -4,6 +4,9 @@ import {
 	Column,
 	PrimaryGeneratedColumn,
 	OneToMany,
+	DeleteDateColumn,
+	CreateDateColumn,
+	UpdateDateColumn,
 } from 'typeorm';
 import { Reservation } from './reservation.models';
 import { ServiceColor } from './enums';
@@ -16,7 +19,6 @@ export class Service extends BaseEntity {
 	@Column({
 		charset: 'utf8mb4',
 		collation: 'utf8mb4_bin',
-		unique: true,
 		length: 30,
 	})
 	service_name: string;
@@ -24,7 +26,6 @@ export class Service extends BaseEntity {
 	@Column({
 		charset: 'utf8mb4',
 		collation: 'utf8mb4_bin',
-		unique: true,
 		length: 20,
 	})
 	shorthand: string;
@@ -83,12 +84,14 @@ export class Service extends BaseEntity {
 	})
 	color: ServiceColor;
 
-	@Column({
-		select: false,
-		name: 'active',
-		default: true,
-	})
-	is_active: boolean;
+	@CreateDateColumn()
+	created_at: Date;
+
+	@UpdateDateColumn()
+	updated_at: Date;
+
+	@DeleteDateColumn()
+	deleted_at?: Date;
 
 	@OneToMany(() => Reservation, (reservation) => reservation.service)
 	reservations: Reservation[];

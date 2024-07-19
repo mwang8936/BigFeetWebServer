@@ -8,7 +8,9 @@ export const getCustomers: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const customers = await CustomerServices.getCustomers();
+		const withDeleted = req.query.with_deleted === 'true';
+
+		const customers = await CustomerServices.getCustomers(withDeleted);
 
 		res
 			.status(HttpCode.OK)
@@ -26,8 +28,12 @@ export const getCustomer: RequestHandler = async (
 ) => {
 	try {
 		const phoneNumber = req.params.phone_number;
+		const withDeleted = req.query.with_deleted === 'true';
 
-		const customer = await CustomerServices.getCustomer(phoneNumber);
+		const customer = await CustomerServices.getCustomer(
+			phoneNumber,
+			withDeleted
+		);
 
 		if (customer) {
 			res
@@ -105,6 +111,32 @@ export const deleteCustomer: RequestHandler = async (
 		const phoneNumber = req.params.phone_number;
 
 		const customer = await CustomerServices.deleteCustomer(phoneNumber);
+
+		if (customer) {
+			res
+				.status(HttpCode.OK)
+				.header('Content-Type', 'application/json')
+				.send(JSON.stringify(customer));
+		} else {
+			res
+				.status(HttpCode.NOT_FOUND)
+				.header('Content-Type', 'application/json')
+				.send();
+		}
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const recoverCustomer: RequestHandler = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const phoneNumber = req.params.phone_number;
+
+		const customer = await CustomerServices.recoverCustomer(phoneNumber);
 
 		if (customer) {
 			res

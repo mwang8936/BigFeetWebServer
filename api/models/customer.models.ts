@@ -1,4 +1,13 @@
-import { Entity, BaseEntity, Column, OneToMany, PrimaryColumn } from 'typeorm';
+import {
+	Entity,
+	BaseEntity,
+	Column,
+	OneToMany,
+	PrimaryColumn,
+	CreateDateColumn,
+	UpdateDateColumn,
+	DeleteDateColumn,
+} from 'typeorm';
 import { Reservation } from './reservation.models';
 
 @Entity('Customers')
@@ -22,6 +31,15 @@ export class Customer extends BaseEntity {
 		nullable: true,
 	})
 	notes: string | null;
+
+	@CreateDateColumn()
+	created_at: Date;
+
+	@UpdateDateColumn()
+	updated_at: Date;
+
+	@DeleteDateColumn()
+	deleted_at?: Date;
 
 	@OneToMany(() => Reservation, (reservation) => reservation.customer)
 	reservations: Reservation[];

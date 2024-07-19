@@ -1,5 +1,15 @@
 import { celebrate, Joi, Segments, Modes } from 'celebrate';
 
+export const GetCustomersValidation = celebrate(
+	{
+		[Segments.QUERY]: Joi.object().keys({
+			with_deleted: Joi.boolean().default(false),
+		}),
+	},
+	{ abortEarly: false },
+	{ mode: Modes.FULL }
+);
+
 export const GetCustomerValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
@@ -7,6 +17,9 @@ export const GetCustomerValidation = celebrate(
 				.length(10)
 				.pattern(/^[0-9]+$/)
 				.required(),
+		}),
+		[Segments.QUERY]: Joi.object().keys({
+			with_deleted: Joi.boolean().default(false),
 		}),
 	},
 	{ abortEarly: false },
@@ -46,6 +59,19 @@ export const AddCustomerValidation = celebrate(
 );
 
 export const DeleteCustomerValidation = celebrate(
+	{
+		[Segments.PARAMS]: Joi.object().keys({
+			phone_number: Joi.string()
+				.length(10)
+				.pattern(/^[0-9]+$/)
+				.required(),
+		}),
+	},
+	{ abortEarly: false },
+	{ mode: Modes.FULL }
+);
+
+export const RecoverCustomerValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
 			phone_number: Joi.string()

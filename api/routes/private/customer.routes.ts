@@ -6,12 +6,15 @@ import {
 	updateCustomer,
 	addCustomer,
 	deleteCustomer,
+	recoverCustomer,
 } from '../../controllers/customer.controller';
 import {
+	GetCustomersValidation,
 	GetCustomerValidation,
 	UpdateCustomerValidation,
 	AddCustomerValidation,
 	DeleteCustomerValidation,
+	RecoverCustomerValidation,
 } from '../../middleware/validation/customer.validation';
 import authorize from '../../middleware/authentication.middleware';
 
@@ -19,7 +22,11 @@ const router = Router();
 
 router
 	.route('/')
-	.get(authorize([Permissions.PERMISSION_GET_CUSTOMER]), getCustomers);
+	.get(
+		authorize([Permissions.PERMISSION_GET_CUSTOMER]),
+		GetCustomersValidation,
+		getCustomers
+	);
 router
 	.route('/:phone_number')
 	.get(
@@ -47,6 +54,13 @@ router
 		authorize([Permissions.PERMISSION_DELETE_CUSTOMER]),
 		DeleteCustomerValidation,
 		deleteCustomer
+	);
+router
+	.route('/:phone_number/recover')
+	.delete(
+		authorize([Permissions.PERMISSION_DELETE_CUSTOMER]),
+		RecoverCustomerValidation,
+		recoverCustomer
 	);
 
 export default router;

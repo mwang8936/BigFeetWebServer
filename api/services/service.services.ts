@@ -1,20 +1,19 @@
 import { Service } from '../models/service.models';
 import { ServiceColor } from '../models/enums';
+import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
 
-export const getServices = async () => {
+export const getServices = async (withDeleted?: boolean) => {
 	return Service.find({
-		where: {
-			is_active: true,
-		},
+		withDeleted,
 	});
 };
 
-export const getService = async (serviceId: number) => {
+export const getService = async (serviceId: number, withDeleted?: boolean) => {
 	return Service.findOne({
 		where: {
 			service_id: serviceId,
-			is_active: true,
 		},
+		withDeleted,
 	});
 };
 
@@ -36,10 +35,12 @@ export const updateService = async (
 		const updates: Partial<Service> = {};
 
 		if (serviceName !== undefined) {
+			await duplicateServiceNameChecker(serviceName);
 			updates.service_name = serviceName;
 		}
 
 		if (shorthand !== undefined) {
+			await duplicateShorthandChecker(shorthand);
 			updates.shorthand = shorthand;
 		}
 
@@ -90,6 +91,9 @@ export const createService = async (
 	feet?: number,
 	acupuncture?: number
 ) => {
+	await duplicateServiceNameChecker(serviceName);
+	await duplicateShorthandChecker(shorthand);
+
 	const service = Service.create({
 		service_name: serviceName,
 		shorthand: shorthand,
@@ -106,11 +110,47 @@ export const createService = async (
 };
 
 export const deleteService = async (serviceId: number) => {
-	const service = await getService(serviceId);
+	const service = await getService(serviceId, false);
 
 	if (service) {
-		return service.remove();
+		return service.softRemove();
 	} else {
 		return null;
+	}
+};
+
+export const recoverService = async (serviceId: number) => {
+	const service = await getService(serviceId, true);
+
+	if (service) {
+		await duplicateServiceNameChecker(service.service_name);
+		await duplicateShorthandChecker(service.shorthand);
+		return service.recover();
+	} else {
+		return null;
+	}
+};
+
+const duplicateServiceNameChecker = async (serviceName: string) => {
+	const duplicates = await Service.find({
+		where: {
+			service_name: serviceName,
+		},
+	});
+
+	if (duplicates.length > 0) {
+		throw new DuplicateIdentifierError('Service', 'Service Name', serviceName);
+	}
+};
+
+const duplicateShorthandChecker = async (shorthand: string) => {
+	const duplicates = await Service.find({
+		where: {
+			shorthand,
+		},
+	});
+
+	if (duplicates.length > 0) {
+		throw new DuplicateIdentifierError('Service', 'Shorthand', shorthand);
 	}
 };

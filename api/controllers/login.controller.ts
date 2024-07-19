@@ -3,7 +3,7 @@ import { RequestHandler, Request, Response, NextFunction } from 'express';
 import rateLimiter from '../config/rate-limiter.config';
 import { HttpCode } from '../exceptions/custom-error';
 import { LoginError } from '../exceptions/login-error';
-import { TooManyRequestsError } from '../exceptions/too-many-requests';
+import { TooManyRequestsError } from '../exceptions/too-many-requests-error';
 import { getUserInfo } from '../services/login.services';
 import * as ProfileServices from '../services/profile.services';
 import { generateToken } from '../utils/jwt.utils';

@@ -1,10 +1,23 @@
 import { celebrate, Joi, Segments, Modes } from 'celebrate';
 import { colorValidation } from './enum.validation';
 
+export const GetServicesValidation = celebrate(
+	{
+		[Segments.QUERY]: Joi.object().keys({
+			with_deleted: Joi.boolean().default(false),
+		}),
+	},
+	{ abortEarly: false },
+	{ mode: Modes.FULL }
+);
+
 export const GetServiceValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
 			service_id: Joi.number().integer().positive().required(),
+		}),
+		[Segments.QUERY]: Joi.object().keys({
+			with_deleted: Joi.boolean().default(false),
 		}),
 	},
 	{ abortEarly: false },
@@ -51,6 +64,16 @@ export const AddServiceValidation = celebrate(
 );
 
 export const DeleteServiceValidation = celebrate(
+	{
+		[Segments.PARAMS]: Joi.object().keys({
+			service_id: Joi.number().integer().positive().required(),
+		}),
+	},
+	{ abortEarly: false },
+	{ mode: Modes.FULL }
+);
+
+export const RecoverServiceValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
 			service_id: Joi.number().integer().positive().required(),

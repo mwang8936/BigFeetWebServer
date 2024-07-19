@@ -8,7 +8,9 @@ export const getServices: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const services = await ServiceServices.getServices();
+		const withDeleted = req.query.with_deleted === 'true';
+
+		const services = await ServiceServices.getServices(withDeleted);
 
 		res
 			.status(HttpCode.OK)
@@ -26,8 +28,9 @@ export const getService: RequestHandler = async (
 ) => {
 	try {
 		const serviceId = parseInt(req.params.service_id);
+		const withDeleted = req.query.with_deleted === 'true';
 
-		const service = await ServiceServices.getService(serviceId);
+		const service = await ServiceServices.getService(serviceId, withDeleted);
 
 		if (service) {
 			res
@@ -118,6 +121,32 @@ export const deleteService: RequestHandler = async (
 		const serviceId = parseInt(req.params.service_id);
 
 		const service = await ServiceServices.deleteService(serviceId);
+
+		if (service) {
+			res
+				.status(HttpCode.OK)
+				.header('Content-Type', 'application/json')
+				.send(JSON.stringify(service));
+		} else {
+			res
+				.status(HttpCode.NOT_FOUND)
+				.header('Content-Type', 'application/json')
+				.send();
+		}
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const recoverService: RequestHandler = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const serviceId = parseInt(req.params.service_id);
+
+		const service = await ServiceServices.recoverService(serviceId);
 
 		if (service) {
 			res
