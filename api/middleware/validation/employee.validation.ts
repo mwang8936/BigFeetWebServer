@@ -5,10 +5,23 @@ import {
 	roleValidation,
 } from './enum.validation';
 
+export const GetEmployeesValidation = celebrate(
+	{
+		[Segments.QUERY]: Joi.object().keys({
+			with_deleted: Joi.boolean().default(false),
+		}),
+	},
+	{ abortEarly: false },
+	{ mode: Modes.FULL }
+);
+
 export const GetEmployeeValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
 			employee_id: Joi.number().integer().positive().required(),
+		}),
+		[Segments.QUERY]: Joi.object().keys({
+			with_deleted: Joi.boolean().default(false),
 		}),
 	},
 	{ abortEarly: false },
@@ -76,6 +89,16 @@ export const AddEmployeeValidation = celebrate(
 );
 
 export const DeleteEmployeeValidation = celebrate(
+	{
+		[Segments.PARAMS]: Joi.object().keys({
+			employee_id: Joi.number().integer().positive().required(),
+		}),
+	},
+	{ abortEarly: false },
+	{ mode: Modes.FULL }
+);
+
+export const RecoverEmployeeValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
 			employee_id: Joi.number().integer().positive().required(),

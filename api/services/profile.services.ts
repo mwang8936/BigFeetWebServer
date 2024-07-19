@@ -22,7 +22,6 @@ export const getProfile = async (employeeId: number) => {
 		},
 		where: {
 			employee_id: employeeId,
-			is_active: true,
 		},
 	});
 };

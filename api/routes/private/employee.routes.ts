@@ -5,13 +5,16 @@ import {
 	updateEmployee,
 	addEmployee,
 	deleteEmployee,
+	recoverEmployee,
 } from '../../controllers/employee.controller';
 import { Permissions } from '../../models/enums';
 import {
+	GetEmployeesValidation,
 	GetEmployeeValidation,
 	UpdateEmployeeValidation,
 	AddEmployeeValidation,
 	DeleteEmployeeValidation,
+	RecoverEmployeeValidation,
 } from '../../middleware/validation/employee.validation';
 import authorize from '../../middleware/authentication.middleware';
 
@@ -19,7 +22,11 @@ const router = Router();
 
 router
 	.route('/')
-	.get(authorize([Permissions.PERMISSION_GET_EMPLOYEE]), getEmployees);
+	.get(
+		authorize([Permissions.PERMISSION_GET_EMPLOYEE]),
+		GetEmployeesValidation,
+		getEmployees
+	);
 router
 	.route('/:employee_id')
 	.get(
@@ -47,6 +54,13 @@ router
 		authorize([Permissions.PERMISSION_DELETE_EMPLOYEE]),
 		DeleteEmployeeValidation,
 		deleteEmployee
+	);
+router
+	.route('/:employee_id/recover')
+	.delete(
+		authorize([Permissions.PERMISSION_DELETE_EMPLOYEE]),
+		RecoverEmployeeValidation,
+		recoverEmployee
 	);
 
 export default router;

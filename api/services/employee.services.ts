@@ -1,20 +1,22 @@
+import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
 import { Employee } from '../models/employee.models';
 import { Gender, Permissions, Role } from '../models/enums';
 
-export const getEmployees = async () => {
+export const getEmployees = async (withDeleted?: boolean) => {
 	return Employee.find({
-		where: {
-			is_active: true,
-		},
+		withDeleted,
 	});
 };
 
-export const getEmployee = async (employeeId: number) => {
+export const getEmployee = async (
+	employeeId: number,
+	withDeleted?: boolean
+) => {
 	return Employee.findOne({
 		where: {
 			employee_id: employeeId,
-			is_active: true,
 		},
+		withDeleted,
 	});
 };
 
@@ -37,6 +39,7 @@ export const updateEmployee = async (
 		const updates: Partial<Employee> = {};
 
 		if (username !== undefined) {
+			await duplicateUsernameChecker(username);
 			updates.username = username;
 		}
 
@@ -97,6 +100,8 @@ export const createEmployee = async (
 	acupunctureRate?: number | null,
 	perHour?: number | null
 ) => {
+	await duplicateUsernameChecker(username);
+
 	const employee = Employee.create({
 		username: username,
 		password: password,
@@ -115,11 +120,34 @@ export const createEmployee = async (
 };
 
 export const deleteEmployee = async (employeeId: number) => {
-	const employee = await getEmployee(employeeId);
+	const employee = await getEmployee(employeeId, false);
 
 	if (employee) {
-		return employee.remove();
+		return employee.softRemove();
 	} else {
 		return null;
+	}
+};
+
+export const recoverEmployee = async (employeeId: number) => {
+	const employee = await getEmployee(employeeId, true);
+
+	if (employee) {
+		await duplicateUsernameChecker(employee.username);
+		return employee.recover();
+	} else {
+		return null;
+	}
+};
+
+const duplicateUsernameChecker = async (username: string) => {
+	const duplicates = await Employee.find({
+		where: {
+			username,
+		},
+	});
+
+	if (duplicates.length > 0) {
+		throw new DuplicateIdentifierError('Employee', 'Username', username);
 	}
 };

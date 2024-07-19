@@ -6,6 +6,7 @@ import {
 	UpdateDateColumn,
 	PrimaryGeneratedColumn,
 	OneToMany,
+	DeleteDateColumn,
 } from 'typeorm';
 import { Gender, Language, Permissions, Role } from './enums';
 import { Schedule } from './schedule.models';
@@ -16,7 +17,6 @@ export class Employee extends BaseEntity {
 	employee_id: number;
 
 	@Column({
-		unique: true,
 		length: 30,
 	})
 	username: string;
@@ -105,18 +105,14 @@ export class Employee extends BaseEntity {
 	})
 	dark_mode: boolean;
 
-	@Column({
-		select: false,
-		name: 'active',
-		default: true,
-	})
-	is_active: boolean;
-
 	@CreateDateColumn()
 	created_at: Date;
 
 	@UpdateDateColumn()
 	updated_at: Date;
+
+	@DeleteDateColumn()
+	deleted_at?: Date;
 
 	@OneToMany(() => Schedule, (schedule) => schedule.employee)
 	schedules: Schedule[];

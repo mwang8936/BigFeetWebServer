@@ -9,7 +9,9 @@ export const getEmployees: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const employees = await EmployeeServices.getEmployees();
+		const withDeleted = req.query.with_deleted === 'true';
+
+		const employees = await EmployeeServices.getEmployees(withDeleted);
 
 		res
 			.status(HttpCode.OK)
@@ -27,8 +29,12 @@ export const getEmployee: RequestHandler = async (
 ) => {
 	try {
 		const employeeId = parseInt(req.params.employee_id);
+		const withDeleted = req.query.with_deleted === 'true';
 
-		const employee = await EmployeeServices.getEmployee(employeeId);
+		const employee = await EmployeeServices.getEmployee(
+			employeeId,
+			withDeleted
+		);
 
 		if (employee) {
 			res
@@ -127,6 +133,32 @@ export const deleteEmployee: RequestHandler = async (
 		const employeeId = parseInt(req.params.employee_id);
 
 		const employee = await EmployeeServices.deleteEmployee(employeeId);
+
+		if (employee) {
+			res
+				.status(HttpCode.OK)
+				.header('Content-Type', 'application/json')
+				.send(JSON.stringify(employee));
+		} else {
+			res
+				.status(HttpCode.NOT_FOUND)
+				.header('Content-Type', 'application/json')
+				.send();
+		}
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const recoverEmployee: RequestHandler = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const employeeId = parseInt(req.params.employee_id);
+
+		const employee = await EmployeeServices.recoverEmployee(employeeId);
 
 		if (employee) {
 			res
