@@ -1,12 +1,42 @@
+import {
+	Between,
+	FindOptionsWhere,
+	In,
+	LessThanOrEqual,
+	MoreThanOrEqual,
+} from 'typeorm';
+import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
 import { Schedule } from '../models/schedule.models';
 import { VipPackage } from '../models/vip-package.models';
+import { NotFoundError } from '../exceptions/not-found-error';
 
-export const getVipPackages = async () => {
-	return await VipPackage.find();
+export const getVipPackages = async (
+	start?: string,
+	end?: string,
+	employeeIds?: number[]
+) => {
+	const whereCondition: FindOptionsWhere<Schedule>[] = [];
+	if (start && end) {
+		whereCondition.push({ date: Between(start, end) });
+	} else if (start) {
+		whereCondition.push({ date: MoreThanOrEqual(start) });
+	} else if (end) {
+		whereCondition.push({ date: LessThanOrEqual(end) });
+	}
+	employeeIds &&
+		whereCondition.push({
+			employee_id: In(employeeIds),
+		});
+
+	return VipPackage.find({
+		where: {
+			schedules: whereCondition,
+		},
+	});
 };
 
 export const getVipPackage = async (serial: string) => {
-	return await VipPackage.findOne({
+	return VipPackage.findOne({
 		where: {
 			serial,
 		},
@@ -16,39 +46,99 @@ export const getVipPackage = async (serial: string) => {
 export const updateVipPackage = async (
 	serial: string,
 	amount?: number,
-	schedules?: { date: Date; employee_id: number }[]
+	date?: string,
+	employeeIds?: number[]
 ) => {
-	const vipPackage = VipPackage.create({
-		amount,
-		schedules,
-	});
+	const vipPackage = await getVipPackage(serial);
 
-	return await VipPackage.update(
-		{
-			serial,
-		},
-		vipPackage
-	);
+	if (vipPackage) {
+		const updates: Partial<VipPackage> = {};
+
+		if (amount !== undefined) {
+			updates.amount = amount;
+		}
+
+		if (
+			date !== undefined &&
+			employeeIds !== undefined &&
+			employeeIds.length > 0
+		) {
+			const schedules = await Schedule.find({
+				where: {
+					date,
+					employee_id: In(employeeIds),
+				},
+			});
+
+			if (schedules.length === 0) {
+				throw new NotFoundError(
+					'Schedule',
+					'date and employee id',
+					`${date} and ${employeeIds}`
+				);
+			}
+
+			updates.schedules = schedules;
+		}
+
+		Object.assign(vipPackage, updates);
+
+		return vipPackage.save();
+	} else {
+		return null;
+	}
 };
 
 export const createVipPackage = async (
 	serial: string,
 	amount: number,
-	schedules: { date: Date; employee_id: number }[]
+	date: string,
+	employeeIds: number[]
 ) => {
+	await duplicateSerialChecker(serial);
+
+	const schedules = await Schedule.find({
+		where: {
+			date,
+			employee_id: In(employeeIds),
+		},
+	});
+
+	if (schedules.length === 0) {
+		throw new NotFoundError(
+			'Schedule',
+			'date and employee id',
+			`${date} and ${employeeIds}`
+		);
+	}
+
 	const vipPackage = VipPackage.create({
 		serial,
 		amount,
-		//schedules,
+		schedules,
 	});
 
-	const mySchedules = schedules.map((schedule) =>
-		Schedule.create({ employee_id: schedule.employee_id, date: schedule.date })
-	);
-	vipPackage.schedules = mySchedules;
-	return await vipPackage.save();
+	return vipPackage.save();
 };
 
 export const deleteVipPackage = async (serial: string) => {
-	return await VipPackage.delete({ serial });
+	const vipPackage = await getVipPackage(serial);
+
+	if (vipPackage) {
+		return vipPackage.remove();
+	} else {
+		return null;
+	}
+};
+
+const duplicateSerialChecker = async (serial: string) => {
+	const duplicates = await VipPackage.find({
+		where: {
+			serial,
+		},
+	});
+
+	if (duplicates) {
+		throw new DuplicateIdentifierError('VIP Package', 'Serial', serial);
+	}
 };

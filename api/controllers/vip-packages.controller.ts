@@ -1,7 +1,7 @@
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as VipPackagesServices from '../services/vip-package.services';
-import { setTimeToZero } from '../utils/date.utils';
+import { formatDateToYYYYMMDD, setTimeToZero } from '../utils/date.utils';
 
 export const getVipPackages: RequestHandler = async (
 	req: Request,
@@ -9,7 +9,19 @@ export const getVipPackages: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const vipPackages = await VipPackagesServices.getVipPackages();
+		const { start, end, employee_ids: employeeIdsStr } = req.query;
+
+		const employeeIds = employeeIdsStr
+			? (Array.isArray(employeeIdsStr) ? employeeIdsStr : [employeeIdsStr]).map(
+					Number
+			  )
+			: undefined;
+
+		const vipPackages = await VipPackagesServices.getVipPackages(
+			start as string,
+			end as string,
+			employeeIds
+		);
 
 		res
 			.status(HttpCode.OK)
@@ -52,25 +64,21 @@ export const updateVipPackage: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const schedules: { date: Date; employee_id: number }[] = req.body.schedules;
-		schedules.forEach(
-			(schedule) => (schedule.date = setTimeToZero(schedule.date))
-		);
-
-		const updated = await VipPackagesServices.updateVipPackage(
+		const vipPackage = await VipPackagesServices.updateVipPackage(
 			req.params.serial,
 			req.body.amount,
-			schedules
+			req.body.date && formatDateToYYYYMMDD(req.body.date),
+			req.body.employee_ids
 		);
 
-		if (!updated.affected) {
+		if (vipPackage) {
 			res
-				.status(HttpCode.NOT_MODIFIED)
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
-				.send();
+				.send(JSON.stringify(vipPackage));
 		} else {
 			res
-				.status(HttpCode.NO_CONTENT)
+				.status(HttpCode.NOT_FOUND)
 				.header('Content-Type', 'application/json')
 				.send();
 		}
@@ -85,15 +93,11 @@ export const addVipPackage: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const schedules: { date: Date; employee_id: number }[] = req.body.schedules;
-		schedules.forEach(
-			(schedule) => (schedule.date = setTimeToZero(schedule.date))
-		);
-
 		const vipPackage = await VipPackagesServices.createVipPackage(
 			req.body.serial,
 			req.body.amount,
-			schedules
+			formatDateToYYYYMMDD(req.body.date),
+			req.body.employee_ids
 		);
 
 		res
@@ -111,18 +115,18 @@ export const deleteVipPackage: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const updated = await VipPackagesServices.deleteVipPackage(
+		const vipPackage = await VipPackagesServices.deleteVipPackage(
 			req.params.serial
 		);
 
-		if (!updated.affected) {
+		if (vipPackage) {
 			res
-				.status(HttpCode.NOT_MODIFIED)
+				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
-				.send();
+				.send(JSON.stringify(vipPackage));
 		} else {
 			res
-				.status(HttpCode.NO_CONTENT)
+				.status(HttpCode.NOT_FOUND)
 				.header('Content-Type', 'application/json')
 				.send();
 		}

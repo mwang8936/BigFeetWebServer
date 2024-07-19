@@ -11,6 +11,7 @@ import {
 	AddVipPackageValidation,
 	DeleteVipPackageValidation,
 	GetVipPackageValidation,
+	GetVipPackagesValidation,
 	UpdateVipPackageValidation,
 } from '../../middleware/validation/vip-packages.validation';
 import authorize from '../../middleware/authentication.middleware';
@@ -19,7 +20,11 @@ const router = Router();
 
 router
 	.route('/')
-	.get(authorize([Permissions.PERMISSION_GET_VIP_PACKAGE]), getVipPackages);
+	.get(
+		authorize([Permissions.PERMISSION_GET_VIP_PACKAGE]),
+		GetVipPackagesValidation,
+		getVipPackages
+	);
 router
 	.route('/:serial')
 	.get(
