@@ -46,6 +46,8 @@ export const UpdateReservationValidation = celebrate(
 			cash: Joi.number().positive().precision(2).max(999.99).allow(null),
 			machine: Joi.number().positive().precision(2).max(999.99).allow(null),
 			vip: Joi.number().positive().precision(2).max(999.99).allow(null),
+			gift_card: Joi.number().positive().precision(2).max(999.99).allow(null),
+			insurance: Joi.number().positive().precision(2).max(999.99).allow(null),
 			tips: Joi.number().positive().precision(3).max(9999.99).allow(null),
 			tip_method: tipMethodValidation.allow(null),
 			message: Joi.string().trim().min(1).allow(null),

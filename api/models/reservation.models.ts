@@ -108,6 +108,24 @@ export class Reservation extends BaseEntity {
 
 	@Column({
 		type: 'decimal',
+		precision: 5,
+		scale: 2,
+		unsigned: true,
+		nullable: true,
+	})
+	gift_card: number | null;
+
+	@Column({
+		type: 'decimal',
+		precision: 5,
+		scale: 2,
+		unsigned: true,
+		nullable: true,
+	})
+	insurance: number | null;
+
+	@Column({
+		type: 'decimal',
 		precision: 6,
 		scale: 2,
 		unsigned: true,

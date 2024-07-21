@@ -11,8 +11,12 @@ export const getSchedules: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const start: string | undefined = req.query.start as string | undefined;
-		const end: string | undefined = req.query.end as string | undefined;
+		const start: string | undefined = req.query.start
+			? formatDateToYYYYMMDD(req.query.start as string)
+			: undefined;
+		const end: string | undefined = req.query.end
+			? formatDateToYYYYMMDD(req.query.end as string)
+			: undefined;
 		const employeeIds: number[] | undefined = (req.query
 			.employee_ids as string[])
 			? (req.query.employee_ids as string[]).map((employee_id) =>

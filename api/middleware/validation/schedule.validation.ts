@@ -2,14 +2,15 @@ import { celebrate, Joi, Segments, Modes } from 'celebrate';
 
 export const GetSchedulesValidation = celebrate(
 	{
-		[Segments.QUERY]: Joi.object()
-			.keys({
-				start: Joi.date().iso(),
-				end: Joi.date().iso().greater(Joi.ref('start')),
-				employee_ids: Joi.array().items(Joi.number().integer().positive()),
-			})
-			.with('start', 'end')
-			.with('end', 'start'),
+		[Segments.QUERY]: Joi.object().keys({
+			start: Joi.date().iso(),
+			end: Joi.when('start', {
+				is: Joi.exist(),
+				then: Joi.date().iso().min(Joi.ref('start')),
+				otherwise: Joi.date().iso(),
+			}),
+			employee_ids: Joi.array().items(Joi.number().integer().positive()).min(1),
+		}),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
