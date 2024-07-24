@@ -26,7 +26,7 @@ export const updateService = async (
 	body?: number,
 	feet?: number,
 	acupuncture?: number,
-	bedRequired?: boolean,
+	bedsRequired?: number,
 	color?: ServiceColor
 ) => {
 	const service = await getService(serviceId);
@@ -64,8 +64,8 @@ export const updateService = async (
 			updates.acupuncture = acupuncture;
 		}
 
-		if (bedRequired !== undefined) {
-			updates.bed_required = bedRequired;
+		if (bedsRequired !== undefined) {
+			updates.beds_required = bedsRequired;
 		}
 
 		if (color !== undefined) {
@@ -85,7 +85,7 @@ export const createService = async (
 	shorthand: string,
 	time: number,
 	money: number,
-	bedRequired: boolean,
+	bedsRequired: number,
 	color: ServiceColor,
 	body?: number,
 	feet?: number,
@@ -102,7 +102,7 @@ export const createService = async (
 		body: body,
 		feet: feet,
 		acupuncture: acupuncture,
-		bed_required: bedRequired,
+		beds_required: bedsRequired,
 		color: color,
 	});
 

@@ -73,10 +73,12 @@ export class Service extends BaseEntity {
 	acupuncture: number;
 
 	@Column({
-		type: 'boolean',
-		default: false,
+		type: 'integer',
+		width: 2,
+		unsigned: true,
+		default: 0,
 	})
-	bed_required: boolean;
+	beds_required: number;
 
 	@Column({
 		type: 'enum',
