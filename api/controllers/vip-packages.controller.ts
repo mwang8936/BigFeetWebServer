@@ -1,7 +1,7 @@
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as VipPackagesServices from '../services/vip-package.services';
-import { formatDateToYYYYMMDD, setTimeToZero } from '../utils/date.utils';
+import { formatDateToYYYYMMDD } from '../utils/date.utils';
 
 export const getVipPackages: RequestHandler = async (
 	req: Request,
@@ -9,17 +9,22 @@ export const getVipPackages: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const { start, end, employee_ids: employeeIdsStr } = req.query;
-
-		const employeeIds = employeeIdsStr
-			? (Array.isArray(employeeIdsStr) ? employeeIdsStr : [employeeIdsStr]).map(
-					Number
+		const start: string | undefined = req.query.start
+			? formatDateToYYYYMMDD(req.query.start as string)
+			: undefined;
+		const end: string | undefined = req.query.end
+			? formatDateToYYYYMMDD(req.query.end as string)
+			: undefined;
+		const employeeIds: number[] | undefined = (req.query
+			.employee_ids as string[])
+			? (req.query.employee_ids as string[]).map((employee_id) =>
+					parseInt(employee_id)
 			  )
 			: undefined;
 
 		const vipPackages = await VipPackagesServices.getVipPackages(
-			start as string,
-			end as string,
+			start as string | undefined,
+			end as string | undefined,
 			employeeIds
 		);
 
@@ -66,8 +71,9 @@ export const updateVipPackage: RequestHandler = async (
 	try {
 		const vipPackage = await VipPackagesServices.updateVipPackage(
 			req.params.serial,
-			req.body.amount,
-			req.body.date && formatDateToYYYYMMDD(req.body.date),
+			req.body.sold_amount,
+			req.body.commission_amount,
+			req.body.date ? formatDateToYYYYMMDD(req.body.date) : undefined,
 			req.body.employee_ids
 		);
 
@@ -95,7 +101,8 @@ export const addVipPackage: RequestHandler = async (
 	try {
 		const vipPackage = await VipPackagesServices.createVipPackage(
 			req.body.serial,
-			req.body.amount,
+			req.body.sold_amount,
+			req.body.commission_amount,
 			formatDateToYYYYMMDD(req.body.date),
 			req.body.employee_ids
 		);

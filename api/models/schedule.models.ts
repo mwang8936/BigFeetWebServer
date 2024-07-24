@@ -51,6 +51,14 @@ export class Schedule extends BaseEntity {
 	})
 	end: Date | null;
 
+	@Column({
+		type: 'integer',
+		width: 2,
+		unsigned: true,
+		nullable: true,
+	})
+	priority: number | null;
+
 	@OneToMany(() => Reservation, (reservation) => reservation.schedule, {
 		eager: true,
 	})

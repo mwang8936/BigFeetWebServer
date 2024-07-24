@@ -45,7 +45,8 @@ export const getVipPackage = async (serial: string) => {
 
 export const updateVipPackage = async (
 	serial: string,
-	amount?: number,
+	soldAmount?: number,
+	commissionAmount?: number,
 	date?: string,
 	employeeIds?: number[]
 ) => {
@@ -54,8 +55,12 @@ export const updateVipPackage = async (
 	if (vipPackage) {
 		const updates: Partial<VipPackage> = {};
 
-		if (amount !== undefined) {
-			updates.amount = amount;
+		if (soldAmount !== undefined) {
+			updates.sold_amount = soldAmount;
+		}
+
+		if (commissionAmount !== undefined) {
+			updates.commission_amount = commissionAmount;
 		}
 
 		if (
@@ -91,7 +96,8 @@ export const updateVipPackage = async (
 
 export const createVipPackage = async (
 	serial: string,
-	amount: number,
+	soldAmount: number,
+	commissionAmount: number,
 	date: string,
 	employeeIds: number[]
 ) => {
@@ -114,7 +120,8 @@ export const createVipPackage = async (
 
 	const vipPackage = VipPackage.create({
 		serial,
-		amount,
+		sold_amount: soldAmount,
+		commission_amount: commissionAmount,
 		schedules,
 	});
 

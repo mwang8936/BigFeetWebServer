@@ -37,6 +37,7 @@ export const UpdateScheduleValidation = celebrate(
 			is_working: Joi.boolean(),
 			start: Joi.date().iso().allow(null),
 			end: Joi.date().iso().greater(Joi.ref('start')).allow(null),
+			priority: Joi.number().integer().positive().allow(null),
 			vip_packages: Joi.array().items(
 				Joi.object({
 					serial: Joi.string()
@@ -65,6 +66,7 @@ export const AddScheduleValidation = celebrate({
 		is_working: Joi.boolean(),
 		start: Joi.date().iso().allow(null),
 		end: Joi.date().iso().greater(Joi.ref('start')).allow(null),
+		priority: Joi.number().integer().positive().allow(null),
 		vip_packages: Joi.array().items(
 			Joi.object({
 				serial: Joi.string()

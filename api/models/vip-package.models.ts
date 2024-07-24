@@ -5,6 +5,8 @@ import {
 	PrimaryColumn,
 	ManyToMany,
 	JoinTable,
+	CreateDateColumn,
+	UpdateDateColumn,
 } from 'typeorm';
 import { Schedule } from './schedule.models';
 
@@ -21,7 +23,21 @@ export class VipPackage extends BaseEntity {
 		scale: 2,
 		unsigned: true,
 	})
-	amount: number;
+	sold_amount: number;
+
+	@Column({
+		type: 'decimal',
+		precision: 8,
+		scale: 2,
+		unsigned: true,
+	})
+	commission_amount: number;
+
+	@CreateDateColumn()
+	created_at: Date;
+
+	@UpdateDateColumn()
+	updated_at: Date;
 
 	@ManyToMany(() => Schedule)
 	@JoinTable()

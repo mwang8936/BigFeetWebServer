@@ -7,6 +7,8 @@ import {
 } from 'typeorm';
 import { Schedule } from '../models/schedule.models';
 import { VipPackage } from '../models/vip-package.models';
+import { Employee } from '../models/employee.models';
+import { NotFoundError } from '../exceptions/not-found-error';
 
 export const getSchedules = async (
 	fromDate?: string,
@@ -49,6 +51,7 @@ export const updateSchedule = async (
 	isWorking?: boolean,
 	start?: Date | null,
 	end?: Date | null,
+	priority?: number | null,
 	vipPackages?: VipPackage[]
 ) => {
 	const schedule = await getSchedule(date, employeeId);
@@ -66,6 +69,10 @@ export const updateSchedule = async (
 
 		if (end !== undefined) {
 			updates.end = end;
+		}
+
+		if (priority !== undefined) {
+			updates.priority = priority;
 		}
 
 		if (vipPackages !== undefined) {
@@ -86,14 +93,24 @@ export const createSchedule = async (
 	isWorking?: boolean,
 	start?: Date | null,
 	end?: Date | null,
+	priority?: number | null,
 	vipPackages?: VipPackage[]
 ) => {
+	const employee = await Employee.findOne({
+		where: {
+			employee_id: employeeId,
+		},
+	});
+
+	if (!employee) throw new NotFoundError('Employee', 'employee id', employeeId);
+
 	const schedule = Schedule.create({
 		date,
-		employee_id: employeeId,
+		employee,
 		is_working: isWorking,
 		start,
 		end,
+		priority,
 		vip_packages: vipPackages,
 	});
 

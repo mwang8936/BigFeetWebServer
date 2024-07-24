@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Service } from '../models/service.models';
 import { Customer } from '../models/customer.models';
+import { NotFoundError } from '../exceptions/not-found-error';
 
 export const getReservations = async (
 	fromDate?: Date,
@@ -214,7 +215,7 @@ export const createReservation = async (
 		},
 	});
 
-	if (!service) throw Error;
+	if (!service) throw new NotFoundError('Service', 'service id', serviceId);
 
 	const reservation = Reservation.create({
 		reserved_date: reservedDate,

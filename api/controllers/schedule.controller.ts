@@ -90,6 +90,7 @@ export const updateSchedule: RequestHandler = async (
 			req.body.is_working,
 			start,
 			end,
+			req.body.priority,
 			req.body.vip_packages as VipPackage[]
 		);
 
@@ -132,15 +133,9 @@ export const addSchedule: RequestHandler = async (
 			req.body.is_working,
 			start,
 			end,
+			req.body.priority,
 			req.body.vip_packages as VipPackage[]
 		);
-
-		schedule.reservations = [];
-		schedule.vip_packages = [];
-		const employee = await EmployeeServices.getEmployee(schedule.employee_id);
-		if (employee) schedule.employee = employee;
-		if (schedule.is_working === undefined) schedule.is_working = false;
-		if (schedule.signed === undefined) schedule.signed = false;
 
 		res
 			.status(HttpCode.CREATED)

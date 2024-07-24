@@ -179,18 +179,4 @@ export class Reservation extends BaseEntity {
 			this.schedule = schedule;
 		}
 	}
-
-	@AfterInsert()
-	@AfterUpdate()
-	async attachSchedule() {
-		const { employee_id, date } = this;
-
-		const schedule = await ScheduleServices.getSchedule(date, employee_id);
-
-		if (schedule) {
-			const newReservation = { ...this };
-			schedule.reservations.push(newReservation);
-			this.schedule = schedule;
-		}
-	}
 }

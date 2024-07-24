@@ -38,7 +38,8 @@ export const UpdateVipPackageValidation = celebrate(
 				.required(),
 		}),
 		[Segments.BODY]: Joi.object({
-			amount: Joi.number().positive().precision(2).max(999999.99),
+			sold_amount: Joi.number().min(0).precision(2).max(999999.99),
+			commission_amount: Joi.number().min(0).precision(2).max(999999.99),
 			date: Joi.date().iso(),
 			employee_ids: Joi.array().items(Joi.number().integer().positive()).min(1),
 		})
@@ -57,7 +58,12 @@ export const AddVipPackageValidation = celebrate(
 				.length(6)
 				.pattern(/^[0-9]+$/)
 				.required(),
-			amount: Joi.number().positive().precision(2).max(999999.99).required(),
+			sold_amount: Joi.number().min(0).precision(2).max(999999.99).required(),
+			commission_amount: Joi.number()
+				.min(0)
+				.precision(2)
+				.max(999999.99)
+				.required(),
 			date: Joi.date().iso().required(),
 			employee_ids: Joi.array()
 				.items(Joi.number().integer().positive())
