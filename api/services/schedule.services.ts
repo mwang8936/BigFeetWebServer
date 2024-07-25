@@ -51,8 +51,7 @@ export const updateSchedule = async (
 	isWorking?: boolean,
 	start?: Date | null,
 	end?: Date | null,
-	priority?: number | null,
-	vipPackages?: VipPackage[]
+	priority?: number | null
 ) => {
 	const schedule = await getSchedule(date, employeeId);
 
@@ -75,10 +74,6 @@ export const updateSchedule = async (
 			updates.priority = priority;
 		}
 
-		if (vipPackages !== undefined) {
-			updates.vip_packages = vipPackages;
-		}
-
 		Object.assign(schedule, updates);
 
 		return schedule.save();
@@ -93,8 +88,7 @@ export const createSchedule = async (
 	isWorking?: boolean,
 	start?: Date | null,
 	end?: Date | null,
-	priority?: number | null,
-	vipPackages?: VipPackage[]
+	priority?: number | null
 ) => {
 	const employee = await Employee.findOne({
 		where: {
@@ -111,7 +105,6 @@ export const createSchedule = async (
 		start,
 		end,
 		priority,
-		vip_packages: vipPackages,
 	});
 
 	return await schedule.save();

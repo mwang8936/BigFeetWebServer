@@ -9,7 +9,10 @@ export const GetSchedulesValidation = celebrate(
 				then: Joi.date().iso().min(Joi.ref('start')),
 				otherwise: Joi.date().iso(),
 			}),
-			employee_ids: Joi.array().items(Joi.number().integer().positive()).min(1),
+			employee_ids: Joi.array()
+				.items(Joi.number().integer().positive())
+				.min(1)
+				.unique(),
 		}),
 	},
 	{ abortEarly: false },
@@ -38,19 +41,6 @@ export const UpdateScheduleValidation = celebrate(
 			start: Joi.date().iso().allow(null),
 			end: Joi.date().iso().greater(Joi.ref('start')).allow(null),
 			priority: Joi.number().integer().positive().allow(null),
-			vip_packages: Joi.array().items(
-				Joi.object({
-					serial: Joi.string()
-						.length(6)
-						.pattern(/^[0-9]+$/)
-						.required(),
-					amount: Joi.number()
-						.positive()
-						.precision(2)
-						.max(999999.99)
-						.required(),
-				})
-			),
 		})
 			.min(1)
 			.with('end', 'start'),
@@ -67,15 +57,6 @@ export const AddScheduleValidation = celebrate({
 		start: Joi.date().iso().allow(null),
 		end: Joi.date().iso().greater(Joi.ref('start')).allow(null),
 		priority: Joi.number().integer().positive().allow(null),
-		vip_packages: Joi.array().items(
-			Joi.object({
-				serial: Joi.string()
-					.length(6)
-					.pattern(/^[0-9]+$/)
-					.required(),
-				amount: Joi.number().positive().precision(2).max(999999.99).required(),
-			})
-		),
 	}).with('end', 'start'),
 });
 

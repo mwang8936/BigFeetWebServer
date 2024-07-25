@@ -8,7 +8,7 @@ import {
 import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
 import { Schedule } from '../models/schedule.models';
 import { VipPackage } from '../models/vip-package.models';
-import { NotFoundError } from '../exceptions/not-found-error';
+import * as ScheduleServices from './schedule.services';
 
 export const getVipPackages = async (
 	start?: string,
@@ -63,24 +63,21 @@ export const updateVipPackage = async (
 			updates.commission_amount = commissionAmount;
 		}
 
-		if (
-			date !== undefined &&
-			employeeIds !== undefined &&
-			employeeIds.length > 0
-		) {
-			const schedules = await Schedule.find({
-				where: {
-					date,
-					employee_id: In(employeeIds),
-				},
-			});
+		if (date !== undefined && employeeIds !== undefined) {
+			updates.employee_ids = employeeIds;
 
-			if (schedules.length === 0) {
-				throw new NotFoundError(
-					'Schedule',
-					'date and employee id',
-					`${date} and ${employeeIds}`
-				);
+			const schedules: Schedule[] = [];
+
+			for (const employeeId of employeeIds) {
+				let schedule = await ScheduleServices.getSchedule(date, employeeId);
+
+				if (!schedule) {
+					schedule = await ScheduleServices.createSchedule(date, employeeId);
+				}
+
+				if (schedule) {
+					schedules.push(schedule);
+				}
 			}
 
 			updates.schedules = schedules;
@@ -103,25 +100,25 @@ export const createVipPackage = async (
 ) => {
 	await duplicateSerialChecker(serial);
 
-	const schedules = await Schedule.find({
-		where: {
-			date,
-			employee_id: In(employeeIds),
-		},
-	});
+	const schedules: Schedule[] = [];
 
-	if (schedules.length === 0) {
-		throw new NotFoundError(
-			'Schedule',
-			'date and employee id',
-			`${date} and ${employeeIds}`
-		);
+	for (const employeeId of employeeIds) {
+		let schedule = await ScheduleServices.getSchedule(date, employeeId);
+
+		if (!schedule) {
+			schedule = await ScheduleServices.createSchedule(date, employeeId);
+		}
+
+		if (schedule) {
+			schedules.push(schedule);
+		}
 	}
 
 	const vipPackage = VipPackage.create({
 		serial,
 		sold_amount: soldAmount,
 		commission_amount: commissionAmount,
+		employee_ids: employeeIds,
 		schedules,
 	});
 
@@ -145,7 +142,7 @@ const duplicateSerialChecker = async (serial: string) => {
 		},
 	});
 
-	if (duplicates) {
+	if (duplicates.length > 0) {
 		throw new DuplicateIdentifierError('VIP Package', 'Serial', serial);
 	}
 };

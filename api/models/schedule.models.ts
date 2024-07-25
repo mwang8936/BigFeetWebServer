@@ -68,7 +68,13 @@ export class Schedule extends BaseEntity {
 		cascade: true,
 		eager: true,
 	})
-	@JoinTable()
+	@JoinTable({
+		joinColumns: [
+			{ name: 'date', referencedColumnName: 'date' },
+			{ name: 'employee_id', referencedColumnName: 'employee_id' },
+		],
+		inverseJoinColumns: [{ name: 'serial', referencedColumnName: 'serial' }],
+	})
 	vip_packages: VipPackage[];
 
 	@Column({

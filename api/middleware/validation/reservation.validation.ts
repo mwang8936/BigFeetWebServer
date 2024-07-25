@@ -7,7 +7,9 @@ export const GetReservationsValidation = celebrate(
 			.keys({
 				start: Joi.date().iso(),
 				end: Joi.date().iso().greater(Joi.ref('start')),
-				employee_ids: Joi.array().items(Joi.number().integer().positive()),
+				employee_ids: Joi.array()
+					.items(Joi.number().integer().positive())
+					.unique(),
 			})
 			.with('start', 'end')
 			.with('end', 'start'),

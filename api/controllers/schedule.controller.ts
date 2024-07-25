@@ -30,6 +30,8 @@ export const getSchedules: RequestHandler = async (
 			employeeIds
 		);
 
+		console.log(schedules.flatMap((schedule) => schedule.vip_packages));
+
 		res
 			.status(HttpCode.OK)
 			.header('Content-Type', 'application/json')
@@ -90,8 +92,7 @@ export const updateSchedule: RequestHandler = async (
 			req.body.is_working,
 			start,
 			end,
-			req.body.priority,
-			req.body.vip_packages as VipPackage[]
+			req.body.priority
 		);
 
 		if (schedule) {
@@ -133,8 +134,7 @@ export const addSchedule: RequestHandler = async (
 			req.body.is_working,
 			start,
 			end,
-			req.body.priority,
-			req.body.vip_packages as VipPackage[]
+			req.body.priority
 		);
 
 		res

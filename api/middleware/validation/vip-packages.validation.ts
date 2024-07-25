@@ -9,7 +9,10 @@ export const GetVipPackagesValidation = celebrate(
 				then: Joi.date().iso().greater(Joi.ref('start')),
 				otherwise: Joi.date().iso(),
 			}),
-			employee_ids: Joi.array().items(Joi.number().integer().positive()).min(1),
+			employee_ids: Joi.array()
+				.items(Joi.number().integer().positive())
+				.min(1)
+				.unique(),
 		}),
 	},
 	{ abortEarly: false },
@@ -41,7 +44,10 @@ export const UpdateVipPackageValidation = celebrate(
 			sold_amount: Joi.number().min(0).precision(2).max(999999.99),
 			commission_amount: Joi.number().min(0).precision(2).max(999999.99),
 			date: Joi.date().iso(),
-			employee_ids: Joi.array().items(Joi.number().integer().positive()).min(1),
+			employee_ids: Joi.array()
+				.items(Joi.number().integer().positive())
+				.min(1)
+				.unique(),
 		})
 			.min(1)
 			.with('date', 'employee_ids')
@@ -68,6 +74,7 @@ export const AddVipPackageValidation = celebrate(
 			employee_ids: Joi.array()
 				.items(Joi.number().integer().positive())
 				.min(1)
+				.unique()
 				.required(),
 		}),
 	},
