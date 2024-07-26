@@ -85,6 +85,14 @@ export class Reservation extends BaseEntity {
 		scale: 2,
 		unsigned: true,
 		nullable: true,
+		transformer: {
+			to(cash: number | null) {
+				return cash;
+			},
+			from(cash: number | null) {
+				return cash === null ? null : Number(cash);
+			},
+		},
 	})
 	cash: number | null;
 
@@ -94,6 +102,14 @@ export class Reservation extends BaseEntity {
 		scale: 2,
 		unsigned: true,
 		nullable: true,
+		transformer: {
+			to(machine: number | null) {
+				return machine;
+			},
+			from(machine: number | null) {
+				return machine === null ? null : Number(machine);
+			},
+		},
 	})
 	machine: number | null;
 
@@ -103,6 +119,14 @@ export class Reservation extends BaseEntity {
 		scale: 2,
 		unsigned: true,
 		nullable: true,
+		transformer: {
+			to(vip: number | null) {
+				return vip;
+			},
+			from(vip: number | null) {
+				return vip === null ? null : Number(vip);
+			},
+		},
 	})
 	vip: number | null;
 
@@ -112,6 +136,14 @@ export class Reservation extends BaseEntity {
 		scale: 2,
 		unsigned: true,
 		nullable: true,
+		transformer: {
+			to(giftCard: number | null) {
+				return giftCard;
+			},
+			from(giftCard: number | null) {
+				return giftCard === null ? null : Number(giftCard);
+			},
+		},
 	})
 	gift_card: number | null;
 
@@ -121,6 +153,14 @@ export class Reservation extends BaseEntity {
 		scale: 2,
 		unsigned: true,
 		nullable: true,
+		transformer: {
+			to(insurance: number | null) {
+				return insurance;
+			},
+			from(insurance: number | null) {
+				return insurance === null ? null : Number(insurance);
+			},
+		},
 	})
 	insurance: number | null;
 
@@ -130,6 +170,14 @@ export class Reservation extends BaseEntity {
 		scale: 2,
 		unsigned: true,
 		nullable: true,
+		transformer: {
+			to(tips: number | null) {
+				return tips;
+			},
+			from(tips: number | null) {
+				return tips === null ? null : Number(tips);
+			},
+		},
 	})
 	tips: number | null;
 

@@ -42,6 +42,14 @@ export class Service extends BaseEntity {
 		precision: 5,
 		scale: 2,
 		unsigned: true,
+		transformer: {
+			to(money: number | null) {
+				return money;
+			},
+			from(money: number | null) {
+				return money === null ? null : Number(money);
+			},
+		},
 	})
 	money: number;
 
@@ -51,6 +59,14 @@ export class Service extends BaseEntity {
 		scale: 1,
 		unsigned: true,
 		default: 0,
+		transformer: {
+			to(body: number | null) {
+				return body;
+			},
+			from(body: number | null) {
+				return body === null ? null : Number(body);
+			},
+		},
 	})
 	body: number;
 
@@ -60,6 +76,14 @@ export class Service extends BaseEntity {
 		scale: 1,
 		unsigned: true,
 		default: 0,
+		transformer: {
+			to(feet: number | null) {
+				return feet;
+			},
+			from(feet: number | null) {
+				return feet === null ? null : Number(feet);
+			},
+		},
 	})
 	feet: number;
 
@@ -69,6 +93,14 @@ export class Service extends BaseEntity {
 		scale: 1,
 		unsigned: true,
 		default: 0,
+		transformer: {
+			to(acupuncture: number | null) {
+				return acupuncture;
+			},
+			from(acupuncture: number | null) {
+				return acupuncture === null ? null : Number(acupuncture);
+			},
+		},
 	})
 	acupuncture: number;
 

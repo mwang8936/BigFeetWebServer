@@ -61,6 +61,14 @@ export class Employee extends BaseEntity {
 		scale: 2,
 		unsigned: true,
 		nullable: true,
+		transformer: {
+			to(bodyRate: number | null) {
+				return bodyRate;
+			},
+			from(bodyRate: number | null) {
+				return bodyRate === null ? null : Number(bodyRate);
+			},
+		},
 	})
 	body_rate: number | null;
 
@@ -70,6 +78,14 @@ export class Employee extends BaseEntity {
 		scale: 2,
 		unsigned: true,
 		nullable: true,
+		transformer: {
+			to(feetRate: number | null) {
+				return feetRate;
+			},
+			from(feetRate: number | null) {
+				return feetRate === null ? null : Number(feetRate);
+			},
+		},
 	})
 	feet_rate: number | null;
 
@@ -79,6 +95,14 @@ export class Employee extends BaseEntity {
 		scale: 2,
 		unsigned: true,
 		nullable: true,
+		transformer: {
+			to(acupunctureRate: number | null) {
+				return acupunctureRate;
+			},
+			from(acupunctureRate: number | null) {
+				return acupunctureRate === null ? null : Number(acupunctureRate);
+			},
+		},
 	})
 	acupuncture_rate: number | null;
 
@@ -88,6 +112,14 @@ export class Employee extends BaseEntity {
 		scale: 2,
 		unsigned: true,
 		nullable: true,
+		transformer: {
+			to(perHour: number | null) {
+				return perHour;
+			},
+			from(perHour: number | null) {
+				return perHour === null ? null : Number(perHour);
+			},
+		},
 	})
 	per_hour: number | null;
 

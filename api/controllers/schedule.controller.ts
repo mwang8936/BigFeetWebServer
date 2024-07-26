@@ -30,8 +30,6 @@ export const getSchedules: RequestHandler = async (
 			employeeIds
 		);
 
-		console.log(schedules.flatMap((schedule) => schedule.vip_packages));
-
 		res
 			.status(HttpCode.OK)
 			.header('Content-Type', 'application/json')

@@ -54,8 +54,8 @@ export class VipPackage extends BaseEntity {
 			to(employeeIds: number[]) {
 				return employeeIds;
 			},
-			from(employeeIds: string[]) {
-				return employeeIds.map((employeeId) => Number(employeeId));
+			from(employeeIds: string[] | null) {
+				return employeeIds?.map((employeeId) => Number(employeeId));
 			},
 		},
 	})

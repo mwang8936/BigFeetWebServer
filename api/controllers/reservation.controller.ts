@@ -141,8 +141,6 @@ export const addReservation: RequestHandler = async (
 			req.body.message
 		);
 
-		console.log(reservation);
-
 		res
 			.status(HttpCode.CREATED)
 			.header('Content-Type', 'application/json')
