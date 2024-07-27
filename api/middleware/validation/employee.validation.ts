@@ -5,6 +5,8 @@ import {
 	roleValidation,
 } from './enum.validation';
 
+const namePattern = /^[a-zA-Z\s'-]+$/;
+
 export const GetEmployeesValidation = celebrate(
 	{
 		[Segments.QUERY]: Joi.object().keys({
@@ -35,16 +37,8 @@ export const UpdateEmployeeValidation = celebrate(
 		}),
 		[Segments.BODY]: Joi.object({
 			username: Joi.string().trim().min(1).max(30).alphanum(),
-			first_name: Joi.string()
-				.trim()
-				.min(1)
-				.max(30)
-				.pattern(/^[a-zA-Z]+$/),
-			last_name: Joi.string()
-				.trim()
-				.min(1)
-				.max(30)
-				.pattern(/^[a-zA-Z]+$/),
+			first_name: Joi.string().trim().min(1).max(30).pattern(namePattern),
+			last_name: Joi.string().trim().min(1).max(30).pattern(namePattern),
 			gender: genderValidation,
 			role: roleValidation,
 			permissions: permissionsValidation,
@@ -67,13 +61,13 @@ export const AddEmployeeValidation = celebrate(
 				.trim()
 				.min(1)
 				.max(30)
-				.pattern(/^[a-zA-Z]+$/)
+				.pattern(namePattern)
 				.required(),
 			last_name: Joi.string()
 				.trim()
 				.min(1)
 				.max(30)
-				.pattern(/^[a-zA-Z]+$/)
+				.pattern(namePattern)
 				.required(),
 			gender: genderValidation.required(),
 			role: roleValidation.required(),
