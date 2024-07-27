@@ -53,7 +53,7 @@ export const updateReservation = async (
 	employeeId?: number,
 	serviceId?: number,
 	phoneNumber?: string | null,
-	customerName?: string,
+	customerName?: string | null,
 	notes?: string | null,
 	requestedGender?: Gender | null,
 	requestedEmployee?: boolean,
@@ -113,10 +113,6 @@ export const updateReservation = async (
 
 				if (customer) {
 					const customer_updates: Partial<Customer> = {};
-
-					if (phoneNumber !== undefined) {
-						customer_updates.phone_number = phoneNumber;
-					}
 
 					if (customerName !== undefined) {
 						customer_updates.customer_name = customerName;
@@ -201,12 +197,32 @@ export const createReservation = async (
 	message?: string | null
 ) => {
 	let customer = null;
-	if (phoneNumber && customerName) {
-		customer = Customer.create({
-			phone_number: phoneNumber,
-			customer_name: customerName,
-			notes,
+	if (phoneNumber) {
+		customer = await Customer.findOne({
+			where: {
+				phone_number: phoneNumber,
+			},
 		});
+
+		if (customer) {
+			const customer_updates: Partial<Customer> = {};
+
+			if (customerName !== undefined) {
+				customer_updates.customer_name = customerName;
+			}
+
+			if (notes !== undefined) {
+				customer_updates.notes = notes;
+			}
+
+			Object.assign(customer, customer_updates);
+		} else {
+			customer = Customer.create({
+				phone_number: phoneNumber,
+				customer_name: customerName,
+				notes,
+			});
+		}
 	}
 
 	const service = await Service.findOne({

@@ -18,11 +18,13 @@ export class Customer extends BaseEntity {
 	phone_number: string;
 
 	@Column({
+		type: 'varchar',
 		charset: 'utf8mb4',
 		collation: 'utf8mb4_bin',
 		length: 60,
+		nullable: true,
 	})
-	customer_name: string;
+	customer_name: string | null;
 
 	@Column({
 		type: 'text',

@@ -57,7 +57,7 @@ export const UpdateReservationValidation = celebrate(
 		})
 			.min(2)
 			.with('customer_name', 'phone_number')
-			.with('notes', ['phone_number', 'customer_name']),
+			.with('notes', 'phone_number'),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -79,7 +79,7 @@ export const AddReservationValidation = celebrate({
 		created_by: Joi.string().trim().min(1).max(30).alphanum().required(),
 	})
 		.with('customer_name', 'phone_number')
-		.with('notes', ['phone_number', 'customer_name']),
+		.with('notes', 'phone_number'),
 });
 
 export const DeleteReservationValidation = celebrate(

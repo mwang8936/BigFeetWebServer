@@ -21,7 +21,7 @@ export const getCustomer = async (
 
 export const updateCustomer = async (
 	phoneNumber: string,
-	customerName?: string,
+	customerName?: string | null,
 	notes?: string | null
 ) => {
 	const customer = await getCustomer(phoneNumber);
@@ -47,7 +47,7 @@ export const updateCustomer = async (
 
 export const createCustomer = async (
 	phoneNumber: string,
-	customerName: string,
+	customerName?: string,
 	notes?: string
 ) => {
 	duplicatePhoneNumberChecker(phoneNumber);

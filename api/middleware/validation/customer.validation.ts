@@ -35,7 +35,7 @@ export const UpdateCustomerValidation = celebrate(
 				.required(),
 		}),
 		[Segments.BODY]: Joi.object({
-			customer_name: Joi.string().trim().min(1).max(60),
+			customer_name: Joi.string().trim().min(1).max(60).allow(null),
 			notes: Joi.string().trim().min(1).allow(null),
 		}).min(1),
 	},
@@ -50,7 +50,7 @@ export const AddCustomerValidation = celebrate(
 				.length(10)
 				.pattern(/^[0-9]+$/)
 				.required(),
-			customer_name: Joi.string().trim().min(1).max(60).required(),
+			customer_name: Joi.string().trim().min(1).max(60).allow(null),
 			notes: Joi.string().trim().min(1).allow(null),
 		}),
 	},
