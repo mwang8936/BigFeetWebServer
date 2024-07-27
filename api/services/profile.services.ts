@@ -14,6 +14,7 @@ export const getProfile = async (employeeId: number) => {
 			permissions: true,
 			body_rate: true,
 			feet_rate: true,
+			acupuncture_rate: true,
 			per_hour: true,
 			language: true,
 			dark_mode: true,
