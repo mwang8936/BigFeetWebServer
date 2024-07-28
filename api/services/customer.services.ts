@@ -50,7 +50,7 @@ export const createCustomer = async (
 	customerName?: string,
 	notes?: string
 ) => {
-	duplicatePhoneNumberChecker(phoneNumber);
+	await duplicatePhoneNumberChecker(phoneNumber);
 
 	const customer = Customer.create({
 		phone_number: phoneNumber,
