@@ -48,6 +48,7 @@ export const UpdateServiceValidation = celebrate(
 				.min(0)
 				.max(NUMBERS.service.acupuncture),
 			beds_required: Joi.number().min(0),
+			can_overlap: Joi.boolean(),
 			color: colorValidation,
 		}).min(1),
 	},
@@ -85,6 +86,7 @@ export const AddServiceValidation = celebrate(
 				.min(0)
 				.max(NUMBERS.service.acupuncture),
 			beds_required: Joi.number().min(0).required(),
+			can_overlap: Joi.boolean().default(false),
 			color: colorValidation.required(),
 		}).or('body', 'feet', 'acupuncture'),
 	},

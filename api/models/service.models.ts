@@ -113,6 +113,11 @@ export class Service extends BaseEntity {
 	beds_required: number;
 
 	@Column({
+		default: false,
+	})
+	can_overlap: boolean;
+
+	@Column({
 		type: 'enum',
 		enum: ServiceColor,
 	})

@@ -1,5 +1,5 @@
 import Logger from '../utils/logger.utils';
-import AppDataSource from '../config/typeorm.config';
+import AppDataSource from '../../ormconfig';
 
 export const init = async () => {
 	AppDataSource.initialize()

@@ -53,7 +53,7 @@ export const AddScheduleValidation = celebrate({
 	[Segments.BODY]: Joi.object({
 		date: Joi.date().iso().required(),
 		employee_id: Joi.number().integer().positive().required(),
-		is_working: Joi.boolean(),
+		is_working: Joi.boolean().default(false),
 		start: Joi.date().iso().allow(null),
 		end: Joi.date().iso().greater(Joi.ref('start')).allow(null),
 		priority: Joi.number().integer().positive().allow(null),

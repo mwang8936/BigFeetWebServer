@@ -116,7 +116,7 @@ export const AddReservationValidation = celebrate({
 			.max(LENGTHS.customer.customer_name),
 		notes: Joi.string().trim().min(1),
 		requested_gender: genderValidation,
-		requested_employee: Joi.boolean(),
+		requested_employee: Joi.boolean().default(false),
 		message: Joi.string().trim().min(1),
 		created_by: Joi.string()
 			.trim()
