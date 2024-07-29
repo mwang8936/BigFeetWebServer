@@ -1,4 +1,5 @@
 import { celebrate, Joi, Segments, Modes } from 'celebrate';
+
 import { languageValidation } from './enum.validation';
 
 export const UpdateProfileValidation = celebrate(

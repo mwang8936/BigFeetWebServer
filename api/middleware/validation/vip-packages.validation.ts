@@ -1,5 +1,9 @@
 import { celebrate, Joi, Segments, Modes } from 'celebrate';
 
+import LENGTHS from './constants/lengths.constants';
+import PATTERNS from './constants/patterns.constants';
+import NUMBERS from './constants/numbers.constants';
+
 export const GetVipPackagesValidation = celebrate(
 	{
 		[Segments.QUERY]: Joi.object().keys({
@@ -23,8 +27,8 @@ export const GetVipPackageValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
 			serial: Joi.string()
-				.length(6)
-				.pattern(/^[0-9]+$/)
+				.length(LENGTHS.vip_package.serial)
+				.pattern(PATTERNS.vip_package.serial)
 				.required(),
 		}),
 	},
@@ -36,13 +40,19 @@ export const UpdateVipPackageValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
 			serial: Joi.string()
-				.length(6)
-				.pattern(/^[0-9]+$/)
+				.length(LENGTHS.vip_package.serial)
+				.pattern(PATTERNS.vip_package.serial)
 				.required(),
 		}),
 		[Segments.BODY]: Joi.object({
-			sold_amount: Joi.number().min(0).precision(2).max(999999.99),
-			commission_amount: Joi.number().min(0).precision(2).max(999999.99),
+			sold_amount: Joi.number()
+				.min(0)
+				.precision(2)
+				.max(NUMBERS.vip_package.sold_amount),
+			commission_amount: Joi.number()
+				.min(0)
+				.precision(2)
+				.max(NUMBERS.vip_package.commission_amount),
 			date: Joi.date().iso(),
 			employee_ids: Joi.array()
 				.items(Joi.number().integer().positive())
@@ -61,14 +71,18 @@ export const AddVipPackageValidation = celebrate(
 	{
 		[Segments.BODY]: Joi.object({
 			serial: Joi.string()
-				.length(6)
-				.pattern(/^[0-9]+$/)
+				.length(LENGTHS.vip_package.serial)
+				.pattern(PATTERNS.vip_package.serial)
 				.required(),
-			sold_amount: Joi.number().min(0).precision(2).max(999999.99).required(),
+			sold_amount: Joi.number()
+				.min(0)
+				.precision(2)
+				.max(NUMBERS.vip_package.sold_amount)
+				.required(),
 			commission_amount: Joi.number()
 				.min(0)
 				.precision(2)
-				.max(999999.99)
+				.max(NUMBERS.vip_package.commission_amount)
 				.required(),
 			date: Joi.date().iso().required(),
 			employee_ids: Joi.array()
@@ -86,8 +100,8 @@ export const DeleteVipPackageValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
 			serial: Joi.string()
-				.length(6)
-				.pattern(/^[0-9]+$/)
+				.length(LENGTHS.vip_package.serial)
+				.pattern(PATTERNS.vip_package.serial)
 				.required(),
 		}),
 	},

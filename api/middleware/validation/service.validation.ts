@@ -1,5 +1,9 @@
 import { celebrate, Joi, Segments, Modes } from 'celebrate';
+
 import { colorValidation } from './enum.validation';
+
+import LENGTHS from './constants/lengths.constants';
+import NUMBERS from './constants/numbers.constants';
 
 export const GetServicesValidation = celebrate(
 	{
@@ -30,13 +34,19 @@ export const UpdateServiceValidation = celebrate(
 			service_id: Joi.number().integer().positive().required(),
 		}),
 		[Segments.BODY]: Joi.object({
-			service_name: Joi.string().trim().min(1).max(30),
-			shorthand: Joi.string().trim().min(1).max(20),
-			time: Joi.number().integer().positive().max(999),
-			money: Joi.number().positive().precision(2).max(999.99),
-			body: Joi.number().precision(1).min(0).max(9.9),
-			feet: Joi.number().precision(1).min(0).max(9.9),
-			acupuncture: Joi.number().precision(1).min(0).max(9.9),
+			service_name: Joi.string()
+				.trim()
+				.min(1)
+				.max(LENGTHS.service.service_name),
+			shorthand: Joi.string().trim().min(1).max(LENGTHS.service.shorthand),
+			time: Joi.number().integer().positive().max(NUMBERS.service.time),
+			money: Joi.number().positive().precision(2).max(NUMBERS.service.money),
+			body: Joi.number().precision(1).min(0).max(NUMBERS.service.body),
+			feet: Joi.number().precision(1).min(0).max(NUMBERS.service.feet),
+			acupuncture: Joi.number()
+				.precision(1)
+				.min(0)
+				.max(NUMBERS.service.acupuncture),
 			beds_required: Joi.number().min(0),
 			color: colorValidation,
 		}).min(1),
@@ -48,13 +58,32 @@ export const UpdateServiceValidation = celebrate(
 export const AddServiceValidation = celebrate(
 	{
 		[Segments.BODY]: Joi.object({
-			service_name: Joi.string().trim().min(1).max(30).required(),
-			shorthand: Joi.string().trim().min(1).max(20).required(),
-			time: Joi.number().integer().positive().max(999).required(),
-			money: Joi.number().positive().precision(2).max(999.99).required(),
-			body: Joi.number().precision(1).min(0).max(9.9),
-			feet: Joi.number().precision(1).min(0).max(9.9),
-			acupuncture: Joi.number().precision(1).min(0).max(9.9),
+			service_name: Joi.string()
+				.trim()
+				.min(1)
+				.max(LENGTHS.service.service_name)
+				.required(),
+			shorthand: Joi.string()
+				.trim()
+				.min(1)
+				.max(LENGTHS.service.shorthand)
+				.required(),
+			time: Joi.number()
+				.integer()
+				.positive()
+				.max(NUMBERS.service.time)
+				.required(),
+			money: Joi.number()
+				.positive()
+				.precision(2)
+				.max(NUMBERS.service.money)
+				.required(),
+			body: Joi.number().precision(1).min(0).max(NUMBERS.service.body),
+			feet: Joi.number().precision(1).min(0).max(NUMBERS.service.feet),
+			acupuncture: Joi.number()
+				.precision(1)
+				.min(0)
+				.max(NUMBERS.service.acupuncture),
 			beds_required: Joi.number().min(0).required(),
 			color: colorValidation.required(),
 		}).or('body', 'feet', 'acupuncture'),
