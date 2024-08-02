@@ -43,6 +43,11 @@ export class Schedule extends BaseEntity {
 	is_working: boolean;
 
 	@Column({
+		default: false,
+	})
+	on_call: boolean;
+
+	@Column({
 		type: 'time',
 		nullable: true,
 	})

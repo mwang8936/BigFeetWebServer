@@ -49,6 +49,7 @@ export const updateSchedule = async (
 	date: string,
 	employeeId: number,
 	isWorking?: boolean,
+	onCall?: boolean,
 	start?: Date | null,
 	end?: Date | null,
 	priority?: number | null
@@ -60,6 +61,10 @@ export const updateSchedule = async (
 
 		if (isWorking !== undefined) {
 			updates.is_working = isWorking;
+		}
+
+		if (onCall !== undefined) {
+			updates.on_call = onCall;
 		}
 
 		if (start !== undefined) {
@@ -86,6 +91,7 @@ export const createSchedule = async (
 	date: string,
 	employeeId: number,
 	isWorking?: boolean,
+	onCall?: boolean,
 	start?: Date | null,
 	end?: Date | null,
 	priority?: number | null
@@ -102,6 +108,7 @@ export const createSchedule = async (
 		date,
 		employee,
 		is_working: isWorking,
+		on_call: onCall,
 		start,
 		end,
 		priority,

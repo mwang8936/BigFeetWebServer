@@ -38,6 +38,7 @@ export const UpdateScheduleValidation = celebrate(
 		}),
 		[Segments.BODY]: Joi.object({
 			is_working: Joi.boolean(),
+			on_call: Joi.boolean(),
 			start: Joi.date().iso().allow(null),
 			end: Joi.date().iso().allow(null),
 			priority: Joi.number().integer().positive().allow(null),
@@ -52,6 +53,7 @@ export const AddScheduleValidation = celebrate({
 		date: Joi.date().iso().required(),
 		employee_id: Joi.number().integer().positive().required(),
 		is_working: Joi.boolean().default(false),
+		on_call: Joi.boolean().default(false),
 		start: Joi.date().iso().allow(null),
 		end: Joi.date().iso().min(Joi.ref('start')).allow(null),
 		priority: Joi.number().integer().positive().allow(null),

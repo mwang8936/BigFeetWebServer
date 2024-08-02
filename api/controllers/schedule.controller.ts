@@ -88,6 +88,7 @@ export const updateSchedule: RequestHandler = async (
 			date,
 			employeeId,
 			req.body.is_working,
+			req.body.on_call,
 			start,
 			end,
 			req.body.priority
@@ -130,6 +131,7 @@ export const addSchedule: RequestHandler = async (
 			date,
 			req.body.employee_id,
 			req.body.is_working,
+			req.body.on_call,
 			start,
 			end,
 			req.body.priority
