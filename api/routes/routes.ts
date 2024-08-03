@@ -3,6 +3,7 @@ import LoginRoute from './public/login.route';
 import AuthenticateRoutes from './private/authenticate.routes';
 import CustomerRoutes from './private/customer.routes';
 import EmployeeRoutes from './private/employee.routes';
+import GiftCardRoutes from './private/gift-card.routes';
 import ProfileRoutes from './private/profile.routes';
 import ReservationRoutes from './private/reservation.routes';
 import ScheduleRoutes from './private/schedule.routes';
@@ -16,6 +17,7 @@ router.use('/authenticate', AuthenticateRoutes);
 
 router.use('/customer', CustomerRoutes);
 router.use('/employee', EmployeeRoutes);
+router.use('/gift-card', GiftCardRoutes);
 router.use('/profile', ProfileRoutes);
 router.use('/reservation', ReservationRoutes);
 router.use('/schedule', ScheduleRoutes);

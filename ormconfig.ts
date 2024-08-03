@@ -7,6 +7,7 @@ import { Reservation } from './api/models/reservation.models';
 import { Customer } from './api/models/customer.models';
 import { Schedule } from './api/models/schedule.models';
 import { VipPackage } from './api/models/vip-package.models';
+import { GiftCard } from './api/models/gift-card.models';
 
 const AppDataSource = new DataSource({
 	type: 'mysql',
@@ -16,7 +17,15 @@ const AppDataSource = new DataSource({
 	username: MY_SQL_DATA_SOURCES.DB_USER,
 	password: MY_SQL_DATA_SOURCES.DB_PASSWORD,
 	database: MY_SQL_DATA_SOURCES.DB_DATABASE,
-	entities: [Employee, Schedule, Reservation, Service, Customer, VipPackage],
+	entities: [
+		Employee,
+		Schedule,
+		Reservation,
+		Service,
+		Customer,
+		VipPackage,
+		GiftCard,
+	],
 	migrations: ['api/migrations/*.ts'],
 	// logging: ENV_VARIABLES.NODE_ENV == 'development',
 	// synchronize: ENV_VARIABLES.NODE_ENV == 'development',

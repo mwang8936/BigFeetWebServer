@@ -5,6 +5,9 @@ const NUMBERS = {
 		acupuncture_rate: 99.99,
 		per_hour: 99.99,
 	},
+	gift_card: {
+		payment_amount: 999999.99,
+	},
 	reservation: {
 		cash: 999.99,
 		machine: 999.99,

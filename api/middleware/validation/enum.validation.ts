@@ -3,6 +3,7 @@ import { Joi } from 'celebrate';
 import {
 	Gender,
 	Language,
+	PaymentMethod,
 	Permissions,
 	Role,
 	ServiceColor,
@@ -28,6 +29,11 @@ export const languageValidation = Joi.string().valid(
 	Language.TRADITIONAL_CHINESE
 );
 
+export const paymentMethodValidation = Joi.string().valid(
+	PaymentMethod.CASH,
+	PaymentMethod.MACHINE
+);
+
 export const permissionsValidation = Joi.array().items(
 	Joi.string().valid(
 		Permissions.PERMISSION_GET_CUSTOMER,
@@ -38,6 +44,10 @@ export const permissionsValidation = Joi.array().items(
 		Permissions.PERMISSION_UPDATE_EMPLOYEE,
 		Permissions.PERMISSION_ADD_EMPLOYEE,
 		Permissions.PERMISSION_DELETE_EMPLOYEE,
+		Permissions.PERMISSION_GET_GIFT_CARD,
+		Permissions.PERMISSION_UPDATE_GIFT_CARD,
+		Permissions.PERMISSION_ADD_GIFT_CARD,
+		Permissions.PERMISSION_DELETE_GIFT_CARD,
 		Permissions.PERMISSION_GET_SCHEDULE,
 		Permissions.PERMISSION_UPDATE_SCHEDULE,
 		Permissions.PERMISSION_ADD_SCHEDULE,
