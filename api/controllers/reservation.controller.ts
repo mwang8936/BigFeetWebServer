@@ -78,6 +78,8 @@ export const updateReservation: RequestHandler = async (
 			? formatDateToYYYYMMDD(req.body.reserved_date)
 			: undefined;
 		const employeeId: number | undefined = req.body.employee_id;
+		const serviceId: number | undefined = req.body.service_id;
+		const customerId: number | null | undefined = req.body.customer_id;
 
 		const reservation = await ReservationServices.updateReservation(
 			reservationId,
@@ -85,8 +87,10 @@ export const updateReservation: RequestHandler = async (
 			reservedDate,
 			date,
 			employeeId,
-			req.body.service_id,
+			serviceId,
+			customerId,
 			req.body.phone_number,
+			req.body.vip_serial,
 			req.body.customer_name,
 			req.body.notes,
 			req.body.requested_gender,
@@ -125,15 +129,19 @@ export const addReservation: RequestHandler = async (
 	try {
 		const reservedDate = new Date(req.body.reserved_date);
 		const date = formatDateToYYYYMMDD(req.body.reserved_date);
-		const employeeId = req.body.employee_id;
+		const employeeId: number = req.body.employee_id;
+		const serviceId: number = req.body.service_id;
+		const customerId: number | null | undefined = req.body.customer_id;
 
 		const reservation = await ReservationServices.createReservation(
 			reservedDate,
 			date,
 			employeeId,
-			req.body.service_id,
+			serviceId,
 			req.body.created_by,
+			customerId,
 			req.body.phone_number,
+			req.body.vip_serial,
 			req.body.customer_name,
 			req.body.notes,
 			req.body.requested_gender,

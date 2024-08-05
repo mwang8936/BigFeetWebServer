@@ -1,6 +1,7 @@
 const LENGTHS = {
 	customer: {
 		phone_number: 10,
+		vip_serial: 6,
 		customer_name: 60,
 	},
 	employee: {

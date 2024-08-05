@@ -63,7 +63,7 @@ export class Reservation extends BaseEntity {
 		nullable: true,
 	})
 	@JoinColumn({
-		name: 'phone_number',
+		name: 'customer_id',
 	})
 	customer: Customer | null;
 

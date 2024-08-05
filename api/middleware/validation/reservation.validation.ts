@@ -43,9 +43,14 @@ export const UpdateReservationValidation = celebrate(
 			reserved_date: Joi.date().iso(),
 			employee_id: Joi.number().integer().positive(),
 			service_id: Joi.number().integer().positive(),
+			customer_id: Joi.number().integer().positive().allow(null),
 			phone_number: Joi.string()
 				.length(LENGTHS.customer.phone_number)
 				.pattern(PATTERNS.customer.phone_number)
+				.allow(null),
+			vip_serial: Joi.string()
+				.length(LENGTHS.customer.vip_serial)
+				.pattern(PATTERNS.customer.vip_serial)
 				.allow(null),
 			customer_name: Joi.string()
 				.trim()
@@ -93,10 +98,7 @@ export const UpdateReservationValidation = celebrate(
 				.max(LENGTHS.reservation.updated_by)
 				.alphanum()
 				.required(),
-		})
-			.min(2)
-			.with('customer_name', 'phone_number')
-			.with('notes', 'phone_number'),
+		}).min(2),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -107,26 +109,31 @@ export const AddReservationValidation = celebrate({
 		reserved_date: Joi.date().iso().required(),
 		employee_id: Joi.number().integer().positive().required(),
 		service_id: Joi.number().integer().positive().required(),
+		customer_id: Joi.number().integer().positive().allow(null),
 		phone_number: Joi.string()
 			.length(LENGTHS.customer.phone_number)
-			.pattern(PATTERNS.customer.phone_number),
+			.pattern(PATTERNS.customer.phone_number)
+			.allow(null),
+		vip_serial: Joi.string()
+			.length(LENGTHS.customer.vip_serial)
+			.pattern(PATTERNS.customer.vip_serial)
+			.allow(null),
 		customer_name: Joi.string()
 			.trim()
 			.min(1)
-			.max(LENGTHS.customer.customer_name),
-		notes: Joi.string().trim().min(1),
-		requested_gender: genderValidation,
+			.max(LENGTHS.customer.customer_name)
+			.allow(null),
+		notes: Joi.string().trim().min(1).allow(null),
+		requested_gender: genderValidation.allow(null),
 		requested_employee: Joi.boolean().default(false),
-		message: Joi.string().trim().min(1),
+		message: Joi.string().trim().min(1).allow(null),
 		created_by: Joi.string()
 			.trim()
 			.min(1)
 			.max(LENGTHS.reservation.created_by)
 			.alphanum()
 			.required(),
-	})
-		.with('customer_name', 'phone_number')
-		.with('notes', 'phone_number'),
+	}),
 });
 
 export const DeleteReservationValidation = celebrate(

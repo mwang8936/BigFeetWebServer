@@ -6,10 +6,12 @@ import {
 	In,
 	LessThanOrEqual,
 	MoreThanOrEqual,
+	Not,
 } from 'typeorm';
 import { Service } from '../models/service.models';
 import { Customer } from '../models/customer.models';
 import { NotFoundError } from '../exceptions/not-found-error';
+import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
 
 export const getReservations = async (
 	fromDate?: Date,
@@ -52,7 +54,9 @@ export const updateReservation = async (
 	date?: string,
 	employeeId?: number,
 	serviceId?: number,
+	customerId?: number | null,
 	phoneNumber?: string | null,
+	vipSerial?: string | null,
 	customerName?: string | null,
 	notes?: string | null,
 	requestedGender?: Gender | null,
@@ -92,47 +96,70 @@ export const updateReservation = async (
 				},
 			});
 
-			if (service) {
-				updates.service = service;
-			}
+			if (!service) throw new NotFoundError('Service', 'service id', serviceId);
+
+			updates.service = service;
 		}
 
-		if (
-			phoneNumber !== undefined ||
-			customerName !== undefined ||
-			notes !== undefined
-		) {
-			if (phoneNumber === null) {
-				updates.customer = null;
-			} else {
-				let customer = await Customer.findOne({
-					where: {
-						phone_number: phoneNumber,
-					},
-				});
+		if (customerId !== undefined && customerId !== null) {
+			const customer = await Customer.findOne({
+				where: {
+					customer_id: customerId,
+				},
+			});
 
-				if (customer) {
-					const customer_updates: Partial<Customer> = {};
+			if (!customer) {
+				throw new NotFoundError('Customer', 'customer id', customerId);
+			}
 
-					if (customerName !== undefined) {
-						customer_updates.customer_name = customerName;
-					}
+			const customer_updates: Partial<Customer> = {};
 
-					if (notes !== undefined) {
-						customer_updates.notes = notes;
-					}
-
-					Object.assign(customer, customer_updates);
-				} else {
-					customer = Customer.create({
-						phone_number: phoneNumber,
-						customer_name: customerName,
-						notes,
-					});
+			if (phoneNumber !== undefined) {
+				if (phoneNumber) {
+					await duplicatePhoneNumberChecker(phoneNumber, customerId);
 				}
 
-				updates.customer = customer;
+				customer_updates.phone_number = phoneNumber;
 			}
+
+			if (vipSerial !== undefined) {
+				if (vipSerial) {
+					await duplicateVipSerialChecker(vipSerial, customerId);
+				}
+
+				customer_updates.vip_serial = vipSerial;
+			}
+
+			if (customerName !== undefined) {
+				customer_updates.customer_name = customerName;
+			}
+
+			if (notes !== undefined) {
+				customer_updates.notes = notes;
+			}
+
+			Object.assign(customer, customer_updates);
+
+			updates.customer = customer;
+		} else if (phoneNumber || vipSerial) {
+			if (phoneNumber) {
+				await duplicatePhoneNumberChecker(phoneNumber);
+			}
+
+			if (vipSerial) {
+				await duplicateVipSerialChecker(vipSerial);
+			}
+
+			const customer = Customer.create({
+				phone_number: phoneNumber,
+				vip_serial: vipSerial,
+				customer_name: customerName,
+				notes,
+			});
+
+			updates.customer = customer;
+		} else if (customerId === null) {
+			updates.customer = null;
 		}
 
 		if (requestedGender !== undefined) {
@@ -189,40 +216,69 @@ export const createReservation = async (
 	employeeId: number,
 	serviceId: number,
 	createdBy: string,
+	customerId?: number | null,
 	phoneNumber?: string | null,
+	vipSerial?: string | null,
 	customerName?: string | null,
 	notes?: string | null,
 	requestedGender?: Gender | null,
 	requestedEmployee?: boolean,
 	message?: string | null
 ) => {
-	let customer = null;
-	if (phoneNumber) {
+	let customer: Customer | null = null;
+	if (customerId !== undefined && customerId !== null) {
 		customer = await Customer.findOne({
 			where: {
-				phone_number: phoneNumber,
+				customer_id: customerId,
 			},
 		});
 
-		if (customer) {
-			const customer_updates: Partial<Customer> = {};
-
-			if (customerName !== undefined) {
-				customer_updates.customer_name = customerName;
-			}
-
-			if (notes !== undefined) {
-				customer_updates.notes = notes;
-			}
-
-			Object.assign(customer, customer_updates);
-		} else {
-			customer = Customer.create({
-				phone_number: phoneNumber,
-				customer_name: customerName,
-				notes,
-			});
+		if (!customer) {
+			throw new NotFoundError('Customer', 'customer id', customerId);
 		}
+
+		const customer_updates: Partial<Customer> = {};
+
+		if (phoneNumber !== undefined) {
+			if (phoneNumber) {
+				await duplicatePhoneNumberChecker(phoneNumber, customerId);
+			}
+
+			customer_updates.phone_number = phoneNumber;
+		}
+
+		if (vipSerial !== undefined) {
+			if (vipSerial) {
+				await duplicateVipSerialChecker(vipSerial, customerId);
+			}
+
+			customer_updates.vip_serial = vipSerial;
+		}
+
+		if (customerName !== undefined) {
+			customer_updates.customer_name = customerName;
+		}
+
+		if (notes !== undefined) {
+			customer_updates.notes = notes;
+		}
+
+		Object.assign(customer, customer_updates);
+	} else if (phoneNumber || vipSerial) {
+		if (phoneNumber) {
+			await duplicatePhoneNumberChecker(phoneNumber);
+		}
+
+		if (vipSerial) {
+			await duplicateVipSerialChecker(vipSerial);
+		}
+
+		customer = Customer.create({
+			phone_number: phoneNumber,
+			vip_serial: vipSerial,
+			customer_name: customerName,
+			notes,
+		});
 	}
 
 	const service = await Service.findOne({
@@ -256,5 +312,37 @@ export const deleteReservation = async (reservationId: number) => {
 		return reservation.remove();
 	} else {
 		return null;
+	}
+};
+
+const duplicatePhoneNumberChecker = async (
+	phoneNumber: string,
+	customerId?: number
+) => {
+	const duplicates = await Customer.find({
+		where: {
+			customer_id: customerId && Not(customerId),
+			phone_number: phoneNumber,
+		},
+	});
+
+	if (duplicates.length > 0) {
+		throw new DuplicateIdentifierError('Customer', 'Phone Number', phoneNumber);
+	}
+};
+
+const duplicateVipSerialChecker = async (
+	vipSerial: string,
+	customerId?: number
+) => {
+	const duplicates = await Customer.find({
+		where: {
+			customer_id: customerId && Not(customerId),
+			vip_serial: vipSerial,
+		},
+	});
+
+	if (duplicates.length > 0) {
+		throw new DuplicateIdentifierError('Customer', 'VIP Serial', vipSerial);
 	}
 };

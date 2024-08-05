@@ -27,11 +27,11 @@ export const getCustomer: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const phoneNumber = req.params.phone_number;
+		const customerId = parseInt(req.params.customer_id);
 		const withDeleted = req.query.with_deleted === 'true';
 
 		const customer = await CustomerServices.getCustomer(
-			phoneNumber,
+			customerId,
 			withDeleted
 		);
 
@@ -57,10 +57,12 @@ export const updateCustomer: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const phoneNumber = req.params.phone_number;
+		const customerId = parseInt(req.params.customer_id);
 
 		const customer = await CustomerServices.updateCustomer(
-			phoneNumber,
+			customerId,
+			req.body.phone_number,
+			req.body.vip_serial,
 			req.body.customer_name,
 			req.body.notes
 		);
@@ -89,6 +91,7 @@ export const addCustomer: RequestHandler = async (
 	try {
 		const customer = await CustomerServices.createCustomer(
 			req.body.phone_number,
+			req.body.vip_serial,
 			req.body.customer_name,
 			req.body.notes
 		);
@@ -108,9 +111,9 @@ export const deleteCustomer: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const phoneNumber = req.params.phone_number;
+		const customerId = parseInt(req.params.customer_id);
 
-		const customer = await CustomerServices.deleteCustomer(phoneNumber);
+		const customer = await CustomerServices.deleteCustomer(customerId);
 
 		if (customer) {
 			res
@@ -134,9 +137,9 @@ export const recoverCustomer: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const phoneNumber = req.params.phone_number;
+		const customerId = parseInt(req.params.customer_id);
 
-		const customer = await CustomerServices.recoverCustomer(phoneNumber);
+		const customer = await CustomerServices.recoverCustomer(customerId);
 
 		if (customer) {
 			res

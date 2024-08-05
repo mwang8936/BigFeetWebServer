@@ -1,6 +1,7 @@
 import { Service } from '../models/service.models';
 import { ServiceColor } from '../models/enums';
 import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
+import { Not } from 'typeorm';
 
 export const getServices = async (withDeleted?: boolean) => {
 	return Service.find({
@@ -36,12 +37,12 @@ export const updateService = async (
 		const updates: Partial<Service> = {};
 
 		if (serviceName !== undefined) {
-			await duplicateServiceNameChecker(serviceName);
+			await duplicateServiceNameChecker(serviceName, serviceId);
 			updates.service_name = serviceName;
 		}
 
 		if (shorthand !== undefined) {
-			await duplicateShorthandChecker(shorthand);
+			await duplicateShorthandChecker(shorthand, serviceId);
 			updates.shorthand = shorthand;
 		}
 
@@ -132,15 +133,20 @@ export const recoverService = async (serviceId: number) => {
 	if (service) {
 		await duplicateServiceNameChecker(service.service_name);
 		await duplicateShorthandChecker(service.shorthand);
+
 		return service.recover();
 	} else {
 		return null;
 	}
 };
 
-const duplicateServiceNameChecker = async (serviceName: string) => {
+const duplicateServiceNameChecker = async (
+	serviceName: string,
+	serviceId?: number
+) => {
 	const duplicates = await Service.find({
 		where: {
+			service_id: serviceId && Not(serviceId),
 			service_name: serviceName,
 		},
 	});
@@ -150,9 +156,13 @@ const duplicateServiceNameChecker = async (serviceName: string) => {
 	}
 };
 
-const duplicateShorthandChecker = async (shorthand: string) => {
+const duplicateShorthandChecker = async (
+	shorthand: string,
+	serviceId?: number
+) => {
 	const duplicates = await Service.find({
 		where: {
+			service_id: serviceId && Not(serviceId),
 			shorthand,
 		},
 	});

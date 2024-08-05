@@ -1,3 +1,4 @@
+import { Not } from 'typeorm';
 import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
 import { Employee } from '../models/employee.models';
 import { Gender, Permissions, Role } from '../models/enums';
@@ -39,7 +40,7 @@ export const updateEmployee = async (
 		const updates: Partial<Employee> = {};
 
 		if (username !== undefined) {
-			await duplicateUsernameChecker(username);
+			await duplicateUsernameChecker(username, employeeId);
 			updates.username = username;
 		}
 
@@ -134,15 +135,20 @@ export const recoverEmployee = async (employeeId: number) => {
 
 	if (employee) {
 		await duplicateUsernameChecker(employee.username);
+
 		return employee.recover();
 	} else {
 		return null;
 	}
 };
 
-const duplicateUsernameChecker = async (username: string) => {
+const duplicateUsernameChecker = async (
+	username: string,
+	employeeId?: number
+) => {
 	const duplicates = await Employee.find({
 		where: {
+			employee_id: employeeId && Not(employeeId),
 			username,
 		},
 	});

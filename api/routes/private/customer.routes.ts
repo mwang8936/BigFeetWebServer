@@ -28,14 +28,14 @@ router
 		getCustomers
 	);
 router
-	.route('/:phone_number')
+	.route('/:customer_id')
 	.get(
 		authorize([Permissions.PERMISSION_GET_CUSTOMER]),
 		GetCustomerValidation,
 		getCustomer
 	);
 router
-	.route('/:phone_number')
+	.route('/:customer_id')
 	.patch(
 		authorize([Permissions.PERMISSION_UPDATE_CUSTOMER]),
 		UpdateCustomerValidation,
@@ -49,14 +49,14 @@ router
 		addCustomer
 	);
 router
-	.route('/:phone_number')
+	.route('/:customer_id')
 	.delete(
 		authorize([Permissions.PERMISSION_DELETE_CUSTOMER]),
 		DeleteCustomerValidation,
 		deleteCustomer
 	);
 router
-	.route('/:phone_number/recover')
+	.route('/:customer_id/recover')
 	.delete(
 		authorize([Permissions.PERMISSION_DELETE_CUSTOMER]),
 		RecoverCustomerValidation,
