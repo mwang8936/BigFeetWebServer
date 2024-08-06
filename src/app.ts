@@ -5,12 +5,11 @@ import createServer from './utils/server.utils';
 import terminate from './utils/shutdown.utils';
 
 const PORT = ENV_VARIABLES.PORT;
-const HOSTNAME = ENV_VARIABLES.HOSTNAME;
 
 const app = createServer();
 
-const server = app.listen(PORT, HOSTNAME, async () => {
-	Logger.debug(`Listening on port: ${PORT} and host: ${HOSTNAME}`);
+const server = app.listen(PORT, async () => {
+	Logger.debug(`Listening on port: ${PORT}`);
 	await MySQLConnector.init();
 });
 

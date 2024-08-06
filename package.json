@@ -2,7 +2,11 @@
 	"name": "bigfeetwebserver",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.js",
+	"engines": {
+		"node": "16.16.0",
+		"npm": "9.6.0"
+  	},
+	"main": "dist/index.js",
 	"scripts": {
 		"run-migration": "typeorm-ts-node-commonjs -d src/config/orm.config.ts migration:run",
 		"create-migration": "typeorm-ts-node-commonjs -d src/config/orm.config.ts migration:create",
