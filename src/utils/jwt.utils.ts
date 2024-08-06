@@ -7,9 +7,7 @@ export function generateToken(
 	employee_id: number,
 	permissions: Permissions[]
 ): string {
-	const privateKey = fs.readFileSync(
-		path.join(__dirname, '../../Private.key')
-	);
+	const privateKey = process.env.PRIVATE_KEY as string;
 
 	const signInOptions: SignOptions = {
 		algorithm: 'RS256',
@@ -26,7 +24,7 @@ interface TokenPayload {
 }
 
 export function validateToken(token: string): Promise<TokenPayload> {
-	const publicKey = fs.readFileSync(path.join(__dirname, '../../Public.key'));
+	const publicKey = process.env.PUBLIC_KEY as string;
 
 	const verifyOptions: VerifyOptions = {
 		algorithms: ['RS256'],
