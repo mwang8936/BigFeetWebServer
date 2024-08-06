@@ -1,1 +1,1 @@
-worker: npm run start:staging
+worker: npm start
