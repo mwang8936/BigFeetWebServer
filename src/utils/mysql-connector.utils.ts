@@ -1,5 +1,5 @@
-import Logger from '../utils/logger.utils';
-import AppDataSource from '../../ormconfig';
+import Logger from './logger.utils';
+import AppDataSource from '../config/orm.config';
 
 export const init = async () => {
 	AppDataSource.initialize()
