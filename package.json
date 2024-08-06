@@ -4,14 +4,14 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"build": "tsc",
-		"start": "node dist/app.js",
-    	"start:staging": "npm run build && npm start",
-		"start:prod": "npm run build && npm start",
-		"dev": "ts-node-dev --respawn --pretty --transpile-only src/app.ts",
 		"run-migration": "typeorm-ts-node-commonjs -d src/config/orm.config.ts migration:run",
 		"create-migration": "typeorm-ts-node-commonjs -d src/config/orm.config.ts migration:create",
-   	 	"generate-migration": "typeorm-ts-node-commonjs -d src/config/orm.config.ts migration:generate"
+   	 	"generate-migration": "typeorm-ts-node-commonjs -d src/config/orm.config.ts migration:generate",
+		"dev": "ts-node-dev --respawn --pretty --transpile-only src/app.ts",
+		"build": "tsc",
+		"start": "node dist/app.js",
+    	"start:staging": "npm run build && npm run run-migration && npm start",
+		"start:prod": "npm run build && npm run run-migration && npm start"
 	},
 	"keywords": [],
 	"author": "",

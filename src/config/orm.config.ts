@@ -28,9 +28,9 @@ const AppDataSource = new DataSource({
 	],
 	synchronize: false,
 	migrations:
-		ENV_VARIABLES.NODE_ENV === 'development'
-			? ['src/migrations/*.ts']
-			: ['dist/migrations/*.js'],
+		ENV_VARIABLES.NODE_ENV !== 'development'
+			? ['dist/migrations/*.js']
+			: ['src/migrations/*.ts'],
 });
 
 export default AppDataSource;
