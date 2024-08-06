@@ -41,11 +41,13 @@ router
 		UpdateEmployeeValidation,
 		updateEmployee
 	);
-router.route('/').post(
-	// authorize([Permissions.PERMISSION_ADD_EMPLOYEE]),
-	AddEmployeeValidation,
-	addEmployee
-);
+router
+	.route('/')
+	.post(
+		authorize([Permissions.PERMISSION_ADD_EMPLOYEE]),
+		AddEmployeeValidation,
+		addEmployee
+	);
 router
 	.route('/:employee_id')
 	.delete(
