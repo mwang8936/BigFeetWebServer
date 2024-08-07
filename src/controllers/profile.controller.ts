@@ -4,7 +4,7 @@ import * as ScheduleServices from '../services/schedule.services';
 import * as ProfileServices from '../services/profile.services';
 import { AuthorizationError } from '../exceptions/authorization-error';
 import { validateToken } from '../utils/jwt.utils';
-import { formatDateToYYYYMMDD, setTimeToZero } from '../utils/date.utils';
+import { formatDateToYYYYMMDD } from '../utils/date.utils';
 
 export const getProfile: RequestHandler = async (
 	req: Request,
