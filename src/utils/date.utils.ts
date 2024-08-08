@@ -10,7 +10,11 @@ export function validateDateString(
 	if (isNaN(date.getTime())) {
 		return undefined;
 	} else {
-		return date;
+		const pstDate = new Date(
+			date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })
+		);
+
+		return pstDate;
 	}
 }
 

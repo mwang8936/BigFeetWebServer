@@ -1,8 +1,6 @@
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
-import * as EmployeeServices from '../services/employee.services';
 import * as ScheduleServices from '../services/schedule.services';
-import { VipPackage } from '../models/vip-package.models';
 import { formatDateToYYYYMMDD, validateDateString } from '../utils/date.utils';
 
 export const getSchedules: RequestHandler = async (

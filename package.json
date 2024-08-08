@@ -1,7 +1,7 @@
 {
 	"name": "bigfeetwebserver",
 	"version": "1.0.0",
-	"description": "",
+	"description": "The dedicated (Node.js and Express.js) REST API backend web server.",
 	"engines": {
 		"node": "16.16.0",
 		"npm": "9.6.0"
