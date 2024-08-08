@@ -80,6 +80,16 @@ export const updateVipPackage = async (
 				}
 			}
 
+			if (
+				vipPackage.employee_ids.some((employeeId) =>
+					employeeIds.includes(employeeId)
+				)
+			) {
+				vipPackage.schedules = [];
+
+				await vipPackage.save();
+			}
+
 			updates.schedules = schedules;
 		}
 
