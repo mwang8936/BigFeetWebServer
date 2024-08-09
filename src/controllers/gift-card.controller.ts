@@ -2,6 +2,13 @@ import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as GiftCardServices from '../services/gift-card.services';
 import { formatDateToYYYYMMDD } from '../utils/date.utils';
+import pusher from '../config/pusher.config';
+import {
+	add_gift_card_event,
+	delete_gift_card_event,
+	gift_cards_channel,
+	update_gift_card_event,
+} from '../events/gift-card.events';
 
 export const getGiftCards: RequestHandler = async (
 	req: Request,
@@ -73,6 +80,10 @@ export const updateGiftCard: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(giftCard));
+
+			pusher.trigger(gift_cards_channel, update_gift_card_event, giftCard, {
+				socket_id: req.body.socket_id,
+			});
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -101,6 +112,10 @@ export const addGiftCard: RequestHandler = async (
 			.status(HttpCode.CREATED)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(giftCard));
+
+		pusher.trigger(gift_cards_channel, add_gift_card_event, giftCard, {
+			socket_id: req.body.socket_id,
+		});
 	} catch (err) {
 		next(err);
 	}
@@ -121,6 +136,10 @@ export const deleteGiftCard: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(giftCard));
+
+			pusher.trigger(gift_cards_channel, delete_gift_card_event, giftCard, {
+				socket_id: req.body.socket_id,
+			});
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)

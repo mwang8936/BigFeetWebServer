@@ -2,9 +2,12 @@ import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as ScheduleServices from '../services/schedule.services';
 import * as ProfileServices from '../services/profile.services';
-import { AuthorizationError } from '../exceptions/authorization-error';
-import { validateToken } from '../utils/jwt.utils';
 import { formatDateToYYYYMMDD } from '../utils/date.utils';
+import pusher from '../config/pusher.config';
+import {
+	schedules_channel,
+	update_schedule_event,
+} from '../events/schedule.events';
 
 export const getProfile: RequestHandler = async (
 	req: Request,
@@ -12,15 +15,7 @@ export const getProfile: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		let jwt = req.headers.authorization;
-		if (!jwt)
-			throw new AuthorizationError(undefined, 'No authorization found.');
-		if (jwt.toLowerCase().startsWith('bearer')) {
-			jwt = jwt.slice('bearer'.length).trim();
-		}
-
-		const decodedToken = await validateToken(jwt);
-		const employeeId = decodedToken.employee_id;
+		const employeeId = req.body.socket_id;
 
 		const employee = await ProfileServices.getProfile(employeeId);
 
@@ -46,15 +41,7 @@ export const getProfileSchedules: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		let jwt = req.headers.authorization;
-		if (!jwt)
-			throw new AuthorizationError(undefined, 'No authorization found.');
-		if (jwt.toLowerCase().startsWith('bearer')) {
-			jwt = jwt.slice('bearer'.length).trim();
-		}
-
-		const decodedToken = await validateToken(jwt);
-		const employeeId = decodedToken.employee_id;
+		const employeeId = req.body.socket_id;
 
 		const schedules = await ProfileServices.getProfileSchedules(employeeId);
 
@@ -73,15 +60,7 @@ export const updateProfile: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		let jwt = req.headers.authorization;
-		if (!jwt)
-			throw new AuthorizationError(undefined, 'No authorization found.');
-		if (jwt.toLowerCase().startsWith('bearer')) {
-			jwt = jwt.slice('bearer'.length).trim();
-		}
-
-		const decodedToken = await validateToken(jwt);
-		const employeeId = decodedToken.employee_id;
+		const employeeId = req.body.socket_id;
 
 		const profile = await ProfileServices.updateProfile(
 			employeeId,
@@ -111,15 +90,7 @@ export const signProfileSchedule: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		let jwt = req.headers.authorization;
-		if (!jwt)
-			throw new AuthorizationError(undefined, 'No authorization found.');
-		if (jwt.toLowerCase().startsWith('bearer')) {
-			jwt = jwt.slice('bearer'.length).trim();
-		}
-
-		const decodedToken = await validateToken(jwt);
-		const employeeId = decodedToken.employee_id;
+		const employeeId = req.body.socket_id;
 
 		const date = formatDateToYYYYMMDD(req.params.date);
 
@@ -136,6 +107,10 @@ export const signProfileSchedule: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(schedule));
+
+			pusher.trigger(schedules_channel, update_schedule_event, schedule, {
+				socket_id: employeeId,
+			});
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)

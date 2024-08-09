@@ -2,6 +2,13 @@ import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as VipPackagesServices from '../services/vip-package.services';
 import { formatDateToYYYYMMDD } from '../utils/date.utils';
+import pusher from '../config/pusher.config';
+import {
+	add_vip_package_event,
+	delete_vip_package_event,
+	update_vip_package_event,
+} from '../events/vip-package.events';
+import { schedules_channel } from '../events/schedule.events';
 
 export const getVipPackages: RequestHandler = async (
 	req: Request,
@@ -82,6 +89,10 @@ export const updateVipPackage: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(vipPackage));
+
+			pusher.trigger(schedules_channel, update_vip_package_event, vipPackage, {
+				socket_id: req.body.socket_id,
+			});
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -111,6 +122,10 @@ export const addVipPackage: RequestHandler = async (
 			.status(HttpCode.CREATED)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(vipPackage));
+
+		pusher.trigger(schedules_channel, add_vip_package_event, vipPackage, {
+			socket_id: req.body.socket_id,
+		});
 	} catch (err) {
 		next(err);
 	}
@@ -131,6 +146,10 @@ export const deleteVipPackage: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(vipPackage));
+
+			pusher.trigger(schedules_channel, delete_vip_package_event, vipPackage, {
+				socket_id: req.body.socket_id,
+			});
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)

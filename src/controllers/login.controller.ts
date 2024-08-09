@@ -5,7 +5,6 @@ import { HttpCode } from '../exceptions/custom-error';
 import { LoginError } from '../exceptions/login-error';
 import { TooManyRequestsError } from '../exceptions/too-many-requests-error';
 import { getUserInfo } from '../services/login.services';
-import * as ProfileServices from '../services/profile.services';
 import { generateToken } from '../utils/jwt.utils';
 
 export const login: RequestHandler = async (

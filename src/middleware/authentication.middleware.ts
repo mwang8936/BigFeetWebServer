@@ -11,10 +11,7 @@ const authorize =
 			let jwt = req.headers.authorization;
 
 			if (!jwt)
-				throw new AuthorizationError(
-					undefined,
-					'No authorization found.'
-				);
+				throw new AuthorizationError(undefined, 'No authorization found.');
 
 			if (jwt.toLowerCase().startsWith('bearer')) {
 				jwt = jwt.slice('bearer'.length).trim();

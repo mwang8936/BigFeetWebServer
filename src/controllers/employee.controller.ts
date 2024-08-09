@@ -2,6 +2,14 @@ import bcrypt from 'bcrypt';
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as EmployeeServices from '../services/employee.services';
+import pusher from '../config/pusher.config';
+import {
+	add_employee_event,
+	delete_employee_event,
+	employees_channel,
+	recover_employee_event,
+	update_employee_event,
+} from '../events/employee.events';
 
 export const getEmployees: RequestHandler = async (
 	req: Request,
@@ -79,6 +87,10 @@ export const updateEmployee: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(employee));
+
+			pusher.trigger(employees_channel, update_employee_event, employee, {
+				socket_id: req.body.socket_id,
+			});
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -119,6 +131,10 @@ export const addEmployee: RequestHandler = async (
 			.status(HttpCode.CREATED)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(respEmployee));
+
+		pusher.trigger(employees_channel, add_employee_event, employee, {
+			socket_id: req.body.socket_id,
+		});
 	} catch (err) {
 		next(err);
 	}
@@ -139,6 +155,10 @@ export const deleteEmployee: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(employee));
+
+			pusher.trigger(employees_channel, delete_employee_event, employee, {
+				socket_id: req.body.socket_id,
+			});
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -165,6 +185,10 @@ export const recoverEmployee: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(employee));
+
+			pusher.trigger(employees_channel, recover_employee_event, employee, {
+				socket_id: req.body.socket_id,
+			});
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
