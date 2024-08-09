@@ -1,3 +1,19 @@
+export function validateDateTimeString(
+	isoDateString: string | undefined
+): Date | undefined {
+	if (!isoDateString) {
+		return undefined;
+	}
+
+	const date = new Date(isoDateString);
+
+	if (isNaN(date.getTime())) {
+		return undefined;
+	} else {
+		return date;
+	}
+}
+
 export function validateDateString(
 	isoDateString: string | undefined
 ): Date | undefined {

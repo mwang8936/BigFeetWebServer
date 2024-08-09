@@ -1,7 +1,10 @@
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as ReservationServices from '../services/reservation.services';
-import { formatDateToYYYYMMDD, validateDateString } from '../utils/date.utils';
+import {
+	formatDateToYYYYMMDD,
+	validateDateTimeString,
+} from '../utils/date.utils';
 
 export const getReservations: RequestHandler = async (
 	req: Request,
@@ -9,10 +12,10 @@ export const getReservations: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const start: Date | undefined = validateDateString(
+		const start: Date | undefined = validateDateTimeString(
 			req.query.start as string | undefined
 		);
-		const end: Date | undefined = validateDateString(
+		const end: Date | undefined = validateDateTimeString(
 			req.query.end as string | undefined
 		);
 		const employeeIds: number[] | undefined = (req.query
@@ -71,7 +74,7 @@ export const updateReservation: RequestHandler = async (
 	try {
 		const reservationId = parseInt(req.params.reservation_id);
 
-		const reservedDate: Date | undefined = validateDateString(
+		const reservedDate: Date | undefined = validateDateTimeString(
 			req.body.reserved_date
 		);
 		const date: string | undefined = reservedDate
