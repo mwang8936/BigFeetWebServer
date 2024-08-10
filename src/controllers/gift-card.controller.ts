@@ -63,7 +63,7 @@ export const updateGiftCard: RequestHandler = async (
 
 		const giftCard = await GiftCardServices.updateGiftCard(
 			giftCardId,
-			formatDateToYYYYMMDD(req.body.date),
+			req.body.date ? formatDateToYYYYMMDD(req.body.date) : undefined,
 			req.body.payment_method,
 			req.body.payment_amount
 		);
