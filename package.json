@@ -1,11 +1,11 @@
 {
 	"name": "bigfeetwebserver",
 	"version": "1.0.0",
-	"description": "The dedicated (Node.js and Express.js) REST API backend web server.",
+	"description": "The dedicated (Node.js and Express.js) REST API backend web server for Big Feet Coquitlam's reservation system.",
 	"engines": {
 		"node": "16.16.0",
 		"npm": "9.6.0"
-  	},
+	},
 	"main": "dist/index.js",
 	"scripts": {
 		"run-migration": "typeorm-ts-node-commonjs -d src/config/orm.config.ts migration:run",
@@ -15,7 +15,7 @@
 		"postinstall": "npm run build && npm run run-migration"
 	},
 	"keywords": [],
-	"author": "",
+	"author": "William Gong",
 	"license": "ISC",
 	"dependencies": {
 		"@joi/date": "^2.1.0",
@@ -32,6 +32,7 @@
 		"jsonwebtoken": "^9.0.0",
 		"morgan": "^1.10.0",
 		"mysql": "^2.18.1",
+		"pusher": "^5.2.0",
 		"rate-limiter-flexible": "^2.4.1",
 		"semver": "^7.5.3",
 		"ts-node": "^10.9.2",

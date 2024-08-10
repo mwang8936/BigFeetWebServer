@@ -2,6 +2,13 @@ import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as ScheduleServices from '../services/schedule.services';
 import { formatDateToYYYYMMDD, validateDateString } from '../utils/date.utils';
+import pusher from '../config/pusher.config';
+import {
+	add_schedule_event,
+	delete_schedule_event,
+	schedules_channel,
+	update_schedule_event,
+} from '../events/schedule.events';
 
 export const getSchedules: RequestHandler = async (
 	req: Request,
@@ -97,6 +104,12 @@ export const updateSchedule: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(schedule));
+
+			if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+				pusher.trigger(schedules_channel, update_schedule_event, schedule, {
+					socket_id: req.body.socket_id,
+				});
+			}
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)
@@ -139,6 +152,12 @@ export const addSchedule: RequestHandler = async (
 			.status(HttpCode.CREATED)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(schedule));
+
+		if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+			pusher.trigger(schedules_channel, add_schedule_event, schedule, {
+				socket_id: req.body.socket_id,
+			});
+		}
 	} catch (err) {
 		next(err);
 	}
@@ -160,6 +179,12 @@ export const deleteSchedule: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(schedule));
+
+			if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+				pusher.trigger(schedules_channel, delete_schedule_event, schedule, {
+					socket_id: req.body.socket_id,
+				});
+			}
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)

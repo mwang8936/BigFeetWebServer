@@ -1,6 +1,14 @@
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as ServiceServices from '../services/service.services';
+import pusher from '../config/pusher.config';
+import {
+	add_service_event,
+	delete_service_event,
+	recover_service_event,
+	services_channel,
+	update_service_event,
+} from '../events/service.events';
 
 export const getServices: RequestHandler = async (
 	req: Request,
@@ -75,6 +83,10 @@ export const updateService: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(service));
+
+			pusher.trigger(services_channel, update_service_event, service, {
+				socket_id: req.body.socket_id,
+			});
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -109,6 +121,10 @@ export const addService: RequestHandler = async (
 			.status(HttpCode.CREATED)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(service));
+
+		pusher.trigger(services_channel, add_service_event, service, {
+			socket_id: req.body.socket_id,
+		});
 	} catch (err) {
 		next(err);
 	}
@@ -129,6 +145,10 @@ export const deleteService: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(service));
+
+			pusher.trigger(services_channel, delete_service_event, service, {
+				socket_id: req.body.socket_id,
+			});
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -155,6 +175,10 @@ export const recoverService: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(service));
+
+			pusher.trigger(services_channel, recover_service_event, service, {
+				socket_id: req.body.socket_id,
+			});
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)

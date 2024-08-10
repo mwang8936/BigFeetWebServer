@@ -42,7 +42,9 @@ export const UpdateScheduleValidation = celebrate(
 			start: Joi.date().iso().allow(null),
 			end: Joi.date().iso().allow(null),
 			priority: Joi.number().integer().positive().allow(null),
-		}).min(1),
+		})
+			.or('is_working', 'on_call', 'start', 'end', 'priority')
+			.append({ socket_id: Joi.string() }),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -57,7 +59,9 @@ export const AddScheduleValidation = celebrate({
 		start: Joi.date().iso().allow(null),
 		end: Joi.date().iso().min(Joi.ref('start')).allow(null),
 		priority: Joi.number().integer().positive().allow(null),
-	}).with('end', 'start'),
+	})
+		.with('end', 'start')
+		.append({ socket_id: Joi.string() }),
 });
 
 export const DeleteScheduleValidation = celebrate(
@@ -65,6 +69,9 @@ export const DeleteScheduleValidation = celebrate(
 		[Segments.PARAMS]: Joi.object().keys({
 			date: Joi.date().iso().required(),
 			employee_id: Joi.number().integer().positive().required(),
+		}),
+		[Segments.BODY]: Joi.object().keys({
+			socket_id: Joi.string(),
 		}),
 	},
 	{ abortEarly: false },

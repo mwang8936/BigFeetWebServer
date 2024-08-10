@@ -5,6 +5,13 @@ import {
 	formatDateToYYYYMMDD,
 	validateDateTimeString,
 } from '../utils/date.utils';
+import pusher from '../config/pusher.config';
+import {
+	add_reservation_event,
+	delete_reservation_event,
+	update_reservation_event,
+} from '../events/reservation.events';
+import { schedules_channel } from '../events/schedule.events';
 
 export const getReservations: RequestHandler = async (
 	req: Request,
@@ -112,7 +119,17 @@ export const updateReservation: RequestHandler = async (
 			res
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
-				.send(JSON.stringify(reservation.schedule));
+				.send(JSON.stringify(reservation));
+			if (reservation.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+				pusher.trigger(
+					schedules_channel,
+					update_reservation_event,
+					reservation,
+					{
+						socket_id: req.body.socket_id,
+					}
+				);
+			}
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)
@@ -155,7 +172,13 @@ export const addReservation: RequestHandler = async (
 		res
 			.status(HttpCode.CREATED)
 			.header('Content-Type', 'application/json')
-			.send(JSON.stringify(reservation.schedule));
+			.send(JSON.stringify(reservation));
+
+		if (reservation.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+			pusher.trigger(schedules_channel, add_reservation_event, reservation, {
+				socket_id: req.body.socket_id,
+			});
+		}
 	} catch (err) {
 		next(err);
 	}
@@ -178,6 +201,17 @@ export const deleteReservation: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(reservation));
+
+			if (reservation.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+				pusher.trigger(
+					schedules_channel,
+					delete_reservation_event,
+					reservation,
+					{
+						socket_id: req.body.socket_id,
+					}
+				);
+			}
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)
