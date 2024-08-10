@@ -81,9 +81,11 @@ export const updateGiftCard: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(giftCard));
 
-			pusher.trigger(gift_cards_channel, update_gift_card_event, giftCard, {
-				socket_id: req.body.socket_id,
-			});
+			if (giftCard.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+				pusher.trigger(gift_cards_channel, update_gift_card_event, giftCard, {
+					socket_id: req.body.socket_id,
+				});
+			}
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -113,9 +115,11 @@ export const addGiftCard: RequestHandler = async (
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(giftCard));
 
-		pusher.trigger(gift_cards_channel, add_gift_card_event, giftCard, {
-			socket_id: req.body.socket_id,
-		});
+		if (giftCard.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+			pusher.trigger(gift_cards_channel, add_gift_card_event, giftCard, {
+				socket_id: req.body.socket_id,
+			});
+		}
 	} catch (err) {
 		next(err);
 	}
@@ -137,9 +141,11 @@ export const deleteGiftCard: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(giftCard));
 
-			pusher.trigger(gift_cards_channel, delete_gift_card_event, giftCard, {
-				socket_id: req.body.socket_id,
-			});
+			if (giftCard.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+				pusher.trigger(gift_cards_channel, delete_gift_card_event, giftCard, {
+					socket_id: req.body.socket_id,
+				});
+			}
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)

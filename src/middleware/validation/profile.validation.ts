@@ -20,6 +20,9 @@ export const SignProfileScheduleValidation = celebrate(
 		[Segments.PARAMS]: Joi.object().keys({
 			date: Joi.date().iso().required(),
 		}),
+		[Segments.BODY]: Joi.object().keys({
+			socket_id: Joi.string(),
+		}),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }

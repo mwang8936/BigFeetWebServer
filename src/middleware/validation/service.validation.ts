@@ -50,7 +50,20 @@ export const UpdateServiceValidation = celebrate(
 			beds_required: Joi.number().min(0),
 			can_overlap: Joi.boolean(),
 			color: colorValidation,
-		}).min(1),
+		})
+			.or(
+				'service_name',
+				'shorthand',
+				'time',
+				'money',
+				'body',
+				'feet',
+				'acupuncture',
+				'beds_required',
+				'can_overlap',
+				'color'
+			)
+			.append({ socket_id: Joi.string() }),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -88,7 +101,9 @@ export const AddServiceValidation = celebrate(
 			beds_required: Joi.number().min(0).required(),
 			can_overlap: Joi.boolean().default(false),
 			color: colorValidation.required(),
-		}).or('body', 'feet', 'acupuncture'),
+		})
+			.or('body', 'feet', 'acupuncture')
+			.append({ socket_id: Joi.string() }),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -99,6 +114,9 @@ export const DeleteServiceValidation = celebrate(
 		[Segments.PARAMS]: Joi.object().keys({
 			service_id: Joi.number().integer().positive().required(),
 		}),
+		[Segments.BODY]: Joi.object().keys({
+			socket_id: Joi.string(),
+		}),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -108,6 +126,9 @@ export const RecoverServiceValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
 			service_id: Joi.number().integer().positive().required(),
+		}),
+		[Segments.BODY]: Joi.object().keys({
+			socket_id: Joi.string(),
 		}),
 	},
 	{ abortEarly: false },

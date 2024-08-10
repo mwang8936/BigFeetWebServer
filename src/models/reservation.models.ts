@@ -9,8 +9,6 @@ import {
 	JoinColumn,
 	BeforeUpdate,
 	BeforeInsert,
-	AfterInsert,
-	AfterUpdate,
 } from 'typeorm';
 import { Service } from './service.models';
 import { Customer } from './customer.models';

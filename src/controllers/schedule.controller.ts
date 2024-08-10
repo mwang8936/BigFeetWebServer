@@ -105,9 +105,11 @@ export const updateSchedule: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(schedule));
 
-			pusher.trigger(schedules_channel, update_schedule_event, schedule, {
-				socket_id: req.body.socket_id,
-			});
+			if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+				pusher.trigger(schedules_channel, update_schedule_event, schedule, {
+					socket_id: req.body.socket_id,
+				});
+			}
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)
@@ -151,9 +153,11 @@ export const addSchedule: RequestHandler = async (
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(schedule));
 
-		pusher.trigger(schedules_channel, add_schedule_event, schedule, {
-			socket_id: req.body.socket_id,
-		});
+		if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+			pusher.trigger(schedules_channel, add_schedule_event, schedule, {
+				socket_id: req.body.socket_id,
+			});
+		}
 	} catch (err) {
 		next(err);
 	}
@@ -176,9 +180,11 @@ export const deleteSchedule: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(schedule));
 
-			pusher.trigger(schedules_channel, delete_schedule_event, schedule, {
-				socket_id: req.body.socket_id,
-			});
+			if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+				pusher.trigger(schedules_channel, delete_schedule_event, schedule, {
+					socket_id: req.body.socket_id,
+				});
+			}
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)

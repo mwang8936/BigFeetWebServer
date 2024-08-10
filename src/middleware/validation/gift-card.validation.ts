@@ -49,7 +49,9 @@ export const UpdateGiftCardValidation = celebrate(
 				.min(0)
 				.precision(2)
 				.max(NUMBERS.gift_card.payment_amount),
-		}).min(1),
+		})
+			.or('date', 'payment_method', 'payment_amount')
+			.append({ socket_id: Joi.string() }),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -70,7 +72,7 @@ export const AddGiftCardValidation = celebrate(
 				.precision(2)
 				.max(NUMBERS.gift_card.payment_amount)
 				.required(),
-		}),
+		}).append({ socket_id: Joi.string() }),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -84,6 +86,9 @@ export const DeleteGiftCardValidation = celebrate(
 				.max(LENGTHS.gift_card.gift_card_id.max)
 				.pattern(PATTERNS.gift_card.gift_card_id)
 				.required(),
+		}),
+		[Segments.BODY]: Joi.object().keys({
+			socket_id: Joi.string(),
 		}),
 	},
 	{ abortEarly: false },
