@@ -10,11 +10,18 @@ const terminate = (
 	return (code: number, reason: string) => (err: any, promise: any) => {
 		if (err && err instanceof Error) {
 			Logger.error(reason, err.message, err.stack);
+			console.error(reason, err.message, err.stack);
 		} else {
-			if (ENV_VARIABLES.NODE_ENV == 'development') Logger.debug(reason);
-			else if (ENV_VARIABLES.NODE_ENV == 'production')
+			if (ENV_VARIABLES.NODE_ENV === 'development') {
+				Logger.debug(reason);
+				console.error(reason);
+			} else if (ENV_VARIABLES.NODE_ENV === 'production') {
 				Logger.warn(reason);
-			else Logger.info(reason);
+				console.error(reason);
+			} else {
+				Logger.info(reason);
+				console.error(reason);
+			}
 		}
 
 		MySQLConnector.destroy();
