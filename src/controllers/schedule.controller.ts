@@ -6,6 +6,7 @@ import pusher from '../config/pusher.config';
 import {
 	add_schedule_event,
 	delete_schedule_event,
+	ScheduleEventMessage,
 	schedules_channel,
 	update_schedule_event,
 } from '../events/schedule.events';
@@ -105,11 +106,16 @@ export const updateSchedule: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(schedule));
 
-			// if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-			// 	pusher.trigger(schedules_channel, update_schedule_event, schedule, {
-			// 		socket_id: req.body.socket_id,
-			// 	});
-			// }
+			const message: ScheduleEventMessage = {
+				employee_id: schedule.employee.employee_id,
+				username: schedule.employee.username,
+			};
+
+			if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+				pusher.trigger(schedules_channel, update_schedule_event, message, {
+					socket_id: req.body.socket_id,
+				});
+			}
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)
@@ -153,11 +159,16 @@ export const addSchedule: RequestHandler = async (
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(schedule));
 
-		// if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-		// 	pusher.trigger(schedules_channel, add_schedule_event, schedule, {
-		// 		socket_id: req.body.socket_id,
-		// 	});
-		// }
+		const message: ScheduleEventMessage = {
+			employee_id: schedule.employee.employee_id,
+			username: schedule.employee.username,
+		};
+
+		if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+			pusher.trigger(schedules_channel, add_schedule_event, message, {
+				socket_id: req.body.socket_id,
+			});
+		}
 	} catch (err) {
 		next(err);
 	}
@@ -180,11 +191,16 @@ export const deleteSchedule: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(schedule));
 
-			// if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-			// 	pusher.trigger(schedules_channel, delete_schedule_event, schedule, {
-			// 		socket_id: req.body.socket_id,
-			// 	});
-			// }
+			const message: ScheduleEventMessage = {
+				employee_id: schedule.employee.employee_id,
+				username: schedule.employee.username,
+			};
+
+			if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+				pusher.trigger(schedules_channel, delete_schedule_event, message, {
+					socket_id: req.body.socket_id,
+				});
+			}
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)

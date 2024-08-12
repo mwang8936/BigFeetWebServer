@@ -4,6 +4,7 @@ import * as CustomerServices from '../services/customer.services';
 import pusher from '../config/pusher.config';
 import {
 	add_customer_event,
+	CustomerEventMessage,
 	customers_channel,
 	delete_customer_event,
 	recover_customer_event,
@@ -81,7 +82,12 @@ export const updateCustomer: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(customer));
 
-			pusher.trigger(customers_channel, update_customer_event, customer, {
+			const message: CustomerEventMessage = {
+				phone_number: customer.phone_number,
+				vip_serial: customer.vip_serial,
+			};
+
+			pusher.trigger(customers_channel, update_customer_event, message, {
 				socket_id: req.body.socket_id,
 			});
 		} else {
@@ -113,7 +119,12 @@ export const addCustomer: RequestHandler = async (
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(customer));
 
-		pusher.trigger(customers_channel, add_customer_event, customer, {
+		const message: CustomerEventMessage = {
+			phone_number: customer.phone_number,
+			vip_serial: customer.vip_serial,
+		};
+
+		pusher.trigger(customers_channel, add_customer_event, message, {
 			socket_id: req.body.socket_id,
 		});
 	} catch (err) {
@@ -137,7 +148,12 @@ export const deleteCustomer: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(customer));
 
-			pusher.trigger(customers_channel, delete_customer_event, customer, {
+			const message: CustomerEventMessage = {
+				phone_number: customer.phone_number,
+				vip_serial: customer.vip_serial,
+			};
+
+			pusher.trigger(customers_channel, delete_customer_event, message, {
 				socket_id: req.body.socket_id,
 			});
 		} else {
@@ -167,7 +183,12 @@ export const recoverCustomer: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(customer));
 
-			pusher.trigger(customers_channel, recover_customer_event, customer, {
+			const message: CustomerEventMessage = {
+				phone_number: customer.phone_number,
+				vip_serial: customer.vip_serial,
+			};
+
+			pusher.trigger(customers_channel, recover_customer_event, message, {
 				socket_id: req.body.socket_id,
 			});
 		} else {

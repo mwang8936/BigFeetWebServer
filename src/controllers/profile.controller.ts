@@ -5,6 +5,12 @@ import * as ProfileServices from '../services/profile.services';
 import { AuthorizationError } from '../exceptions/authorization-error';
 import { validateToken } from '../utils/jwt.utils';
 import { formatDateToYYYYMMDD } from '../utils/date.utils';
+import {
+	ScheduleEventMessage,
+	schedules_channel,
+	sign_schedule_event,
+} from '../events/schedule.events';
+import pusher from '../config/pusher.config';
 
 export const getProfile: RequestHandler = async (
 	req: Request,
@@ -136,6 +142,17 @@ export const signProfileSchedule: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(schedule));
+
+			const message: ScheduleEventMessage = {
+				employee_id: schedule.employee.employee_id,
+				username: schedule.employee.username,
+			};
+
+			if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+				pusher.trigger(schedules_channel, sign_schedule_event, message, {
+					socket_id: req.body.socket_id,
+				});
+			}
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)

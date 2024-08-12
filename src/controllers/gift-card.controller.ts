@@ -82,7 +82,7 @@ export const updateGiftCard: RequestHandler = async (
 				.send(JSON.stringify(giftCard));
 
 			if (giftCard.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-				pusher.trigger(gift_cards_channel, update_gift_card_event, giftCard, {
+				pusher.trigger(gift_cards_channel, update_gift_card_event, undefined, {
 					socket_id: req.body.socket_id,
 				});
 			}
@@ -116,7 +116,7 @@ export const addGiftCard: RequestHandler = async (
 			.send(JSON.stringify(giftCard));
 
 		if (giftCard.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-			pusher.trigger(gift_cards_channel, add_gift_card_event, giftCard, {
+			pusher.trigger(gift_cards_channel, add_gift_card_event, undefined, {
 				socket_id: req.body.socket_id,
 			});
 		}
@@ -142,7 +142,7 @@ export const deleteGiftCard: RequestHandler = async (
 				.send(JSON.stringify(giftCard));
 
 			if (giftCard.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-				pusher.trigger(gift_cards_channel, delete_gift_card_event, giftCard, {
+				pusher.trigger(gift_cards_channel, delete_gift_card_event, undefined, {
 					socket_id: req.body.socket_id,
 				});
 			}

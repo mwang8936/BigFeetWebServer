@@ -7,6 +7,7 @@ import {
 	add_vip_package_event,
 	delete_vip_package_event,
 	update_vip_package_event,
+	VipPackageEventMessage,
 } from '../events/vip-package.events';
 import { schedules_channel } from '../events/schedule.events';
 
@@ -90,7 +91,12 @@ export const updateVipPackage: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(vipPackage));
 
-			pusher.trigger(schedules_channel, update_vip_package_event, vipPackage, {
+			const message: VipPackageEventMessage = {
+				employee_ids: vipPackage.employee_ids,
+				serial: vipPackage.serial,
+			};
+
+			pusher.trigger(schedules_channel, update_vip_package_event, message, {
 				socket_id: req.body.socket_id,
 			});
 		} else {
@@ -123,7 +129,12 @@ export const addVipPackage: RequestHandler = async (
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(vipPackage));
 
-		pusher.trigger(schedules_channel, add_vip_package_event, vipPackage, {
+		const message: VipPackageEventMessage = {
+			employee_ids: vipPackage.employee_ids,
+			serial: vipPackage.serial,
+		};
+
+		pusher.trigger(schedules_channel, add_vip_package_event, message, {
 			socket_id: req.body.socket_id,
 		});
 	} catch (err) {
@@ -147,7 +158,12 @@ export const deleteVipPackage: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(vipPackage));
 
-			pusher.trigger(schedules_channel, delete_vip_package_event, vipPackage, {
+			const message: VipPackageEventMessage = {
+				employee_ids: vipPackage.employee_ids,
+				serial: vipPackage.serial,
+			};
+
+			pusher.trigger(schedules_channel, delete_vip_package_event, message, {
 				socket_id: req.body.socket_id,
 			});
 		} else {

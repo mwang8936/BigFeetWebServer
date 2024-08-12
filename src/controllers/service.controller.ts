@@ -6,6 +6,7 @@ import {
 	add_service_event,
 	delete_service_event,
 	recover_service_event,
+	ServiceEventMessage,
 	services_channel,
 	update_service_event,
 } from '../events/service.events';
@@ -84,7 +85,11 @@ export const updateService: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(service));
 
-			pusher.trigger(services_channel, update_service_event, service, {
+			const message: ServiceEventMessage = {
+				service_name: service.service_name,
+			};
+
+			pusher.trigger(services_channel, update_service_event, message, {
 				socket_id: req.body.socket_id,
 			});
 		} else {
@@ -122,7 +127,11 @@ export const addService: RequestHandler = async (
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(service));
 
-		pusher.trigger(services_channel, add_service_event, service, {
+		const message: ServiceEventMessage = {
+			service_name: service.service_name,
+		};
+
+		pusher.trigger(services_channel, add_service_event, message, {
 			socket_id: req.body.socket_id,
 		});
 	} catch (err) {
@@ -146,7 +155,11 @@ export const deleteService: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(service));
 
-			pusher.trigger(services_channel, delete_service_event, service, {
+			const message: ServiceEventMessage = {
+				service_name: service.service_name,
+			};
+
+			pusher.trigger(services_channel, delete_service_event, message, {
 				socket_id: req.body.socket_id,
 			});
 		} else {
@@ -176,7 +189,11 @@ export const recoverService: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(service));
 
-			pusher.trigger(services_channel, recover_service_event, service, {
+			const message: ServiceEventMessage = {
+				service_name: service.service_name,
+			};
+
+			pusher.trigger(services_channel, recover_service_event, message, {
 				socket_id: req.body.socket_id,
 			});
 		} else {

@@ -6,6 +6,7 @@ import pusher from '../config/pusher.config';
 import {
 	add_employee_event,
 	delete_employee_event,
+	EmployeeEventMessage,
 	employees_channel,
 	recover_employee_event,
 	update_employee_event,
@@ -88,7 +89,11 @@ export const updateEmployee: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(employee));
 
-			pusher.trigger(employees_channel, update_employee_event, employee, {
+			const message: EmployeeEventMessage = {
+				username: employee.username,
+			};
+
+			pusher.trigger(employees_channel, update_employee_event, message, {
 				socket_id: req.body.socket_id,
 			});
 		} else {
@@ -132,7 +137,11 @@ export const addEmployee: RequestHandler = async (
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(respEmployee));
 
-		pusher.trigger(employees_channel, add_employee_event, employee, {
+		const message: EmployeeEventMessage = {
+			username: employee.username,
+		};
+
+		pusher.trigger(employees_channel, add_employee_event, message, {
 			socket_id: req.body.socket_id,
 		});
 	} catch (err) {
@@ -156,7 +165,11 @@ export const deleteEmployee: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(employee));
 
-			pusher.trigger(employees_channel, delete_employee_event, employee, {
+			const message: EmployeeEventMessage = {
+				username: employee.username,
+			};
+
+			pusher.trigger(employees_channel, delete_employee_event, message, {
 				socket_id: req.body.socket_id,
 			});
 		} else {
@@ -186,7 +199,11 @@ export const recoverEmployee: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(employee));
 
-			pusher.trigger(employees_channel, recover_employee_event, employee, {
+			const message: EmployeeEventMessage = {
+				username: employee.username,
+			};
+
+			pusher.trigger(employees_channel, recover_employee_event, message, {
 				socket_id: req.body.socket_id,
 			});
 		} else {
