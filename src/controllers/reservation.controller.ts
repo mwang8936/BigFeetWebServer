@@ -120,16 +120,16 @@ export const updateReservation: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(reservation));
-			if (reservation.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-				pusher.trigger(
-					schedules_channel,
-					update_reservation_event,
-					reservation,
-					{
-						socket_id: req.body.socket_id,
-					}
-				);
-			}
+			// if (reservation.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+			// 	pusher.trigger(
+			// 		schedules_channel,
+			// 		update_reservation_event,
+			// 		reservation,
+			// 		{
+			// 			socket_id: req.body.socket_id,
+			// 		}
+			// 	);
+			// }
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)
@@ -174,11 +174,11 @@ export const addReservation: RequestHandler = async (
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(reservation));
 
-		if (reservation.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-			pusher.trigger(schedules_channel, add_reservation_event, reservation, {
-				socket_id: req.body.socket_id,
-			});
-		}
+		// if (reservation.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+		// 	pusher.trigger(schedules_channel, add_reservation_event, reservation, {
+		// 		socket_id: req.body.socket_id,
+		// 	});
+		// }
 	} catch (err) {
 		next(err);
 	}
@@ -202,16 +202,16 @@ export const deleteReservation: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(reservation));
 
-			if (reservation.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-				pusher.trigger(
-					schedules_channel,
-					delete_reservation_event,
-					reservation,
-					{
-						socket_id: req.body.socket_id,
-					}
-				);
-			}
+			// if (reservation.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+			// 	pusher.trigger(
+			// 		schedules_channel,
+			// 		delete_reservation_event,
+			// 		reservation,
+			// 		{
+			// 			socket_id: req.body.socket_id,
+			// 		}
+			// 	);
+			// }
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)

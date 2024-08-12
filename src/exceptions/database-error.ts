@@ -8,6 +8,7 @@ export class DatabaseError extends CustomError {
 		Object.setPrototypeOf(this, DatabaseError.prototype);
 	}
 	formatErrors() {
+		console.error(this.error);
 		return 'A database error occurred.';
 	}
 }
