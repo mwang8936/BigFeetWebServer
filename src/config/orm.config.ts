@@ -17,6 +17,7 @@ const AppDataSource = new DataSource({
 	username: MY_SQL_DATA_SOURCES.DB_USER,
 	password: MY_SQL_DATA_SOURCES.DB_PASSWORD,
 	database: MY_SQL_DATA_SOURCES.DB_DATABASE,
+	poolSize: MY_SQL_DATA_SOURCES.DB_POOL_SIZE,
 	entities: [
 		Employee,
 		Schedule,

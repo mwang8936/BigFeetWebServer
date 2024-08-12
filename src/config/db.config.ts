@@ -10,6 +10,9 @@ const MY_SQL_DATA_SOURCES = {
 		? parseInt(process.env.MY_SQL_DB_PORT)
 		: 3306,
 	DB_DATABASE: process.env.MY_SQL_DB_DATABASE,
+	DB_POOL_SIZE: process.env.MY_SQL_DB_POOL_SIZE
+		? parseInt(process.env.MY_SQL_DB_POOL_SIZE)
+		: 10,
 };
 
 export default MY_SQL_DATA_SOURCES;
