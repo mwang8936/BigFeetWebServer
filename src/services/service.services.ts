@@ -28,7 +28,6 @@ export const updateService = async (
 	feet?: number,
 	acupuncture?: number,
 	bedsRequired?: number,
-	canOverlap?: boolean,
 	color?: ServiceColor
 ) => {
 	const service = await getService(serviceId);
@@ -70,10 +69,6 @@ export const updateService = async (
 			updates.beds_required = bedsRequired;
 		}
 
-		if (canOverlap !== undefined) {
-			updates.can_overlap = canOverlap;
-		}
-
 		if (color !== undefined) {
 			updates.color = color;
 		}
@@ -95,8 +90,7 @@ export const createService = async (
 	color: ServiceColor,
 	body?: number,
 	feet?: number,
-	acupuncture?: number,
-	canOverlap?: boolean
+	acupuncture?: number
 ) => {
 	await duplicateServiceNameChecker(serviceName);
 	await duplicateShorthandChecker(shorthand);
@@ -110,7 +104,6 @@ export const createService = async (
 		feet: feet,
 		acupuncture: acupuncture,
 		beds_required: bedsRequired,
-		can_overlap: canOverlap,
 		color: color,
 	});
 

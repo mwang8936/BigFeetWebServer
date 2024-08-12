@@ -48,7 +48,6 @@ export const UpdateServiceValidation = celebrate(
 				.min(0)
 				.max(NUMBERS.service.acupuncture),
 			beds_required: Joi.number().min(0),
-			can_overlap: Joi.boolean(),
 			color: colorValidation,
 		})
 			.or(
@@ -60,7 +59,6 @@ export const UpdateServiceValidation = celebrate(
 				'feet',
 				'acupuncture',
 				'beds_required',
-				'can_overlap',
 				'color'
 			)
 			.append({ socket_id: Joi.string() }),
@@ -99,7 +97,6 @@ export const AddServiceValidation = celebrate(
 				.min(0)
 				.max(NUMBERS.service.acupuncture),
 			beds_required: Joi.number().min(0).required(),
-			can_overlap: Joi.boolean().default(false),
 			color: colorValidation.required(),
 		})
 			.or('body', 'feet', 'acupuncture')
