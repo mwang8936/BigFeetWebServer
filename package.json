@@ -8,6 +8,8 @@
 	},
 	"main": "dist/index.js",
 	"scripts": {
+		"create-migration": "typeorm-ts-node-commonjs migration:create",
+		"generate-migration": "typeorm-ts-node-commonjs -d src/config/orm.config.ts migration:generate",
 		"run-migration": "typeorm-ts-node-commonjs -d src/config/orm.config.ts migration:run",
 		"dev": "ts-node-dev --respawn --pretty --transpile-only src/app.ts",
 		"build": "tsc",

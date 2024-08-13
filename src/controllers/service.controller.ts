@@ -75,7 +75,6 @@ export const updateService: RequestHandler = async (
 			req.body.feet,
 			req.body.acupuncture,
 			req.body.beds_required,
-			req.body.can_overlap,
 			req.body.color
 		);
 
@@ -118,8 +117,7 @@ export const addService: RequestHandler = async (
 			req.body.color,
 			req.body.body,
 			req.body.feet,
-			req.body.acupuncture,
-			req.body.can_overlap
+			req.body.acupuncture
 		);
 
 		res
