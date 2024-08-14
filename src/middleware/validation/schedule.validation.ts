@@ -43,8 +43,9 @@ export const UpdateScheduleValidation = celebrate(
 			start: Joi.date().iso().allow(null),
 			end: Joi.date().iso().allow(null),
 			priority: Joi.number().integer().positive().allow(null),
+			add_award: Joi.boolean(),
 		})
-			.or('is_working', 'on_call', 'start', 'end', 'priority')
+			.or('is_working', 'on_call', 'start', 'end', 'priority', 'add_award')
 			.append({ socket_id: Joi.string() }),
 	},
 	{ abortEarly: false },
@@ -78,6 +79,7 @@ export const AddScheduleValidation = celebrate({
 		start: Joi.date().iso().allow(null),
 		end: Joi.date().iso().min(Joi.ref('start')).allow(null),
 		priority: Joi.number().integer().positive().allow(null),
+		add_award: Joi.boolean().default(false),
 	})
 		.with('end', 'start')
 		.append({ socket_id: Joi.string() }),

@@ -101,7 +101,8 @@ export const updateSchedule: RequestHandler = async (
 			req.body.on_call,
 			start,
 			end,
-			req.body.priority
+			req.body.priority,
+			req.body.add_award
 		);
 
 		if (schedule) {
@@ -203,7 +204,8 @@ export const addSchedule: RequestHandler = async (
 			req.body.on_call,
 			start,
 			end,
-			req.body.priority
+			req.body.priority,
+			req.body.add_award
 		);
 
 		res
