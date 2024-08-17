@@ -18,6 +18,13 @@ const AppDataSource = new DataSource({
 	password: MY_SQL_DATA_SOURCES.DB_PASSWORD,
 	database: MY_SQL_DATA_SOURCES.DB_DATABASE,
 	poolSize: MY_SQL_DATA_SOURCES.DB_POOL_SIZE,
+	extra: {
+		connectionLimit: MY_SQL_DATA_SOURCES.DB_POOL_SIZE,
+		waitForConnections: true,
+		queueLimit: 0,
+		connectTimeout: 10000,
+		acquireTimeout: 10000,
+	},
 	entities: [
 		Employee,
 		Schedule,
