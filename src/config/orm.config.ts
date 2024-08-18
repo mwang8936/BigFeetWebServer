@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import MY_SQL_DATA_SOURCES from './db.config';
+import POSTGRESQL_DATA_SOURCE from './db.config';
 import ENV_VARIABLES from './env.config';
 import { Employee } from '../models/employee.models';
 import { Service } from '../models/service.models';
@@ -10,20 +10,17 @@ import { VipPackage } from '../models/vip-package.models';
 import { GiftCard } from '../models/gift-card.models';
 
 const AppDataSource = new DataSource({
-	type: 'mysql',
-	host: MY_SQL_DATA_SOURCES.DB_HOST,
-	port: MY_SQL_DATA_SOURCES.DB_PORT,
-	timezone: '-08:00',
-	username: MY_SQL_DATA_SOURCES.DB_USER,
-	password: MY_SQL_DATA_SOURCES.DB_PASSWORD,
-	database: MY_SQL_DATA_SOURCES.DB_DATABASE,
-	poolSize: MY_SQL_DATA_SOURCES.DB_POOL_SIZE,
+	type: 'postgres',
+	host: POSTGRESQL_DATA_SOURCE.DB_HOST,
+	port: POSTGRESQL_DATA_SOURCE.DB_PORT,
+	username: POSTGRESQL_DATA_SOURCE.DB_USER,
+	password: POSTGRESQL_DATA_SOURCE.DB_PASSWORD,
+	database: POSTGRESQL_DATA_SOURCE.DB_DATABASE,
+	poolSize: POSTGRESQL_DATA_SOURCE.DB_POOL_SIZE,
 	extra: {
-		connectionLimit: MY_SQL_DATA_SOURCES.DB_POOL_SIZE,
-		waitForConnections: true,
-		queueLimit: 0,
-		connectTimeout: 10000,
-		acquireTimeout: 10000,
+		max: POSTGRESQL_DATA_SOURCE.DB_POOL_SIZE,
+		idleTimeoutMillis: 10000,
+		connectionTimeoutMillis: 2000,
 	},
 	entities: [
 		Employee,

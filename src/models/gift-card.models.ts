@@ -6,9 +6,10 @@ import {
 	UpdateDateColumn,
 	PrimaryColumn,
 } from 'typeorm';
+
 import { PaymentMethod } from './enums';
 
-@Entity('GiftCardsSold')
+@Entity('gift_cards_sold')
 export class GiftCard extends BaseEntity {
 	@PrimaryColumn({
 		length: 8,
@@ -30,12 +31,11 @@ export class GiftCard extends BaseEntity {
 		type: 'decimal',
 		precision: 6,
 		scale: 2,
-		unsigned: true,
 		transformer: {
 			to(tips: number) {
 				return tips;
 			},
-			from(tips: number) {
+			from(tips: string) {
 				return Number(tips);
 			},
 		},

@@ -1,6 +1,6 @@
 import { Server } from 'http';
 import Logger from './logger.utils';
-import * as MySQLConnector from './mysql-connector.utils';
+import * as PostgreSQLConnector from './postgresql-connector.utils';
 import ENV_VARIABLES from '../config/env.config';
 
 const terminate = (
@@ -24,7 +24,7 @@ const terminate = (
 			}
 		}
 
-		MySQLConnector.destroy();
+		PostgreSQLConnector.destroy();
 
 		const exit = () => {
 			options.coredump ? process.abort() : process.exit(code);
