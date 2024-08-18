@@ -17,6 +17,9 @@ const AppDataSource = new DataSource({
 	password: POSTGRESQL_DATA_SOURCE.DB_PASSWORD,
 	database: POSTGRESQL_DATA_SOURCE.DB_DATABASE,
 	poolSize: POSTGRESQL_DATA_SOURCE.DB_POOL_SIZE,
+	ssl: {
+		rejectUnauthorized: false,
+	},
 	extra: {
 		max: POSTGRESQL_DATA_SOURCE.DB_POOL_SIZE,
 		idleTimeoutMillis: 10000,
