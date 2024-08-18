@@ -8,10 +8,11 @@ import {
 	OneToMany,
 	DeleteDateColumn,
 } from 'typeorm';
+
 import { Gender, Language, Permissions, Role } from './enums';
 import { Schedule } from './schedule.models';
 
-@Entity('Employees')
+@Entity('employees')
 export class Employee extends BaseEntity {
 	@PrimaryGeneratedColumn()
 	employee_id: number;
@@ -50,8 +51,10 @@ export class Employee extends BaseEntity {
 	role: Role;
 
 	@Column({
-		type: 'set',
+		type: 'enum',
 		enum: Permissions,
+		array: true,
+		default: [],
 	})
 	permissions: Permissions[];
 
@@ -59,13 +62,12 @@ export class Employee extends BaseEntity {
 		type: 'decimal',
 		precision: 4,
 		scale: 2,
-		unsigned: true,
 		nullable: true,
 		transformer: {
 			to(bodyRate: number | null) {
 				return bodyRate;
 			},
-			from(bodyRate: number | null) {
+			from(bodyRate: string | null) {
 				return bodyRate === null ? null : Number(bodyRate);
 			},
 		},
@@ -76,13 +78,12 @@ export class Employee extends BaseEntity {
 		type: 'decimal',
 		precision: 4,
 		scale: 2,
-		unsigned: true,
 		nullable: true,
 		transformer: {
 			to(feetRate: number | null) {
 				return feetRate;
 			},
-			from(feetRate: number | null) {
+			from(feetRate: string | null) {
 				return feetRate === null ? null : Number(feetRate);
 			},
 		},
@@ -93,13 +94,12 @@ export class Employee extends BaseEntity {
 		type: 'decimal',
 		precision: 4,
 		scale: 2,
-		unsigned: true,
 		nullable: true,
 		transformer: {
 			to(acupunctureRate: number | null) {
 				return acupunctureRate;
 			},
-			from(acupunctureRate: number | null) {
+			from(acupunctureRate: string | null) {
 				return acupunctureRate === null ? null : Number(acupunctureRate);
 			},
 		},
@@ -110,13 +110,12 @@ export class Employee extends BaseEntity {
 		type: 'decimal',
 		precision: 4,
 		scale: 2,
-		unsigned: true,
 		nullable: true,
 		transformer: {
 			to(perHour: number | null) {
 				return perHour;
 			},
-			from(perHour: number | null) {
+			from(perHour: string | null) {
 				return perHour === null ? null : Number(perHour);
 			},
 		},

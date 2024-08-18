@@ -10,10 +10,12 @@ import {
 	BeforeInsert,
 	BeforeUpdate,
 } from 'typeorm';
+
 import { Reservation } from './reservation.models';
+
 import { DataStructureError } from '../exceptions/data-structure.error';
 
-@Entity('Customers')
+@Entity('customers')
 export class Customer extends BaseEntity {
 	@PrimaryGeneratedColumn()
 	customer_id: number;
@@ -34,8 +36,6 @@ export class Customer extends BaseEntity {
 
 	@Column({
 		type: 'varchar',
-		charset: 'utf8mb4',
-		collation: 'utf8mb4_bin',
 		length: 60,
 		nullable: true,
 	})
@@ -43,8 +43,6 @@ export class Customer extends BaseEntity {
 
 	@Column({
 		type: 'text',
-		charset: 'utf8mb4',
-		collation: 'utf8mb4_bin',
 		nullable: true,
 	})
 	notes: string | null;

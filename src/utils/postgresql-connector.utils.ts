@@ -5,7 +5,7 @@ export const init = async () => {
 	AppDataSource.initialize()
 		.then(() => {
 			Logger.debug(
-				`MySQL connection initialized. Connected to DB: ${AppDataSource.options.database}`
+				`POSTGRESQL connection initialized. Connected to DB: ${AppDataSource.options.database}`
 			);
 		})
 		.catch((err) => {
@@ -19,7 +19,7 @@ export const destroy = async () => {
 		if (AppDataSource.isInitialized) {
 			await AppDataSource.destroy();
 			Logger.debug(
-				`Disconnected from MYSQL DB: ${AppDataSource.options.database}`
+				`Disconnected from POSTGRESQL DB: ${AppDataSource.options.database}`
 			);
 		} else {
 			Logger.debug('Database connection never initialized.');
@@ -27,6 +27,6 @@ export const destroy = async () => {
 		process.exit(0);
 	} catch (err) {
 		Logger.error('Error during data source disconnection.', err);
-		process.exit(1); // Exit with a non-zero code to indicate failure
+		process.exit(1);
 	}
 };

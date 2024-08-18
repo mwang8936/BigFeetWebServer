@@ -11,12 +11,14 @@ import {
 	BeforeInsert,
 	BeforeUpdate,
 } from 'typeorm';
+
 import { Employee } from './employee.models';
 import { Reservation } from './reservation.models';
 import { VipPackage } from './vip-package.models';
+
 import { DataStructureError } from '../exceptions/data-structure.error';
 
-@Entity('Schedules')
+@Entity('schedules')
 export class Schedule extends BaseEntity {
 	@PrimaryColumn({
 		type: 'date',
@@ -61,8 +63,6 @@ export class Schedule extends BaseEntity {
 
 	@Column({
 		type: 'integer',
-		width: 2,
-		unsigned: true,
 		nullable: true,
 	})
 	priority: number | null;

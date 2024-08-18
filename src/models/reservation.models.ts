@@ -10,20 +10,21 @@ import {
 	BeforeUpdate,
 	BeforeInsert,
 } from 'typeorm';
-import { Service } from './service.models';
+
 import { Customer } from './customer.models';
 import { Gender, TipMethod } from './enums';
 import { Schedule } from './schedule.models';
+import { Service } from './service.models';
 
 import * as ScheduleServices from '../services/schedule.services';
 
-@Entity('Reservations')
+@Entity('reservations')
 export class Reservation extends BaseEntity {
 	@PrimaryGeneratedColumn()
 	reservation_id: number;
 
 	@Column({
-		type: 'datetime',
+		type: 'timestamp',
 	})
 	reserved_date: Date;
 
@@ -81,13 +82,12 @@ export class Reservation extends BaseEntity {
 		type: 'decimal',
 		precision: 5,
 		scale: 2,
-		unsigned: true,
 		nullable: true,
 		transformer: {
 			to(cash: number | null) {
 				return cash;
 			},
-			from(cash: number | null) {
+			from(cash: string | null) {
 				return cash === null ? null : Number(cash);
 			},
 		},
@@ -98,13 +98,12 @@ export class Reservation extends BaseEntity {
 		type: 'decimal',
 		precision: 5,
 		scale: 2,
-		unsigned: true,
 		nullable: true,
 		transformer: {
 			to(machine: number | null) {
 				return machine;
 			},
-			from(machine: number | null) {
+			from(machine: string | null) {
 				return machine === null ? null : Number(machine);
 			},
 		},
@@ -115,13 +114,12 @@ export class Reservation extends BaseEntity {
 		type: 'decimal',
 		precision: 5,
 		scale: 2,
-		unsigned: true,
 		nullable: true,
 		transformer: {
 			to(vip: number | null) {
 				return vip;
 			},
-			from(vip: number | null) {
+			from(vip: string | null) {
 				return vip === null ? null : Number(vip);
 			},
 		},
@@ -132,13 +130,12 @@ export class Reservation extends BaseEntity {
 		type: 'decimal',
 		precision: 5,
 		scale: 2,
-		unsigned: true,
 		nullable: true,
 		transformer: {
 			to(giftCard: number | null) {
 				return giftCard;
 			},
-			from(giftCard: number | null) {
+			from(giftCard: string | null) {
 				return giftCard === null ? null : Number(giftCard);
 			},
 		},
@@ -149,13 +146,12 @@ export class Reservation extends BaseEntity {
 		type: 'decimal',
 		precision: 5,
 		scale: 2,
-		unsigned: true,
 		nullable: true,
 		transformer: {
 			to(insurance: number | null) {
 				return insurance;
 			},
-			from(insurance: number | null) {
+			from(insurance: string | null) {
 				return insurance === null ? null : Number(insurance);
 			},
 		},
@@ -166,13 +162,12 @@ export class Reservation extends BaseEntity {
 		type: 'decimal',
 		precision: 6,
 		scale: 2,
-		unsigned: true,
 		nullable: true,
 		transformer: {
 			to(tips: number | null) {
 				return tips;
 			},
-			from(tips: number | null) {
+			from(tips: string | null) {
 				return tips === null ? null : Number(tips);
 			},
 		},
@@ -188,8 +183,6 @@ export class Reservation extends BaseEntity {
 
 	@Column({
 		type: 'text',
-		charset: 'utf8mb4',
-		collation: 'utf8mb4_bin',
 		nullable: true,
 	})
 	message: string | null;

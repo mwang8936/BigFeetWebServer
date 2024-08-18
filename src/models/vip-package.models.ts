@@ -7,9 +7,10 @@ import {
 	CreateDateColumn,
 	UpdateDateColumn,
 } from 'typeorm';
+
 import { Schedule } from './schedule.models';
 
-@Entity('VipPackagesSold')
+@Entity('vip_packages_sold')
 export class VipPackage extends BaseEntity {
 	@PrimaryColumn({
 		length: 6,
@@ -20,7 +21,6 @@ export class VipPackage extends BaseEntity {
 		type: 'decimal',
 		precision: 8,
 		scale: 2,
-		unsigned: true,
 		transformer: {
 			to(soldAmount: number) {
 				return soldAmount;
@@ -36,7 +36,6 @@ export class VipPackage extends BaseEntity {
 		type: 'decimal',
 		precision: 8,
 		scale: 2,
-		unsigned: true,
 		transformer: {
 			to(commissionAmount: number) {
 				return commissionAmount;
@@ -49,13 +48,14 @@ export class VipPackage extends BaseEntity {
 	commission_amount: number;
 
 	@Column({
-		type: 'simple-array',
+		type: 'integer',
+		array: true,
 		transformer: {
 			to(employeeIds: number[]) {
 				return employeeIds;
 			},
-			from(employeeIds: string[] | null) {
-				return employeeIds?.map((employeeId) => Number(employeeId));
+			from(employeeIds: number[] | null) {
+				return employeeIds || [];
 			},
 		},
 	})

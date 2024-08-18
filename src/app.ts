@@ -1,6 +1,6 @@
 import ENV_VARIABLES from './config/env.config';
 import Logger from './utils/logger.utils';
-import * as MySQLConnector from './utils/mysql-connector.utils';
+import * as PostgreSQLConnector from './utils/postgresql-connector.utils';
 import createServer from './utils/server.utils';
 import terminate from './utils/shutdown.utils';
 
@@ -10,7 +10,7 @@ const app = createServer();
 
 const server = app.listen(PORT, async () => {
 	Logger.debug(`Listening on port: ${PORT}`);
-	await MySQLConnector.init();
+	await PostgreSQLConnector.init();
 });
 
 const exitHandler = terminate(server);
