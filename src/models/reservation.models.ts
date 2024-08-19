@@ -24,7 +24,7 @@ export class Reservation extends BaseEntity {
 	reservation_id: number;
 
 	@Column({
-		type: 'timestamp',
+		type: 'timestamptz',
 	})
 	reserved_date: Date;
 
