@@ -6,6 +6,9 @@ import { Gender, Permissions, Role } from '../models/enums';
 export const getEmployees = async (withDeleted?: boolean) => {
 	return Employee.find({
 		withDeleted,
+		order: {
+			username: 'ASC',
+		},
 	});
 };
 

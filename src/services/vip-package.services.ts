@@ -32,6 +32,9 @@ export const getVipPackages = async (
 		where: {
 			schedules: whereCondition,
 		},
+		order: {
+			serial: 'ASC',
+		},
 	});
 };
 

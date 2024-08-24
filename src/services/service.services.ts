@@ -6,6 +6,9 @@ import { Not } from 'typeorm';
 export const getServices = async (withDeleted?: boolean) => {
 	return Service.find({
 		withDeleted,
+		order: {
+			service_name: 'ASC',
+		},
 	});
 };
 
