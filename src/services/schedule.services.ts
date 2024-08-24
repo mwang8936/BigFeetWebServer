@@ -86,6 +86,17 @@ export const updateSchedule = async (
 	}
 };
 
+export const signSchedule = async (date: string, employeeId: number) => {
+	const schedule = await getSchedule(date, employeeId);
+
+	if (schedule) {
+		schedule.signed = true;
+		return schedule.save();
+	} else {
+		return null;
+	}
+};
+
 export const createSchedule = async (
 	date: string,
 	employeeId: number,

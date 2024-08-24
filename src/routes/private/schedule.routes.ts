@@ -6,6 +6,7 @@ import {
 	deleteSchedule,
 	getSchedule,
 	getSchedules,
+	signSchedule,
 	updateSchedule,
 } from '../../controllers/schedule.controller';
 import {
@@ -13,6 +14,7 @@ import {
 	DeleteScheduleValidation,
 	GetScheduleValidation,
 	GetSchedulesValidation,
+	SignScheduleValidation,
 	UpdateScheduleValidation,
 } from '../../middleware/validation/schedule.validation';
 
@@ -38,6 +40,13 @@ router
 		authorize([Permissions.PERMISSION_UPDATE_SCHEDULE]),
 		UpdateScheduleValidation,
 		updateSchedule
+	);
+router
+	.route('/:date/employee/:employee_id/sign')
+	.patch(
+		authorize([Permissions.PERMISSION_UPDATE_SCHEDULE]),
+		SignScheduleValidation,
+		signSchedule
 	);
 router
 	.route('/')

@@ -24,6 +24,21 @@ export const getEmployee = async (
 	});
 };
 
+export const getEmployeeHashedPassword = async (
+	employeeId: number,
+	withDeleted?: boolean
+) => {
+	return Employee.findOne({
+		select: {
+			password: true,
+		},
+		where: {
+			employee_id: employeeId,
+		},
+		withDeleted,
+	});
+};
+
 export const updateEmployee = async (
 	employeeId: number,
 	username?: string,

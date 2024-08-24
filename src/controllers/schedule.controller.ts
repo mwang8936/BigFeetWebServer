@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as ScheduleServices from '../services/schedule.services';
@@ -8,8 +9,11 @@ import {
 	delete_schedule_event,
 	ScheduleEventMessage,
 	schedules_channel,
+	sign_schedule_event,
 	update_schedule_event,
 } from '../events/schedule.events';
+import { getEmployeeHashedPassword } from '../services/employee.services';
+import { ForbiddenError } from '../exceptions/forbidden-error';
 
 export const getSchedules: RequestHandler = async (
 	req: Request,
@@ -113,6 +117,54 @@ export const updateSchedule: RequestHandler = async (
 
 			if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
 				pusher.trigger(schedules_channel, update_schedule_event, message, {
+					socket_id: req.body.socket_id,
+				});
+			}
+		} else {
+			res
+				.status(HttpCode.NOT_MODIFIED)
+				.header('Content-Type', 'application/json')
+				.send();
+		}
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const signSchedule: RequestHandler = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const date = formatDateToYYYYMMDD(req.params.date);
+		const employeeId = parseInt(req.params.employee_id);
+
+		const account = await getEmployeeHashedPassword(employeeId);
+		if (account == null) throw new ForbiddenError();
+
+		const hashedPassword = account.password;
+		const passwordMatch = await bcrypt.compare(
+			req.body.password,
+			hashedPassword
+		);
+		if (!passwordMatch) throw new ForbiddenError();
+
+		const schedule = await ScheduleServices.signSchedule(date, employeeId);
+
+		if (schedule) {
+			res
+				.status(HttpCode.OK)
+				.header('Content-Type', 'application/json')
+				.send(JSON.stringify(schedule));
+
+			const message: ScheduleEventMessage = {
+				employee_id: schedule.employee.employee_id,
+				username: schedule.employee.username,
+			};
+
+			if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
+				pusher.trigger(schedules_channel, sign_schedule_event, message, {
 					socket_id: req.body.socket_id,
 				});
 			}

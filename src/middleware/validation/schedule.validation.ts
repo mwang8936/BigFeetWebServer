@@ -1,4 +1,5 @@
 import { celebrate, Joi, Segments, Modes } from 'celebrate';
+import LENGTHS from './constants/lengths.constants';
 
 export const GetSchedulesValidation = celebrate(
 	{
@@ -45,6 +46,24 @@ export const UpdateScheduleValidation = celebrate(
 		})
 			.or('is_working', 'on_call', 'start', 'end', 'priority')
 			.append({ socket_id: Joi.string() }),
+	},
+	{ abortEarly: false },
+	{ mode: Modes.FULL }
+);
+
+export const SignScheduleValidation = celebrate(
+	{
+		[Segments.PARAMS]: Joi.object().keys({
+			date: Joi.date().iso().required(),
+			employee_id: Joi.number().integer().positive().required(),
+		}),
+		[Segments.BODY]: Joi.object({
+			password: Joi.string()
+				.trim()
+				.min(1)
+				.max(LENGTHS.employee.password)
+				.required(),
+		}).append({ socket_id: Joi.string() }),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
