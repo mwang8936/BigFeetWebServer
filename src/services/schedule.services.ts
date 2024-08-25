@@ -51,7 +51,8 @@ export const updateSchedule = async (
 	onCall?: boolean,
 	start?: Date | null,
 	end?: Date | null,
-	priority?: number | null
+	priority?: number | null,
+	addAward?: boolean
 ) => {
 	const schedule = await getSchedule(date, employeeId);
 
@@ -76,6 +77,10 @@ export const updateSchedule = async (
 
 		if (priority !== undefined) {
 			updates.priority = priority;
+		}
+
+		if (addAward !== undefined) {
+			updates.add_award = addAward;
 		}
 
 		Object.assign(schedule, updates);
@@ -104,7 +109,8 @@ export const createSchedule = async (
 	onCall?: boolean,
 	start?: Date | null,
 	end?: Date | null,
-	priority?: number | null
+	priority?: number | null,
+	addAward?: boolean
 ) => {
 	const employee = await Employee.findOne({
 		where: {
@@ -122,6 +128,7 @@ export const createSchedule = async (
 		start,
 		end,
 		priority,
+		add_award: addAward,
 	});
 
 	return await schedule.save();

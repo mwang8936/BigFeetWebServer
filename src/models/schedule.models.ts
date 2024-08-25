@@ -67,6 +67,11 @@ export class Schedule extends BaseEntity {
 	})
 	priority: number | null;
 
+	@Column({
+		default: false,
+	})
+	add_award: boolean;
+
 	@OneToMany(() => Reservation, (reservation) => reservation.schedule, {
 		eager: true,
 	})
