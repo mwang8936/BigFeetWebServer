@@ -5,6 +5,11 @@ import { Customer } from '../models/customer.models';
 export const getCustomers = async (withDeleted?: boolean) => {
 	return Customer.find({
 		withDeleted,
+		order: {
+			customer_name: 'ASC',
+			phone_number: 'ASC',
+			vip_serial: 'ASC',
+		},
 	});
 };
 

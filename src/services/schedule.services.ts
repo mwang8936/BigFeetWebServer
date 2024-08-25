@@ -6,7 +6,6 @@ import {
 	MoreThanOrEqual,
 } from 'typeorm';
 import { Schedule } from '../models/schedule.models';
-import { VipPackage } from '../models/vip-package.models';
 import { Employee } from '../models/employee.models';
 import { NotFoundError } from '../exceptions/not-found-error';
 
@@ -31,7 +30,7 @@ export const getSchedules = async (
 	return Schedule.find({
 		where: whereCondition,
 		order: {
-			date: 'DESC',
+			date: 'ASC',
 		},
 	});
 };
@@ -81,6 +80,17 @@ export const updateSchedule = async (
 
 		Object.assign(schedule, updates);
 
+		return schedule.save();
+	} else {
+		return null;
+	}
+};
+
+export const signSchedule = async (date: string, employeeId: number) => {
+	const schedule = await getSchedule(date, employeeId);
+
+	if (schedule) {
+		schedule.signed = true;
 		return schedule.save();
 	} else {
 		return null;

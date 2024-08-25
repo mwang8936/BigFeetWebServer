@@ -19,6 +19,9 @@ export const getGiftCards = async (start?: string, end?: string) => {
 
 	return GiftCard.find({
 		where: whereCondition,
+		order: {
+			gift_card_id: 'ASC',
+		},
 	});
 };
 

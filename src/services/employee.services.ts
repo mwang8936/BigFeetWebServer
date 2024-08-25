@@ -6,6 +6,9 @@ import { Gender, Permissions, Role } from '../models/enums';
 export const getEmployees = async (withDeleted?: boolean) => {
 	return Employee.find({
 		withDeleted,
+		order: {
+			username: 'ASC',
+		},
 	});
 };
 
@@ -14,6 +17,21 @@ export const getEmployee = async (
 	withDeleted?: boolean
 ) => {
 	return Employee.findOne({
+		where: {
+			employee_id: employeeId,
+		},
+		withDeleted,
+	});
+};
+
+export const getEmployeeHashedPassword = async (
+	employeeId: number,
+	withDeleted?: boolean
+) => {
+	return Employee.findOne({
+		select: {
+			password: true,
+		},
 		where: {
 			employee_id: employeeId,
 		},
