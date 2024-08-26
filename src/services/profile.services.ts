@@ -64,6 +64,25 @@ export const updateProfile = async (
 	}
 };
 
+export const changeProfilePassword = async (
+	employeeId: number,
+	newPassword: string
+) => {
+	const profile = await getProfile(employeeId);
+
+	if (profile) {
+		const updates: Partial<Employee> = {};
+
+		updates.password = newPassword;
+
+		Object.assign(profile, updates);
+
+		return profile.save();
+	} else {
+		return null;
+	}
+};
+
 export const signProfileSchedule = async (date: string, employeeId: number) => {
 	const schedule = await Schedule.findOne({
 		where: {

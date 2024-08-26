@@ -30,6 +30,7 @@ export const getEmployeeHashedPassword = async (
 ) => {
 	return Employee.findOne({
 		select: {
+			username: true,
 			password: true,
 		},
 		where: {
@@ -42,6 +43,7 @@ export const getEmployeeHashedPassword = async (
 export const updateEmployee = async (
 	employeeId: number,
 	username?: string,
+	password?: string,
 	firstName?: string,
 	lastName?: string,
 	gender?: Gender,
@@ -60,6 +62,10 @@ export const updateEmployee = async (
 		if (username !== undefined) {
 			await duplicateUsernameChecker(username, employeeId);
 			updates.username = username;
+		}
+
+		if (password !== undefined) {
+			updates.password = password;
 		}
 
 		if (firstName !== undefined) {

@@ -13,7 +13,7 @@ import {
 	update_schedule_event,
 } from '../events/schedule.events';
 import { getEmployeeHashedPassword } from '../services/employee.services';
-import { ForbiddenError } from '../exceptions/forbidden-error';
+import { IncorrectPasswordError } from '../exceptions/incorrect-password-error';
 
 export const getSchedules: RequestHandler = async (
 	req: Request,
@@ -142,14 +142,14 @@ export const signSchedule: RequestHandler = async (
 		const employeeId = parseInt(req.params.employee_id);
 
 		const account = await getEmployeeHashedPassword(employeeId);
-		if (account == null) throw new ForbiddenError();
+		if (account == null) throw new IncorrectPasswordError();
 
 		const hashedPassword = account.password;
 		const passwordMatch = await bcrypt.compare(
 			req.body.password,
 			hashedPassword
 		);
-		if (!passwordMatch) throw new ForbiddenError();
+		if (!passwordMatch) throw new IncorrectPasswordError(account.username);
 
 		const schedule = await ScheduleServices.signSchedule(date, employeeId);
 

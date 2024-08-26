@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as ScheduleServices from '../services/schedule.services';
@@ -11,6 +12,9 @@ import {
 	sign_schedule_event,
 } from '../events/schedule.events';
 import pusher from '../config/pusher.config';
+import { getEmployeeHashedPassword } from '../services/employee.services';
+import saltRounds from '../config/password.config';
+import { IncorrectPasswordError } from '../exceptions/incorrect-password-error';
 
 export const getProfile: RequestHandler = async (
 	req: Request,
@@ -100,6 +104,62 @@ export const updateProfile: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(profile));
+		} else {
+			res
+				.status(HttpCode.NOT_FOUND)
+				.header('Content-Type', 'application/json')
+				.send();
+		}
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const changeProfilePassword: RequestHandler = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		let jwt = req.headers.authorization;
+		if (!jwt)
+			throw new AuthorizationError(undefined, 'No authorization found.');
+		if (jwt.toLowerCase().startsWith('bearer')) {
+			jwt = jwt.slice('bearer'.length).trim();
+		}
+
+		const decodedToken = await validateToken(jwt);
+		const employeeId = decodedToken.employee_id;
+
+		const account = await getEmployeeHashedPassword(employeeId);
+		if (account == null) throw new IncorrectPasswordError();
+
+		const hashedPassword = account.password;
+
+		const passwordMatch = await bcrypt.compare(
+			req.body.old_password,
+			hashedPassword
+		);
+		if (!passwordMatch) throw new IncorrectPasswordError(account.username);
+
+		const newHashedPassword = await bcrypt.hash(
+			req.body.new_password,
+			saltRounds
+		);
+
+		const profile = await ProfileServices.changeProfilePassword(
+			employeeId,
+			newHashedPassword
+		);
+
+		if (profile) {
+			const respProfile = Object(profile);
+			delete respProfile['password'];
+
+			res
+				.status(HttpCode.OK)
+				.header('Content-Type', 'application/json')
+				.send(JSON.stringify(respProfile));
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
