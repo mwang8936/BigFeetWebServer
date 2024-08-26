@@ -44,6 +44,11 @@ export const UpdateEmployeeValidation = celebrate(
 				.min(1)
 				.max(LENGTHS.employee.username)
 				.alphanum(),
+			password: Joi.string()
+				.trim()
+				.min(1)
+				.max(LENGTHS.employee.password)
+				.required(),
 			first_name: Joi.string()
 				.trim()
 				.min(1)
@@ -80,6 +85,7 @@ export const UpdateEmployeeValidation = celebrate(
 		})
 			.or(
 				'username',
+				'password',
 				'first_name',
 				'last_name',
 				'gender',

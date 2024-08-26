@@ -11,6 +11,7 @@ import {
 	recover_employee_event,
 	update_employee_event,
 } from '../events/employee.events';
+import saltRounds from '../config/password.config';
 
 export const getEmployees: RequestHandler = async (
 	req: Request,
@@ -69,9 +70,12 @@ export const updateEmployee: RequestHandler = async (
 	try {
 		const employeeId = parseInt(req.params.employee_id);
 
+		const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+
 		const employee = await EmployeeServices.updateEmployee(
 			employeeId,
 			req.body.username,
+			hashedPassword,
 			req.body.first_name,
 			req.body.last_name,
 			req.body.gender,
@@ -84,10 +88,13 @@ export const updateEmployee: RequestHandler = async (
 		);
 
 		if (employee) {
+			const respEmployee = Object(employee);
+			delete respEmployee['password'];
+
 			res
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
-				.send(JSON.stringify(employee));
+				.send(JSON.stringify(respEmployee));
 
 			const message: EmployeeEventMessage = {
 				username: employee.username,
@@ -113,7 +120,7 @@ export const addEmployee: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const hashedPassword = await bcrypt.hash(req.body.password, 10);
+		const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
 
 		const employee = await EmployeeServices.createEmployee(
 			req.body.username,
