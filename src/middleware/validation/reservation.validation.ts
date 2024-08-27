@@ -43,6 +43,12 @@ export const UpdateReservationValidation = celebrate(
 			reserved_date: Joi.date().iso(),
 			employee_id: Joi.number().integer().positive(),
 			service_id: Joi.number().integer().positive(),
+			time: Joi.number()
+				.integer()
+				.positive()
+				.max(NUMBERS.service.time)
+				.allow(null),
+			beds_required: Joi.number().integer().min(0).allow(null),
 			customer_id: Joi.number().integer().positive().allow(null),
 			phone_number: Joi.string()
 				.length(LENGTHS.customer.phone_number)
@@ -103,6 +109,8 @@ export const UpdateReservationValidation = celebrate(
 				'reserved_date',
 				'employee_id',
 				'service_id',
+				'time',
+				'beds_required',
 				'customer_id',
 				'phone_number',
 				'vip_serial',
@@ -130,6 +138,12 @@ export const AddReservationValidation = celebrate({
 		reserved_date: Joi.date().iso().required(),
 		employee_id: Joi.number().integer().positive().required(),
 		service_id: Joi.number().integer().positive().required(),
+		time: Joi.number()
+			.integer()
+			.positive()
+			.max(NUMBERS.service.time)
+			.allow(null),
+		beds_required: Joi.number().integer().min(0).allow(null),
 		customer_id: Joi.number().integer().positive().allow(null),
 		phone_number: Joi.string()
 			.length(LENGTHS.customer.phone_number)

@@ -16,6 +16,8 @@ import { Gender, TipMethod } from './enums';
 import { Schedule } from './schedule.models';
 import { Service } from './service.models';
 
+import { DataStructureError } from '../exceptions/data-structure.error';
+
 import * as ScheduleServices from '../services/schedule.services';
 
 @Entity('reservations')
@@ -53,6 +55,18 @@ export class Reservation extends BaseEntity {
 		name: 'service_id',
 	})
 	service: Service;
+
+	@Column({
+		type: 'integer',
+		nullable: true,
+	})
+	time: number | null;
+
+	@Column({
+		type: 'integer',
+		nullable: true,
+	})
+	beds_required: number | null;
 
 	@ManyToOne(() => Customer, (customer) => customer.reservations, {
 		cascade: true,
@@ -205,7 +219,44 @@ export class Reservation extends BaseEntity {
 
 	@BeforeInsert()
 	@BeforeUpdate()
-	async ensureScheduleExists() {
+	async beforeFunction() {
+		await this.checkEndTime();
+		await this.ensureScheduleExists();
+	}
+
+	private async checkEndTime() {
+		const { reserved_date, service, time } = this;
+
+		const maxEndDate = new Date(
+			reserved_date.getTime() + service.time * (1000 * 60)
+		);
+
+		if (time) {
+			const endDate = new Date(reserved_date.getTime() + time * (1000 * 60));
+
+			if (endDate < reserved_date)
+				throw new DataStructureError(
+					'Reservation',
+					`end: ${endDate.toLocaleTimeString(
+						'en-US'
+					)} must be after reserved date: ${reserved_date.toLocaleTimeString(
+						'en-US'
+					)}`
+				);
+
+			if (endDate > maxEndDate)
+				throw new DataStructureError(
+					'Reservation',
+					`end: ${endDate.toLocaleTimeString(
+						'en-US'
+					)} must be before reserved end date: ${maxEndDate.toLocaleTimeString(
+						'en-US'
+					)}`
+				);
+		}
+	}
+
+	private async ensureScheduleExists() {
 		const { employee_id, date } = this;
 
 		let schedule = await ScheduleServices.getSchedule(date, employee_id);
