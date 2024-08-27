@@ -70,7 +70,10 @@ export const updateEmployee: RequestHandler = async (
 	try {
 		const employeeId = parseInt(req.params.employee_id);
 
-		const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+		let hashedPassword = undefined;
+		if (req.body.password) {
+			hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+		}
 
 		const employee = await EmployeeServices.updateEmployee(
 			employeeId,
