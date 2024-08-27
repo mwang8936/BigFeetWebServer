@@ -47,7 +47,7 @@ export const UpdateServiceValidation = celebrate(
 				.precision(1)
 				.min(0)
 				.max(NUMBERS.service.acupuncture),
-			beds_required: Joi.number().min(0),
+			beds_required: Joi.number().integer().min(0),
 			color: colorValidation,
 		})
 			.or(
@@ -96,7 +96,7 @@ export const AddServiceValidation = celebrate(
 				.precision(1)
 				.min(0)
 				.max(NUMBERS.service.acupuncture),
-			beds_required: Joi.number().min(0).required(),
+			beds_required: Joi.number().integer().min(0).required(),
 			color: colorValidation.required(),
 		})
 			.or('body', 'feet', 'acupuncture')

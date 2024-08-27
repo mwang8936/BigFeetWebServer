@@ -54,6 +54,8 @@ export const updateReservation = async (
 	date?: string,
 	employeeId?: number,
 	serviceId?: number,
+	time?: number | null,
+	bedsRequired?: number | null,
 	customerId?: number | null,
 	phoneNumber?: string | null,
 	vipSerial?: string | null,
@@ -99,6 +101,14 @@ export const updateReservation = async (
 			if (!service) throw new NotFoundError('Service', 'service id', serviceId);
 
 			updates.service = service;
+		}
+
+		if (time !== undefined) {
+			updates.time = time;
+		}
+
+		if (bedsRequired !== undefined) {
+			updates.beds_required = bedsRequired;
 		}
 
 		if (customerId !== undefined && customerId !== null) {
@@ -216,6 +226,8 @@ export const createReservation = async (
 	employeeId: number,
 	serviceId: number,
 	createdBy: string,
+	time?: number | null,
+	bedsRequired?: number | null,
 	customerId?: number | null,
 	phoneNumber?: string | null,
 	vipSerial?: string | null,
@@ -294,6 +306,8 @@ export const createReservation = async (
 		date,
 		employee_id: employeeId,
 		service,
+		time,
+		beds_required: bedsRequired,
 		customer,
 		requested_gender: requestedGender,
 		requested_employee: requestedEmployee,
