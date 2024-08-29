@@ -1,5 +1,7 @@
 import { Not } from 'typeorm';
+
 import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
+
 import { Customer } from '../models/customer.models';
 
 export const getCustomers = async (withDeleted?: boolean) => {

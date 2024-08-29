@@ -8,6 +8,7 @@ import { Customer } from '../models/customer.models';
 import { Schedule } from '../models/schedule.models';
 import { VipPackage } from '../models/vip-package.models';
 import { GiftCard } from '../models/gift-card.models';
+import { CustomerHistory } from '../models/customer-history.models';
 
 const AppDataSource = new DataSource({
 	type: 'postgres',
@@ -24,13 +25,14 @@ const AppDataSource = new DataSource({
 		connectionTimeoutMillis: 2000,
 	},
 	entities: [
-		Employee,
-		Schedule,
-		Reservation,
-		Service,
 		Customer,
-		VipPackage,
+		CustomerHistory,
+		Employee,
 		GiftCard,
+		Reservation,
+		Schedule,
+		Service,
+		VipPackage,
 	],
 	synchronize: false,
 	migrations:

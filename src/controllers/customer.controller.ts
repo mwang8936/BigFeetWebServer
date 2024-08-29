@@ -1,7 +1,12 @@
 import { RequestHandler, Request, Response, NextFunction } from 'express';
-import { HttpCode } from '../exceptions/custom-error';
-import * as CustomerServices from '../services/customer.services';
+
 import pusher from '../config/pusher.config';
+
+import { HttpCode } from '../exceptions/custom-error';
+
+import * as CustomerServices from '../services/customer.services';
+import * as CustomerHistoryServices from '../services/customer-history.services';
+
 import {
 	add_customer_event,
 	CustomerEventMessage,
@@ -10,6 +15,8 @@ import {
 	recover_customer_event,
 	update_customer_event,
 } from '../events/customer.events';
+
+import { validateDateTimeString } from '../utils/date.utils';
 
 export const getCustomers: RequestHandler = async (
 	req: Request,
@@ -20,6 +27,27 @@ export const getCustomers: RequestHandler = async (
 		const withDeleted = req.query.with_deleted === 'true';
 
 		const customers = await CustomerServices.getCustomers(withDeleted);
+
+		res
+			.status(HttpCode.OK)
+			.header('Content-Type', 'application/json')
+			.send(JSON.stringify(customers));
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const getCustomerHistories: RequestHandler = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const date: Date =
+			validateDateTimeString(req.query.date as string | undefined) ??
+			new Date();
+
+		const customers = await CustomerHistoryServices.getCustomerHistories(date);
 
 		res
 			.status(HttpCode.OK)

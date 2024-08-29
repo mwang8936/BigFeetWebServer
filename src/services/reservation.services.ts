@@ -12,6 +12,8 @@ import { Service } from '../models/service.models';
 import { Customer } from '../models/customer.models';
 import { NotFoundError } from '../exceptions/not-found-error';
 import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
+import { CustomerHistory } from '../models/customer-history.models';
+import AppDataSource from '../config/orm.config';
 
 export const getReservations = async (
 	fromDate?: Date,
@@ -111,46 +113,28 @@ export const updateReservation = async (
 			updates.beds_required = bedsRequired;
 		}
 
-		if (customerId !== undefined && customerId !== null) {
-			const customer = await Customer.findOne({
-				where: {
-					customer_id: customerId,
-				},
-			});
+		if (customerId) {
+			const customerHistoryRepository =
+				AppDataSource.getRepository(CustomerHistory);
 
-			if (!customer) {
+			const customerHistory = await customerHistoryRepository
+				.createQueryBuilder('customer_history')
+				.where('customer_history.customer_id = :customerId', { customerId })
+				.andWhere('customer_history.valid_from <= :date', {
+					date: reservedDate,
+				})
+				.andWhere(
+					'(customer_history.valid_to IS NULL OR customer_history.valid_to > :date)',
+					{ date: reservedDate }
+				)
+				.orderBy('customer_history.valid_from', 'DESC')
+				.getOne();
+
+			if (!customerHistory) {
 				throw new NotFoundError('Customer', 'customer id', customerId);
 			}
 
-			const customer_updates: Partial<Customer> = {};
-
-			if (phoneNumber !== undefined) {
-				if (phoneNumber) {
-					await duplicatePhoneNumberChecker(phoneNumber, customerId);
-				}
-
-				customer_updates.phone_number = phoneNumber;
-			}
-
-			if (vipSerial !== undefined) {
-				if (vipSerial) {
-					await duplicateVipSerialChecker(vipSerial, customerId);
-				}
-
-				customer_updates.vip_serial = vipSerial;
-			}
-
-			if (customerName !== undefined) {
-				customer_updates.customer_name = customerName;
-			}
-
-			if (notes !== undefined) {
-				customer_updates.notes = notes;
-			}
-
-			Object.assign(customer, customer_updates);
-
-			updates.customer = customer;
+			updates.customer = customerHistory;
 		} else if (phoneNumber || vipSerial) {
 			if (phoneNumber) {
 				await duplicatePhoneNumberChecker(phoneNumber);
@@ -166,8 +150,18 @@ export const updateReservation = async (
 				customer_name: customerName,
 				notes,
 			});
+			await customer.save();
 
-			updates.customer = customer;
+			const customerHistory = CustomerHistory.create({
+				customer_id: customer.customer_id,
+				valid_from: new Date(Date.UTC(1900, 0, 1)),
+				phone_number: customer.phone_number,
+				vip_serial: customer.vip_serial,
+				customer_name: customer.customer_name,
+				notes: customer.notes,
+			});
+
+			updates.customer = customerHistory;
 		} else if (customerId === null) {
 			updates.customer = null;
 		}
@@ -237,45 +231,27 @@ export const createReservation = async (
 	requestedEmployee?: boolean,
 	message?: string | null
 ) => {
-	let customer: Customer | null = null;
+	let customerHistory: CustomerHistory | null = null;
 	if (customerId !== undefined && customerId !== null) {
-		customer = await Customer.findOne({
-			where: {
-				customer_id: customerId,
-			},
-		});
+		const customerHistoryRepository =
+			AppDataSource.getRepository(CustomerHistory);
 
-		if (!customer) {
+		customerHistory = await customerHistoryRepository
+			.createQueryBuilder('customer_history')
+			.where('customer_history.customer_id = :customerId', { customerId })
+			.andWhere('customer_history.valid_from <= :date', {
+				date: reservedDate,
+			})
+			.andWhere(
+				'(customer_history.valid_to IS NULL OR customer_history.valid_to > :date)',
+				{ date: reservedDate }
+			)
+			.orderBy('customer_history.valid_from', 'DESC')
+			.getOne();
+
+		if (!customerHistory) {
 			throw new NotFoundError('Customer', 'customer id', customerId);
 		}
-
-		const customer_updates: Partial<Customer> = {};
-
-		if (phoneNumber !== undefined) {
-			if (phoneNumber) {
-				await duplicatePhoneNumberChecker(phoneNumber, customerId);
-			}
-
-			customer_updates.phone_number = phoneNumber;
-		}
-
-		if (vipSerial !== undefined) {
-			if (vipSerial) {
-				await duplicateVipSerialChecker(vipSerial, customerId);
-			}
-
-			customer_updates.vip_serial = vipSerial;
-		}
-
-		if (customerName !== undefined) {
-			customer_updates.customer_name = customerName;
-		}
-
-		if (notes !== undefined) {
-			customer_updates.notes = notes;
-		}
-
-		Object.assign(customer, customer_updates);
 	} else if (phoneNumber || vipSerial) {
 		if (phoneNumber) {
 			await duplicatePhoneNumberChecker(phoneNumber);
@@ -285,11 +261,22 @@ export const createReservation = async (
 			await duplicateVipSerialChecker(vipSerial);
 		}
 
-		customer = Customer.create({
+		const customer = Customer.create({
 			phone_number: phoneNumber,
 			vip_serial: vipSerial,
 			customer_name: customerName,
 			notes,
+		});
+
+		await customer.save();
+
+		const customerHistory = CustomerHistory.create({
+			customer_id: customer.customer_id,
+			valid_from: new Date(Date.UTC(1900, 0, 1)),
+			phone_number: customer.phone_number,
+			vip_serial: customer.vip_serial,
+			customer_name: customer.customer_name,
+			notes: customer.notes,
 		});
 	}
 
@@ -308,7 +295,7 @@ export const createReservation = async (
 		service,
 		time,
 		beds_required: bedsRequired,
-		customer,
+		customer: customerHistory,
 		requested_gender: requestedGender,
 		requested_employee: requestedEmployee,
 		message,

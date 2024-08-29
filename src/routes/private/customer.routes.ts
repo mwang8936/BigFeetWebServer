@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { Permissions } from '../../models/enums';
+
 import {
 	getCustomers,
 	getCustomer,
@@ -7,7 +7,11 @@ import {
 	addCustomer,
 	deleteCustomer,
 	recoverCustomer,
+	getCustomerHistories,
 } from '../../controllers/customer.controller';
+
+import authorize from '../../middleware/authentication.middleware';
+
 import {
 	GetCustomersValidation,
 	GetCustomerValidation,
@@ -15,8 +19,10 @@ import {
 	AddCustomerValidation,
 	DeleteCustomerValidation,
 	RecoverCustomerValidation,
+	GetCustomerHistoriesValidation,
 } from '../../middleware/validation/customer.validation';
-import authorize from '../../middleware/authentication.middleware';
+
+import { Permissions } from '../../models/enums';
 
 const router = Router();
 
@@ -26,6 +32,13 @@ router
 		authorize([Permissions.PERMISSION_GET_CUSTOMER]),
 		GetCustomersValidation,
 		getCustomers
+	);
+router
+	.route('/histories')
+	.get(
+		authorize([Permissions.PERMISSION_GET_CUSTOMER]),
+		GetCustomerHistoriesValidation,
+		getCustomerHistories
 	);
 router
 	.route('/:customer_id')

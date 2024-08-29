@@ -13,6 +13,16 @@ export const GetCustomersValidation = celebrate(
 	{ mode: Modes.FULL }
 );
 
+export const GetCustomerHistoriesValidation = celebrate(
+	{
+		[Segments.QUERY]: Joi.object().keys({
+			date: Joi.date().iso().required(),
+		}),
+	},
+	{ abortEarly: false },
+	{ mode: Modes.FULL }
+);
+
 export const GetCustomerValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
