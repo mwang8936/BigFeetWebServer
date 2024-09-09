@@ -11,7 +11,7 @@ import {
 	BeforeInsert,
 } from 'typeorm';
 
-import { CustomerHistory } from './customer-history.models';
+import { CustomerRecord } from './customer-record.models';
 import { Gender, TipMethod } from './enums';
 import { Schedule } from './schedule.models';
 import { Service } from './service.models';
@@ -68,7 +68,7 @@ export class Reservation extends BaseEntity {
 	})
 	beds_required: number | null;
 
-	@ManyToOne(() => CustomerHistory, (customer) => customer.reservations, {
+	@ManyToOne(() => CustomerRecord, (customer) => customer.reservations, {
 		onUpdate: 'CASCADE',
 		onDelete: 'SET NULL',
 		eager: true,
@@ -78,7 +78,7 @@ export class Reservation extends BaseEntity {
 		{ name: 'customer_id', referencedColumnName: 'customer_id' },
 		{ name: 'customer_valid_from', referencedColumnName: 'valid_from' },
 	])
-	customer: CustomerHistory | null;
+	customer: CustomerRecord | null;
 
 	@Column({
 		type: 'enum',

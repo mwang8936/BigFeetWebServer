@@ -1,14 +1,27 @@
-import { Not } from 'typeorm';
-
-import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
+import AppDataSource from '../config/orm.config';
 
 import { Customer } from '../models/customer.models';
+
+// export const getCustomers = async (
+// 	search?: string,
+// 	withDeleted?: boolean,
+// 	limit: number = 10,
+// 	offset: number = 0
+// ) => {
+// 	const customerRepository = AppDataSource.getRepository(Customer);
+
+// 	const queryBuilder = customerRepository.createQueryBuilder('customers');
+
+// 	if (withDeleted) {
+// 		queryBuilder.withDeleted();
+// 	}
+
+// };
 
 export const getCustomers = async (withDeleted?: boolean) => {
 	return Customer.find({
 		withDeleted,
 		order: {
-			customer_name: 'ASC',
 			phone_number: 'ASC',
 			vip_serial: 'ASC',
 		},
@@ -17,22 +30,22 @@ export const getCustomers = async (withDeleted?: boolean) => {
 
 export const getCustomer = async (
 	customerId: number,
-	withDeleted?: boolean
+	withDeleted?: boolean,
+	withRecords?: boolean
 ) => {
 	return Customer.findOne({
 		where: {
 			customer_id: customerId,
 		},
 		withDeleted,
+		relations: withRecords ? ['records'] : undefined,
 	});
 };
 
 export const updateCustomer = async (
 	customerId: number,
-	phoneNumber: string | null,
-	vipSerial: string | null,
-	customerName?: string | null,
-	notes?: string | null
+	phoneNumber?: string | null,
+	vipSerial?: string | null
 ) => {
 	const customer = await getCustomer(customerId);
 
@@ -40,27 +53,11 @@ export const updateCustomer = async (
 		const updates: Partial<Customer> = {};
 
 		if (phoneNumber !== undefined) {
-			if (phoneNumber !== null) {
-				await duplicatePhoneNumberChecker(phoneNumber, customerId);
-			}
-
 			updates.phone_number = phoneNumber;
 		}
 
 		if (vipSerial !== undefined) {
-			if (vipSerial !== null) {
-				await duplicateVipSerialChecker(vipSerial, customerId);
-			}
-
 			updates.vip_serial = vipSerial;
-		}
-
-		if (customerName !== undefined) {
-			updates.customer_name = customerName;
-		}
-
-		if (notes !== undefined) {
-			updates.notes = notes;
 		}
 
 		Object.assign(customer, updates);
@@ -72,20 +69,14 @@ export const updateCustomer = async (
 };
 
 export const createCustomer = async (
+	validFrom: string,
 	phoneNumber?: string,
 	vipSerial?: string,
 	customerName?: string,
 	notes?: string
 ) => {
-	if (phoneNumber !== undefined) {
-		await duplicatePhoneNumberChecker(phoneNumber);
-	}
-
-	if (vipSerial !== undefined) {
-		await duplicateVipSerialChecker(vipSerial);
-	}
-
 	const customer = Customer.create({
+		valid_from: validFrom,
 		phone_number: phoneNumber,
 		vip_serial: vipSerial,
 		customer_name: customerName,
@@ -109,48 +100,8 @@ export const recoverCustomer = async (customerId: number) => {
 	const customer = await getCustomer(customerId, true);
 
 	if (customer) {
-		if (customer.phone_number) {
-			await duplicatePhoneNumberChecker(customer.phone_number);
-		}
-
-		if (customer.vip_serial) {
-			await duplicateVipSerialChecker(customer.vip_serial);
-		}
-
 		return customer.recover();
 	} else {
 		return null;
-	}
-};
-
-const duplicatePhoneNumberChecker = async (
-	phoneNumber: string,
-	customerId?: number
-) => {
-	const duplicates = await Customer.find({
-		where: {
-			customer_id: customerId && Not(customerId),
-			phone_number: phoneNumber,
-		},
-	});
-
-	if (duplicates.length > 0) {
-		throw new DuplicateIdentifierError('Customer', 'Phone Number', phoneNumber);
-	}
-};
-
-const duplicateVipSerialChecker = async (
-	vipSerial: string,
-	customerId?: number
-) => {
-	const duplicates = await Customer.find({
-		where: {
-			customer_id: customerId && Not(customerId),
-			vip_serial: vipSerial,
-		},
-	});
-
-	if (duplicates.length > 0) {
-		throw new DuplicateIdentifierError('Customer', 'VIP Serial', vipSerial);
 	}
 };

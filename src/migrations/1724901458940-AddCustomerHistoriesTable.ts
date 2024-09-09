@@ -31,7 +31,7 @@ export class AddCustomerHistoriesTable1724901458940
             )
             SELECT
                 customer_id,
-                '1900-01-01 00:00:00+00'::timestamptz,
+                '2024-01-01',
                 deleted_at,
                 phone_number,
                 vip_serial,

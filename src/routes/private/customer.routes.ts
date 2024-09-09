@@ -3,11 +3,11 @@ import { Router } from 'express';
 import {
 	getCustomers,
 	getCustomer,
-	updateCustomer,
+	updateCustomerRecord,
 	addCustomer,
 	deleteCustomer,
 	recoverCustomer,
-	getCustomerHistories,
+	getCustomerRecords,
 } from '../../controllers/customer.controller';
 
 import authorize from '../../middleware/authentication.middleware';
@@ -38,7 +38,7 @@ router
 	.get(
 		authorize([Permissions.PERMISSION_GET_CUSTOMER]),
 		GetCustomerHistoriesValidation,
-		getCustomerHistories
+		getCustomerRecords
 	);
 router
 	.route('/:customer_id')
@@ -52,7 +52,7 @@ router
 	.patch(
 		authorize([Permissions.PERMISSION_UPDATE_CUSTOMER]),
 		UpdateCustomerValidation,
-		updateCustomer
+		updateCustomerRecord
 	);
 router
 	.route('/')

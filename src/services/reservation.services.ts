@@ -6,13 +6,12 @@ import {
 	In,
 	LessThanOrEqual,
 	MoreThanOrEqual,
-	Not,
 } from 'typeorm';
 import { Service } from '../models/service.models';
 import { Customer } from '../models/customer.models';
 import { NotFoundError } from '../exceptions/not-found-error';
-import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
-import { CustomerHistory } from '../models/customer-history.models';
+
+import { CustomerRecord } from '../models/customer-record.models';
 import AppDataSource from '../config/orm.config';
 
 export const getReservations = async (
@@ -47,6 +46,24 @@ export const getReservation = async (reservationId: number) => {
 			reservation_id: reservationId,
 		},
 	});
+};
+
+const getCustomerRecord = async (
+	customerId: number,
+	date: string
+): Promise<CustomerRecord | null> => {
+	const customerRecordsRepository = AppDataSource.getRepository(CustomerRecord);
+
+	return await customerRecordsRepository
+		.createQueryBuilder('customer_history')
+		.where('customer_history.customer_id = :customerId', { customerId })
+		.andWhere('customer_history.valid_from <= :date', { date })
+		.andWhere(
+			'(customer_history.valid_to IS NULL OR customer_history.valid_to > :date)',
+			{ date }
+		)
+		.orderBy('customer_history.valid_from', 'DESC')
+		.getOne();
 };
 
 export const updateReservation = async (
@@ -113,55 +130,39 @@ export const updateReservation = async (
 			updates.beds_required = bedsRequired;
 		}
 
+		const reservationDate = date ?? reservation.date;
+
 		if (customerId) {
-			const customerHistoryRepository =
-				AppDataSource.getRepository(CustomerHistory);
+			const customerRecord = await getCustomerRecord(
+				customerId,
+				reservationDate
+			);
 
-			const customerHistory = await customerHistoryRepository
-				.createQueryBuilder('customer_history')
-				.where('customer_history.customer_id = :customerId', { customerId })
-				.andWhere('customer_history.valid_from <= :date', {
-					date: reservedDate,
-				})
-				.andWhere(
-					'(customer_history.valid_to IS NULL OR customer_history.valid_to > :date)',
-					{ date: reservedDate }
-				)
-				.orderBy('customer_history.valid_from', 'DESC')
-				.getOne();
-
-			if (!customerHistory) {
+			if (!customerRecord) {
 				throw new NotFoundError('Customer', 'customer id', customerId);
 			}
 
-			updates.customer = customerHistory;
+			updates.customer = customerRecord;
 		} else if (phoneNumber || vipSerial) {
-			if (phoneNumber) {
-				await duplicatePhoneNumberChecker(phoneNumber);
-			}
-
-			if (vipSerial) {
-				await duplicateVipSerialChecker(vipSerial);
-			}
-
 			const customer = Customer.create({
 				phone_number: phoneNumber,
 				vip_serial: vipSerial,
 				customer_name: customerName,
 				notes,
 			});
+
 			await customer.save();
 
-			const customerHistory = CustomerHistory.create({
+			const customerRecord = CustomerRecord.create({
 				customer_id: customer.customer_id,
-				valid_from: new Date(Date.UTC(1900, 0, 1)),
+				valid_from: reservationDate,
 				phone_number: customer.phone_number,
 				vip_serial: customer.vip_serial,
 				customer_name: customer.customer_name,
 				notes: customer.notes,
 			});
 
-			updates.customer = customerHistory;
+			updates.customer = customerRecord;
 		} else if (customerId === null) {
 			updates.customer = null;
 		}
@@ -231,36 +232,14 @@ export const createReservation = async (
 	requestedEmployee?: boolean,
 	message?: string | null
 ) => {
-	let customerHistory: CustomerHistory | null = null;
+	let customerRecord: CustomerRecord | null = null;
 	if (customerId !== undefined && customerId !== null) {
-		const customerHistoryRepository =
-			AppDataSource.getRepository(CustomerHistory);
+		customerRecord = await getCustomerRecord(customerId, date);
 
-		customerHistory = await customerHistoryRepository
-			.createQueryBuilder('customer_history')
-			.where('customer_history.customer_id = :customerId', { customerId })
-			.andWhere('customer_history.valid_from <= :date', {
-				date: reservedDate,
-			})
-			.andWhere(
-				'(customer_history.valid_to IS NULL OR customer_history.valid_to > :date)',
-				{ date: reservedDate }
-			)
-			.orderBy('customer_history.valid_from', 'DESC')
-			.getOne();
-
-		if (!customerHistory) {
+		if (!customerRecord) {
 			throw new NotFoundError('Customer', 'customer id', customerId);
 		}
 	} else if (phoneNumber || vipSerial) {
-		if (phoneNumber) {
-			await duplicatePhoneNumberChecker(phoneNumber);
-		}
-
-		if (vipSerial) {
-			await duplicateVipSerialChecker(vipSerial);
-		}
-
 		const customer = Customer.create({
 			phone_number: phoneNumber,
 			vip_serial: vipSerial,
@@ -270,9 +249,9 @@ export const createReservation = async (
 
 		await customer.save();
 
-		const customerHistory = CustomerHistory.create({
+		customerRecord = CustomerRecord.create({
 			customer_id: customer.customer_id,
-			valid_from: new Date(Date.UTC(1900, 0, 1)),
+			valid_from: date,
 			phone_number: customer.phone_number,
 			vip_serial: customer.vip_serial,
 			customer_name: customer.customer_name,
@@ -295,7 +274,7 @@ export const createReservation = async (
 		service,
 		time,
 		beds_required: bedsRequired,
-		customer: customerHistory,
+		customer: customerRecord,
 		requested_gender: requestedGender,
 		requested_employee: requestedEmployee,
 		message,
@@ -313,37 +292,5 @@ export const deleteReservation = async (reservationId: number) => {
 		return reservation.remove();
 	} else {
 		return null;
-	}
-};
-
-const duplicatePhoneNumberChecker = async (
-	phoneNumber: string,
-	customerId?: number
-) => {
-	const duplicates = await Customer.find({
-		where: {
-			customer_id: customerId && Not(customerId),
-			phone_number: phoneNumber,
-		},
-	});
-
-	if (duplicates.length > 0) {
-		throw new DuplicateIdentifierError('Customer', 'Phone Number', phoneNumber);
-	}
-};
-
-const duplicateVipSerialChecker = async (
-	vipSerial: string,
-	customerId?: number
-) => {
-	const duplicates = await Customer.find({
-		where: {
-			customer_id: customerId && Not(customerId),
-			vip_serial: vipSerial,
-		},
-	});
-
-	if (duplicates.length > 0) {
-		throw new DuplicateIdentifierError('Customer', 'VIP Serial', vipSerial);
 	}
 };

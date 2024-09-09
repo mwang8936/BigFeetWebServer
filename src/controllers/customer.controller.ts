@@ -5,7 +5,7 @@ import pusher from '../config/pusher.config';
 import { HttpCode } from '../exceptions/custom-error';
 
 import * as CustomerServices from '../services/customer.services';
-import * as CustomerHistoryServices from '../services/customer-history.services';
+import * as CustomerRecordServices from '../services/customer-record.services';
 
 import {
 	add_customer_event,
@@ -16,7 +16,7 @@ import {
 	update_customer_event,
 } from '../events/customer.events';
 
-import { validateDateTimeString } from '../utils/date.utils';
+import { formatDateToYYYYMMDD } from '../utils/date.utils';
 
 export const getCustomers: RequestHandler = async (
 	req: Request,
@@ -24,9 +24,15 @@ export const getCustomers: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
+		const date: string = req.query.date
+			? (req.query.date as string)
+			: new Date().toISOString();
 		const withDeleted = req.query.with_deleted === 'true';
 
-		const customers = await CustomerServices.getCustomers(withDeleted);
+		const customers = await CustomerServices.getCustomers(
+			formatDateToYYYYMMDD(date),
+			withDeleted
+		);
 
 		res
 			.status(HttpCode.OK)
@@ -37,17 +43,19 @@ export const getCustomers: RequestHandler = async (
 	}
 };
 
-export const getCustomerHistories: RequestHandler = async (
+export const getCustomerRecords: RequestHandler = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
 	try {
-		const date: Date =
-			validateDateTimeString(req.query.date as string | undefined) ??
-			new Date();
+		const date: string = req.query.date
+			? (req.query.date as string)
+			: new Date().toISOString();
 
-		const customers = await CustomerHistoryServices.getCustomerHistories(date);
+		const customers = await CustomerRecordServices.getCustomerRecords(
+			formatDateToYYYYMMDD(date)
+		);
 
 		res
 			.status(HttpCode.OK)
@@ -66,10 +74,12 @@ export const getCustomer: RequestHandler = async (
 	try {
 		const customerId = parseInt(req.params.customer_id);
 		const withDeleted = req.query.with_deleted === 'true';
+		const withRecords = req.query.with_records === 'true';
 
 		const customer = await CustomerServices.getCustomer(
 			customerId,
-			withDeleted
+			withDeleted,
+			withRecords
 		);
 
 		if (customer) {
@@ -88,16 +98,18 @@ export const getCustomer: RequestHandler = async (
 	}
 };
 
-export const updateCustomer: RequestHandler = async (
+export const updateCustomerRecord: RequestHandler = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
 	try {
 		const customerId = parseInt(req.params.customer_id);
+		const date = formatDateToYYYYMMDD(req.params.date);
 
-		const customer = await CustomerServices.updateCustomer(
+		const customer = await CustomerRecordServices.updateCustomerRecord(
 			customerId,
+			date,
 			req.body.phone_number,
 			req.body.vip_serial,
 			req.body.customer_name,
@@ -111,6 +123,53 @@ export const updateCustomer: RequestHandler = async (
 				.send(JSON.stringify(customer));
 
 			const message: CustomerEventMessage = {
+				valid_from: customer.valid_from,
+				valid_to: customer.valid_to,
+				phone_number: customer.phone_number,
+				vip_serial: customer.vip_serial,
+			};
+
+			pusher.trigger(customers_channel, update_customer_event, message, {
+				socket_id: req.body.socket_id,
+			});
+		} else {
+			res
+				.status(HttpCode.NOT_FOUND)
+				.header('Content-Type', 'application/json')
+				.send();
+		}
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const addCustomerRecord: RequestHandler = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const customerId = parseInt(req.params.customer_id);
+		const date = formatDateToYYYYMMDD(req.params.date);
+
+		const customer = await CustomerRecordServices.addCustomerRecord(
+			customerId,
+			date,
+			req.body.phone_number,
+			req.body.vip_serial,
+			req.body.customer_name,
+			req.body.notes
+		);
+
+		if (customer) {
+			res
+				.status(HttpCode.OK)
+				.header('Content-Type', 'application/json')
+				.send(JSON.stringify(customer));
+
+			const message: CustomerEventMessage = {
+				valid_from: customer.valid_from,
+				valid_to: customer.valid_to,
 				phone_number: customer.phone_number,
 				vip_serial: customer.vip_serial,
 			};
@@ -135,7 +194,10 @@ export const addCustomer: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
+		const date = formatDateToYYYYMMDD(req.params.date);
+
 		const customer = await CustomerServices.createCustomer(
+			date,
 			req.body.phone_number,
 			req.body.vip_serial,
 			req.body.customer_name,
@@ -148,6 +210,7 @@ export const addCustomer: RequestHandler = async (
 			.send(JSON.stringify(customer));
 
 		const message: CustomerEventMessage = {
+			valid_from: customer.valid_from,
 			phone_number: customer.phone_number,
 			vip_serial: customer.vip_serial,
 		};

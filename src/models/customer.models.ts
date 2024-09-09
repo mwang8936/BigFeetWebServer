@@ -1,28 +1,27 @@
 import {
 	Entity,
 	BaseEntity,
-	Column,
 	OneToMany,
 	CreateDateColumn,
-	UpdateDateColumn,
 	DeleteDateColumn,
 	PrimaryGeneratedColumn,
-	BeforeInsert,
-	BeforeUpdate,
 	AfterInsert,
-	AfterUpdate,
-	AfterSoftRemove,
-	AfterRecover,
+	BeforeInsert,
+	Column,
+	BeforeUpdate,
 } from 'typeorm';
 
-import { CustomerHistory } from './customer-history.models';
+import { CustomerRecord } from './customer-record.models';
 
 import { DataStructureError } from '../exceptions/data-structure.error';
+import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
 
 @Entity('customers')
 export class Customer extends BaseEntity {
 	@PrimaryGeneratedColumn()
 	customer_id: number;
+
+	valid_from: string;
 
 	@Column({
 		type: 'varchar',
@@ -38,17 +37,7 @@ export class Customer extends BaseEntity {
 	})
 	vip_serial: string | null;
 
-	@Column({
-		type: 'varchar',
-		length: 60,
-		nullable: true,
-	})
 	customer_name: string | null;
-
-	@Column({
-		type: 'text',
-		nullable: true,
-	})
 	notes: string | null;
 
 	@CreateDateColumn({
@@ -56,124 +45,79 @@ export class Customer extends BaseEntity {
 	})
 	created_at: Date;
 
-	@UpdateDateColumn({
-		type: 'timestamptz',
-	})
-	updated_at: Date;
-
 	@DeleteDateColumn({
 		type: 'timestamptz',
 	})
 	deleted_at: Date | null;
 
-	@OneToMany(() => CustomerHistory, (history) => history.customer)
-	histories: CustomerHistory[];
+	@OneToMany(() => CustomerRecord, (record) => record.customer, {
+		eager: true,
+	})
+	records: CustomerRecord[];
 
 	@BeforeInsert()
 	@BeforeUpdate()
-	async checkPhoneNumberOrVipSerialExists() {
+	async beforeFunction() {
+		this.checkPhoneNumberOrVipSerialExists();
+		this.checkPhoneNumberOrVipSerialDuplicates();
+	}
+
+	private async checkPhoneNumberOrVipSerialExists() {
 		const { phone_number, vip_serial } = this;
 
 		if (phone_number === null && vip_serial === null) {
 			throw new DataStructureError(
-				'Schedule',
-				'phone number and vip serial cannot both be empty.'
+				'Customer',
+				"'phone number' and 'vip serial' cannot both be empty."
 			);
 		}
 	}
 
+	private async checkPhoneNumberOrVipSerialDuplicates() {
+		const { phone_number, vip_serial } = this;
+
+		if (phone_number !== null) {
+			const duplicates = await Customer.find({
+				where: {
+					phone_number,
+				},
+			});
+
+			if (duplicates.length > 0) {
+				throw new DuplicateIdentifierError(
+					'Customer',
+					'phone number',
+					phone_number
+				);
+			}
+		} else if (vip_serial !== null) {
+			const duplicates = await Customer.find({
+				where: {
+					vip_serial,
+				},
+			});
+
+			if (duplicates.length > 0) {
+				throw new DuplicateIdentifierError(
+					'Customer',
+					'VIP Serial',
+					vip_serial as string
+				);
+			}
+		}
+	}
+
 	@AfterInsert()
-	async addInitialHistory() {
-		const { customer_id, phone_number, vip_serial, customer_name, notes } =
-			this;
+	async addInitialRecord() {
+		const { customer_id, valid_from, customer_name, notes } = this;
 
-		const history = CustomerHistory.create({
+		const record = CustomerRecord.create({
 			customer_id,
-			valid_from: new Date(Date.UTC(1900, 0, 1)),
-			phone_number,
-			vip_serial,
+			valid_from,
 			customer_name,
 			notes,
 		});
 
-		history.save();
-	}
-
-	@AfterUpdate()
-	async addHistorySetPreviousHistoryInvalid() {
-		const {
-			customer_id,
-			phone_number,
-			vip_serial,
-			customer_name,
-			notes,
-			updated_at,
-		} = this;
-
-		const mostRecentHistory = await CustomerHistory.findOne({
-			where: {
-				customer_id,
-			},
-			order: {
-				valid_from: 'DESC',
-			},
-		});
-
-		if (mostRecentHistory) {
-			mostRecentHistory.valid_to = updated_at;
-
-			mostRecentHistory.save();
-		}
-
-		const history = CustomerHistory.create({
-			customer_id,
-			valid_from: updated_at,
-			phone_number,
-			vip_serial,
-			customer_name,
-			notes,
-		});
-
-		history.save();
-	}
-
-	@AfterSoftRemove()
-	async setMostRecentHistoryInvalid() {
-		const { customer_id, deleted_at } = this;
-
-		const mostRecentHistory = await CustomerHistory.findOne({
-			where: {
-				customer_id,
-			},
-			order: {
-				valid_from: 'DESC',
-			},
-		});
-
-		if (mostRecentHistory) {
-			mostRecentHistory.valid_to = deleted_at;
-
-			mostRecentHistory.save();
-		}
-	}
-
-	@AfterRecover()
-	async setMostRecentHistoryValid() {
-		const { customer_id } = this;
-
-		const mostRecentHistory = await CustomerHistory.findOne({
-			where: {
-				customer_id,
-			},
-			order: {
-				valid_from: 'DESC',
-			},
-		});
-
-		if (mostRecentHistory?.valid_to) {
-			mostRecentHistory.valid_to = null;
-
-			mostRecentHistory.save();
-		}
+		record.save();
 	}
 }

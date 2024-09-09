@@ -14,7 +14,7 @@ export class LinkReservationToCustomerHistories1724901705000
 		);
 		await queryRunner.query(`
             UPDATE "reservations"
-            SET "customer_valid_from" = '1899-12-31 16:00:00-08'
+            SET "customer_valid_from" = '2024-01-01'
             WHERE "customer_id" IS NOT NULL;
         `);
 		await queryRunner.query(
