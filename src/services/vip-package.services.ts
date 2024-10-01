@@ -5,7 +5,6 @@ import {
 	LessThanOrEqual,
 	MoreThanOrEqual,
 } from 'typeorm';
-import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
 import { Schedule } from '../models/schedule.models';
 import { VipPackage } from '../models/vip-package.models';
 import * as ScheduleServices from './schedule.services';
@@ -38,25 +37,30 @@ export const getVipPackages = async (
 	});
 };
 
-export const getVipPackage = async (serial: string) => {
+export const getVipPackage = async (vipPackageId: number) => {
 	return VipPackage.findOne({
 		where: {
-			serial,
+			vip_package_id: vipPackageId,
 		},
 	});
 };
 
 export const updateVipPackage = async (
-	serial: string,
+	vipPackageId: number,
+	serial?: string,
 	soldAmount?: number,
 	commissionAmount?: number,
 	date?: string,
 	employeeIds?: number[]
 ) => {
-	const vipPackage = await getVipPackage(serial);
+	const vipPackage = await getVipPackage(vipPackageId);
 
 	if (vipPackage) {
 		const updates: Partial<VipPackage> = {};
+
+		if (serial !== undefined) {
+			updates.serial = serial;
+		}
 
 		if (soldAmount !== undefined) {
 			updates.sold_amount = soldAmount;
@@ -111,8 +115,6 @@ export const createVipPackage = async (
 	date: string,
 	employeeIds: number[]
 ) => {
-	await duplicateSerialChecker(serial);
-
 	const schedules: Schedule[] = [];
 
 	for (const employeeId of employeeIds) {
@@ -138,24 +140,12 @@ export const createVipPackage = async (
 	return vipPackage.save();
 };
 
-export const deleteVipPackage = async (serial: string) => {
-	const vipPackage = await getVipPackage(serial);
+export const deleteVipPackage = async (vipPackageId: number) => {
+	const vipPackage = await getVipPackage(vipPackageId);
 
 	if (vipPackage) {
 		return vipPackage.remove();
 	} else {
 		return null;
-	}
-};
-
-const duplicateSerialChecker = async (serial: string) => {
-	const duplicates = await VipPackage.find({
-		where: {
-			serial,
-		},
-	});
-
-	if (duplicates.length > 0) {
-		throw new DuplicateIdentifierError('VIP Package', 'Serial', serial);
 	}
 };

@@ -26,10 +26,7 @@ export const GetVipPackagesValidation = celebrate(
 export const GetVipPackageValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
-			serial: Joi.string()
-				.length(LENGTHS.vip_package.serial)
-				.pattern(PATTERNS.vip_package.serial)
-				.required(),
+			vip_package_id: Joi.number().integer().positive().required(),
 		}),
 	},
 	{ abortEarly: false },
@@ -39,12 +36,12 @@ export const GetVipPackageValidation = celebrate(
 export const UpdateVipPackageValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
-			serial: Joi.string()
-				.length(LENGTHS.vip_package.serial)
-				.pattern(PATTERNS.vip_package.serial)
-				.required(),
+			vip_package_id: Joi.number().integer().positive().required(),
 		}),
 		[Segments.BODY]: Joi.object({
+			serial: Joi.string()
+				.length(LENGTHS.vip_package.serial)
+				.pattern(PATTERNS.vip_package.serial),
 			sold_amount: Joi.number()
 				.min(0)
 				.precision(2)
@@ -59,7 +56,7 @@ export const UpdateVipPackageValidation = celebrate(
 				.min(1)
 				.unique(),
 		})
-			.or('sold_amount', 'commission_amount', 'date', 'employee_ids')
+			.or('serial', 'sold_amount', 'commission_amount', 'date', 'employee_ids')
 			.with('date', 'employee_ids')
 			.with('employee_ids', 'date')
 			.append({ socket_id: Joi.string() }),
@@ -100,10 +97,7 @@ export const AddVipPackageValidation = celebrate(
 export const DeleteVipPackageValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
-			serial: Joi.string()
-				.length(LENGTHS.vip_package.serial)
-				.pattern(PATTERNS.vip_package.serial)
-				.required(),
+			vip_package_id: Joi.number().integer().positive().required(),
 		}),
 		[Segments.BODY]: Joi.object().keys({
 			socket_id: Joi.string(),

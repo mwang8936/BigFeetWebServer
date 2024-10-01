@@ -26,14 +26,14 @@ router
 		getVipPackages
 	);
 router
-	.route('/:serial')
+	.route('/:vip_package_id')
 	.get(
 		authorize([Permissions.PERMISSION_GET_VIP_PACKAGE]),
 		GetVipPackageValidation,
 		getVipPackage
 	);
 router
-	.route('/:serial')
+	.route('/:vip_package_id')
 	.patch(
 		authorize([Permissions.PERMISSION_UPDATE_VIP_PACKAGE]),
 		UpdateVipPackageValidation,
@@ -47,7 +47,7 @@ router
 		addVipPackage
 	);
 router
-	.route('/:serial')
+	.route('/:vip_package_id')
 	.delete(
 		authorize([Permissions.PERMISSION_DELETE_VIP_PACKAGE]),
 		DeleteVipPackageValidation,

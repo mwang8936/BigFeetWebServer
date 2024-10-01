@@ -51,9 +51,9 @@ export const getVipPackage: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const vipPackage = await VipPackagesServices.getVipPackage(
-			req.params.serial
-		);
+		const vipPackageId = parseInt(req.params.vip_package_id);
+
+		const vipPackage = await VipPackagesServices.getVipPackage(vipPackageId);
 
 		if (vipPackage) {
 			res
@@ -77,8 +77,11 @@ export const updateVipPackage: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
+		const vipPackageId = parseInt(req.params.vip_package_id);
+
 		const vipPackage = await VipPackagesServices.updateVipPackage(
-			req.params.serial,
+			vipPackageId,
+			req.body.serial,
 			req.body.sold_amount,
 			req.body.commission_amount,
 			req.body.date ? formatDateToYYYYMMDD(req.body.date) : undefined,
@@ -148,9 +151,9 @@ export const deleteVipPackage: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const vipPackage = await VipPackagesServices.deleteVipPackage(
-			req.params.serial
-		);
+		const vipPackageId = parseInt(req.params.vip_package_id);
+
+		const vipPackage = await VipPackagesServices.deleteVipPackage(vipPackageId);
 
 		if (vipPackage) {
 			res

@@ -86,7 +86,9 @@ export class Schedule extends BaseEntity {
 			{ name: 'date', referencedColumnName: 'date' },
 			{ name: 'employee_id', referencedColumnName: 'employee_id' },
 		],
-		inverseJoinColumns: [{ name: 'serial', referencedColumnName: 'serial' }],
+		inverseJoinColumns: [
+			{ name: 'vip_package_id', referencedColumnName: 'vip_package_id' },
+		],
 	})
 	vip_packages: VipPackage[];
 
