@@ -2,7 +2,11 @@ import bcrypt from 'bcrypt';
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as ScheduleServices from '../services/schedule.services';
-import { formatDateToYYYYMMDD, validateDateString } from '../utils/date.utils';
+import {
+	convertDateToYearMonthDayObject,
+	formatDateToYYYYMMDD,
+	validateDateString,
+} from '../utils/date.utils';
 import pusher from '../config/pusher.config';
 import {
 	add_schedule_event,
@@ -21,11 +25,13 @@ export const getSchedules: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const start: string | undefined = req.query.start
-			? formatDateToYYYYMMDD(req.query.start as string)
+		const start: { year: number; month: number; day: number } | undefined = req
+			.query.start
+			? convertDateToYearMonthDayObject(req.query.start as string)
 			: undefined;
-		const end: string | undefined = req.query.end
-			? formatDateToYYYYMMDD(req.query.end as string)
+		const end: { year: number; month: number; day: number } | undefined = req
+			.query.end
+			? convertDateToYearMonthDayObject(req.query.end as string)
 			: undefined;
 		const employeeIds: number[] | undefined = (req.query
 			.employee_ids as string[])
@@ -55,7 +61,7 @@ export const getSchedule: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const date = formatDateToYYYYMMDD(req.params.date);
+		const date = convertDateToYearMonthDayObject(req.params.date);
 		const employeeId = parseInt(req.params.employee_id);
 
 		const schedule = await ScheduleServices.getSchedule(date, employeeId);
@@ -82,7 +88,7 @@ export const updateSchedule: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const date = formatDateToYYYYMMDD(req.params.date);
+		const date = convertDateToYearMonthDayObject(req.params.date);
 		const employeeId = parseInt(req.params.employee_id);
 
 		const start =
@@ -138,7 +144,7 @@ export const signSchedule: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const date = formatDateToYYYYMMDD(req.params.date);
+		const date = convertDateToYearMonthDayObject(req.params.date);
 		const employeeId = parseInt(req.params.employee_id);
 
 		const account = await getEmployeeHashedPassword(employeeId);
@@ -186,7 +192,7 @@ export const addSchedule: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const date = formatDateToYYYYMMDD(req.body.date);
+		const date = convertDateToYearMonthDayObject(req.body.date);
 
 		const start =
 			req.body.start === null
@@ -234,7 +240,7 @@ export const deleteSchedule: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const date = formatDateToYYYYMMDD(req.params.date);
+		const date = convertDateToYearMonthDayObject(req.params.date);
 		const employeeId = parseInt(req.params.employee_id);
 
 		const schedule = await ScheduleServices.deleteSchedule(date, employeeId);

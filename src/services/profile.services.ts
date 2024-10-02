@@ -83,16 +83,22 @@ export const changeProfilePassword = async (
 	}
 };
 
-export const signProfileSchedule = async (date: string, employeeId: number) => {
+export const signProfileSchedule = async (
+	date: { year: number; month: number; day: number },
+	employeeId: number
+) => {
 	const schedule = await Schedule.findOne({
 		where: {
-			date,
+			year: date.year,
+			month: date.month,
+			day: date.day,
 			employee_id: employeeId,
 		},
 	});
 
 	if (schedule) {
 		schedule.signed = true;
+
 		return schedule.save();
 	} else {
 		return null;

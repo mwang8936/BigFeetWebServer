@@ -1,11 +1,13 @@
 import bcrypt from 'bcrypt';
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
-import * as ScheduleServices from '../services/schedule.services';
 import * as ProfileServices from '../services/profile.services';
 import { AuthorizationError } from '../exceptions/authorization-error';
 import { validateToken } from '../utils/jwt.utils';
-import { formatDateToYYYYMMDD } from '../utils/date.utils';
+import {
+	convertDateToYearMonthDayObject,
+	formatDateToYYYYMMDD,
+} from '../utils/date.utils';
 import {
 	ScheduleEventMessage,
 	schedules_channel,
@@ -187,15 +189,12 @@ export const signProfileSchedule: RequestHandler = async (
 		const decodedToken = await validateToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
-		const date = formatDateToYYYYMMDD(req.params.date);
+		const date = convertDateToYearMonthDayObject(req.params.date);
 
-		let schedule = await ScheduleServices.getSchedule(date, employeeId);
-
-		if (!schedule) {
-			await ScheduleServices.createSchedule(date, employeeId);
-		}
-
-		schedule = await ProfileServices.signProfileSchedule(date, employeeId);
+		const schedule = await ProfileServices.signProfileSchedule(
+			date,
+			employeeId
+		);
 
 		if (schedule) {
 			res

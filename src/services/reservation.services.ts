@@ -35,6 +35,7 @@ export const getReservations = async (
 		where: whereCondition,
 		order: {
 			reserved_date: 'ASC',
+			employee_id: 'ASC',
 		},
 	});
 };
@@ -51,7 +52,7 @@ export const updateReservation = async (
 	reservationId: number,
 	updatedBy: string,
 	reservedDate?: Date,
-	date?: string,
+	date?: { year: number; month: number; day: number },
 	employeeId?: number,
 	serviceId?: number,
 	time?: number | null,
@@ -84,7 +85,9 @@ export const updateReservation = async (
 		}
 
 		if (date !== undefined) {
-			updates.date = date;
+			updates.year = date.year;
+			updates.month = date.month;
+			updates.day = date.day;
 		}
 
 		if (employeeId !== undefined) {
@@ -222,7 +225,7 @@ export const updateReservation = async (
 
 export const createReservation = async (
 	reservedDate: Date,
-	date: string,
+	date: { year: number; month: number; day: number },
 	employeeId: number,
 	serviceId: number,
 	createdBy: string,
@@ -303,7 +306,9 @@ export const createReservation = async (
 
 	const reservation = Reservation.create({
 		reserved_date: reservedDate,
-		date,
+		year: date.year,
+		month: date.month,
+		day: date.day,
 		employee_id: employeeId,
 		service,
 		time,

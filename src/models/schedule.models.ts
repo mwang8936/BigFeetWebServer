@@ -10,6 +10,8 @@ import {
 	JoinTable,
 	BeforeInsert,
 	BeforeUpdate,
+	Check,
+	AfterLoad,
 } from 'typeorm';
 
 import { Employee } from './employee.models';
@@ -17,12 +19,22 @@ import { Reservation } from './reservation.models';
 import { VipPackage } from './vip-package.models';
 
 import { DataStructureError } from '../exceptions/data-structure.error';
+import { isValidDate } from '../utils/date.utils';
 
 @Entity('schedules')
+@Check(`"year" >= 2020`)
+@Check(`"month" >= 1 AND month <= 12`)
+@Check(`"day" >= 1 AND day <= 31`)
 export class Schedule extends BaseEntity {
-	@PrimaryColumn({
-		type: 'date',
-	})
+	@PrimaryColumn()
+	year: number;
+
+	@PrimaryColumn()
+	month: number;
+
+	@PrimaryColumn()
+	day: number;
+
 	date: string;
 
 	@PrimaryColumn()
@@ -83,7 +95,9 @@ export class Schedule extends BaseEntity {
 	})
 	@JoinTable({
 		joinColumns: [
-			{ name: 'date', referencedColumnName: 'date' },
+			{ name: 'year', referencedColumnName: 'year' },
+			{ name: 'month', referencedColumnName: 'month' },
+			{ name: 'day', referencedColumnName: 'day' },
 			{ name: 'employee_id', referencedColumnName: 'employee_id' },
 		],
 		inverseJoinColumns: [
@@ -99,7 +113,12 @@ export class Schedule extends BaseEntity {
 
 	@BeforeInsert()
 	@BeforeUpdate()
-	async checkStartEndValid() {
+	async beforeFunction() {
+		this.checkStartEndValid();
+		this.checkDateValid();
+	}
+
+	private async checkStartEndValid() {
 		const { start, end } = this;
 
 		const timeStringToDate = (time: string | Date) => {
@@ -151,5 +170,19 @@ export class Schedule extends BaseEntity {
 				);
 			}
 		}
+	}
+
+	private async checkDateValid() {
+		const { year, month, day } = this;
+		if (!isValidDate(year, month, day)) {
+			throw new DataStructureError('Schedule', 'invalid date');
+		}
+	}
+
+	@AfterLoad()
+	async setDate() {
+		const { year, month, day } = this;
+
+		this.date = `${year}-${month}-${day}`;
 	}
 }

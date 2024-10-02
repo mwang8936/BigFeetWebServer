@@ -10,22 +10,36 @@ import { VipPackage } from '../models/vip-package.models';
 import * as ScheduleServices from './schedule.services';
 
 export const getVipPackages = async (
-	start?: string,
-	end?: string,
+	start?: { year: number; month: number; day: number },
+	end?: { year: number; month: number; day: number },
 	employeeIds?: number[]
 ) => {
 	const whereCondition: FindOptionsWhere<Schedule>[] = [];
 	if (start && end) {
-		whereCondition.push({ date: Between(start, end) });
+		whereCondition.push({
+			year: Between(start.year, end.year),
+			month: Between(start.month, end.month),
+			day: Between(start.day, end.day),
+		});
 	} else if (start) {
-		whereCondition.push({ date: MoreThanOrEqual(start) });
+		whereCondition.push({
+			year: MoreThanOrEqual(start.year),
+			month: MoreThanOrEqual(start.month),
+			day: MoreThanOrEqual(start.day),
+		});
 	} else if (end) {
-		whereCondition.push({ date: LessThanOrEqual(end) });
+		whereCondition.push({
+			year: LessThanOrEqual(end.year),
+			month: LessThanOrEqual(end.month),
+			day: LessThanOrEqual(end.day),
+		});
 	}
-	employeeIds &&
+
+	if (employeeIds) {
 		whereCondition.push({
 			employee_id: In(employeeIds),
 		});
+	}
 
 	return VipPackage.find({
 		where: {
@@ -50,7 +64,7 @@ export const updateVipPackage = async (
 	serial?: string,
 	soldAmount?: number,
 	commissionAmount?: number,
-	date?: string,
+	date?: { year: number; month: number; day: number },
 	employeeIds?: number[]
 ) => {
 	const vipPackage = await getVipPackage(vipPackageId);
@@ -112,7 +126,7 @@ export const createVipPackage = async (
 	serial: string,
 	soldAmount: number,
 	commissionAmount: number,
-	date: string,
+	date: { year: number; month: number; day: number },
 	employeeIds: number[]
 ) => {
 	const schedules: Schedule[] = [];
