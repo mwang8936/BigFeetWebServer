@@ -8,6 +8,7 @@ import { Customer } from '../models/customer.models';
 import { Schedule } from '../models/schedule.models';
 import { VipPackage } from '../models/vip-package.models';
 import { GiftCard } from '../models/gift-card.models';
+import { Payroll } from '../models/payroll.models';
 
 const AppDataSource = new DataSource({
 	type: 'postgres',
@@ -31,6 +32,7 @@ const AppDataSource = new DataSource({
 		Customer,
 		VipPackage,
 		GiftCard,
+		Payroll,
 	],
 	synchronize: false,
 	migrations:

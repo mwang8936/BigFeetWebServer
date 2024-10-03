@@ -11,6 +11,7 @@ import {
 
 import { Gender, Language, Permissions, Role } from './enums';
 import { Schedule } from './schedule.models';
+import { Payroll } from './payroll.models';
 
 @Entity('employees')
 export class Employee extends BaseEntity {
@@ -147,4 +148,7 @@ export class Employee extends BaseEntity {
 
 	@OneToMany(() => Schedule, (schedule) => schedule.employee)
 	schedules: Schedule[];
+
+	@OneToMany(() => Payroll, (payroll) => payroll.employee)
+	payrolls: Payroll[];
 }

@@ -14,22 +14,23 @@ import { NotFoundError } from '../exceptions/not-found-error';
 import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
 
 export const getReservations = async (
-	fromDate?: Date,
-	toDate?: Date,
+	start?: Date,
+	end?: Date,
 	employeeIds?: number[]
 ) => {
-	const whereCondition: FindOptionsWhere<Reservation>[] = [];
-	if (fromDate && toDate) {
-		whereCondition.push({ reserved_date: Between(fromDate, toDate) });
-	} else if (fromDate) {
-		whereCondition.push({ reserved_date: MoreThanOrEqual(fromDate) });
-	} else if (toDate) {
-		whereCondition.push({ reserved_date: LessThanOrEqual(toDate) });
+	const whereCondition: FindOptionsWhere<Reservation> = {};
+
+	if (start && end) {
+		whereCondition.reserved_date = Between(start, end);
+	} else if (start) {
+		whereCondition.reserved_date = MoreThanOrEqual(start);
+	} else if (end) {
+		whereCondition.reserved_date = LessThanOrEqual(end);
 	}
-	employeeIds &&
-		whereCondition.push({
-			employee_id: In(employeeIds),
-		});
+
+	if (employeeIds) {
+		whereCondition.employee_id = In(employeeIds);
+	}
 
 	return Reservation.find({
 		where: whereCondition,
