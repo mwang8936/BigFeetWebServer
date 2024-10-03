@@ -6,13 +6,17 @@ import {
 	ManyToMany,
 	CreateDateColumn,
 	UpdateDateColumn,
+	PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { Schedule } from './schedule.models';
 
 @Entity('vip_packages_sold')
 export class VipPackage extends BaseEntity {
-	@PrimaryColumn({
+	@PrimaryGeneratedColumn()
+	vip_package_id: number;
+
+	@Column({
 		length: 6,
 	})
 	serial: string;
