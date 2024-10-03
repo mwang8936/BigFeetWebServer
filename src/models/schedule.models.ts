@@ -18,8 +18,12 @@ import { Employee } from './employee.models';
 import { Reservation } from './reservation.models';
 import { VipPackage } from './vip-package.models';
 
+import * as PayrollServices from '../services/payroll.services';
+
 import { DataStructureError } from '../exceptions/data-structure.error';
 import { isValidDate } from '../utils/date.utils';
+import { Payroll } from './payroll.models';
+import { PayrollPart } from './enums';
 
 @Entity('schedules')
 @Check(`"year" >= 2020`)
@@ -34,6 +38,13 @@ export class Schedule extends BaseEntity {
 
 	@PrimaryColumn()
 	day: number;
+
+	@Column({
+		type: 'enum',
+		enum: PayrollPart,
+		nullable: true,
+	})
+	part: PayrollPart | null;
 
 	date: string;
 
@@ -106,16 +117,35 @@ export class Schedule extends BaseEntity {
 	})
 	vip_packages: VipPackage[];
 
+	@ManyToOne(() => Payroll, (payroll) => payroll.schedules, {
+		onUpdate: 'CASCADE',
+		onDelete: 'SET NULL',
+		nullable: true,
+	})
+	@JoinColumn([
+		{ name: 'year', referencedColumnName: 'year' },
+		{ name: 'month', referencedColumnName: 'month' },
+		{ name: 'part', referencedColumnName: 'part' },
+		{ name: 'employee_id', referencedColumnName: 'employee_id' },
+	])
+	payroll: Payroll | null;
+
 	@Column({
 		default: false,
 	})
 	signed: boolean;
 
 	@BeforeInsert()
+	async beforeInsert() {
+		await this.checkStartEndValid();
+		await this.checkDateValid();
+		await this.assignPayroll();
+	}
+
 	@BeforeUpdate()
-	async beforeFunction() {
-		this.checkStartEndValid();
-		this.checkDateValid();
+	async beforeUpdate() {
+		await this.checkStartEndValid();
+		await this.checkDateValid();
 	}
 
 	private async checkStartEndValid() {
@@ -176,6 +206,27 @@ export class Schedule extends BaseEntity {
 		const { year, month, day } = this;
 		if (!isValidDate(year, month, day)) {
 			throw new DataStructureError('Schedule', 'invalid date');
+		}
+	}
+
+	private async assignPayroll() {
+		const { year, month, day, employee_id } = this;
+
+		let part = PayrollPart.PART_1;
+
+		if (day >= 16 && day <= 31) {
+			part = PayrollPart.PART_2;
+		}
+
+		let payroll = await PayrollServices.getPayroll(
+			year,
+			month,
+			part,
+			employee_id
+		);
+
+		if (payroll) {
+			this.payroll = payroll;
 		}
 	}
 

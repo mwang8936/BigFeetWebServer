@@ -14,31 +14,23 @@ export const getVipPackages = async (
 	end?: { year: number; month: number; day: number },
 	employeeIds?: number[]
 ) => {
-	const whereCondition: FindOptionsWhere<Schedule>[] = [];
+	const whereCondition: FindOptionsWhere<Schedule> = {};
 	if (start && end) {
-		whereCondition.push({
-			year: Between(start.year, end.year),
-			month: Between(start.month, end.month),
-			day: Between(start.day, end.day),
-		});
+		whereCondition.year = Between(start.year, end.year);
+		whereCondition.month = Between(start.month, end.month);
+		whereCondition.day = Between(start.day, end.day);
 	} else if (start) {
-		whereCondition.push({
-			year: MoreThanOrEqual(start.year),
-			month: MoreThanOrEqual(start.month),
-			day: MoreThanOrEqual(start.day),
-		});
+		whereCondition.year = MoreThanOrEqual(start.year);
+		whereCondition.month = MoreThanOrEqual(start.month);
+		whereCondition.day = MoreThanOrEqual(start.day);
 	} else if (end) {
-		whereCondition.push({
-			year: LessThanOrEqual(end.year),
-			month: LessThanOrEqual(end.month),
-			day: LessThanOrEqual(end.day),
-		});
+		whereCondition.year = LessThanOrEqual(end.year);
+		whereCondition.month = LessThanOrEqual(end.month);
+		whereCondition.day = LessThanOrEqual(end.day);
 	}
 
 	if (employeeIds) {
-		whereCondition.push({
-			employee_id: In(employeeIds),
-		});
+		whereCondition.employee_id = In(employeeIds);
 	}
 
 	return VipPackage.find({

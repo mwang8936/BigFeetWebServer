@@ -4,6 +4,8 @@ import {
 	Gender,
 	Language,
 	PaymentMethod,
+	PayrollOption,
+	PayrollPart,
 	Permissions,
 	Role,
 	ServiceColor,
@@ -34,6 +36,18 @@ export const paymentMethodValidation = Joi.string().valid(
 	PaymentMethod.MACHINE
 );
 
+export const payrollOptionValidation = Joi.string().valid(
+	PayrollOption.ACUPUNCTURIST,
+	PayrollOption.RECEPTIONIST,
+	PayrollOption.STORE_EMPLOYEE,
+	PayrollOption.STORE_EMPLOYEE_WITH_TIPS_AND_CASH
+);
+
+export const payrollPartValidation = Joi.number().valid(
+	PayrollPart.PART_1,
+	PayrollPart.PART_2
+);
+
 export const permissionsValidation = Joi.array().items(
 	Joi.string().valid(
 		Permissions.PERMISSION_GET_CUSTOMER,
@@ -48,6 +62,10 @@ export const permissionsValidation = Joi.array().items(
 		Permissions.PERMISSION_UPDATE_GIFT_CARD,
 		Permissions.PERMISSION_ADD_GIFT_CARD,
 		Permissions.PERMISSION_DELETE_GIFT_CARD,
+		Permissions.PERMISSION_GET_PAYROLL,
+		Permissions.PERMISSION_UPDATE_PAYROLL,
+		Permissions.PERMISSION_ADD_PAYROLL,
+		Permissions.PERMISSION_DELETE_PAYROLL,
 		Permissions.PERMISSION_GET_SCHEDULE,
 		Permissions.PERMISSION_UPDATE_SCHEDULE,
 		Permissions.PERMISSION_ADD_SCHEDULE,
@@ -71,6 +89,7 @@ export const roleValidation = Joi.string().valid(
 	Role.DEVELOPER,
 	Role.MANAGER,
 	Role.RECEPTIONIST,
+	Role.ACUPUNCTURIST,
 	Role.STORE_EMPLOYEE,
 	Role.OTHER
 );

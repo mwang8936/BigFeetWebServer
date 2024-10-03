@@ -68,12 +68,65 @@ export const getProfileSchedules: RequestHandler = async (
 		const decodedToken = await validateToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
-		const schedules = await ProfileServices.getProfileSchedules(employeeId);
+		const start: { year: number; month: number; day: number } | undefined = req
+			.query.start
+			? convertDateToYearMonthDayObject(req.query.start as string)
+			: undefined;
+		const end: { year: number; month: number; day: number } | undefined = req
+			.query.end
+			? convertDateToYearMonthDayObject(req.query.end as string)
+			: undefined;
+
+		const schedules = await ProfileServices.getProfileSchedules(
+			employeeId,
+			start,
+			end
+		);
 
 		res
 			.status(HttpCode.OK)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(schedules));
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const getProfilePayrolls: RequestHandler = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		let jwt = req.headers.authorization;
+		if (!jwt)
+			throw new AuthorizationError(undefined, 'No authorization found.');
+		if (jwt.toLowerCase().startsWith('bearer')) {
+			jwt = jwt.slice('bearer'.length).trim();
+		}
+
+		const decodedToken = await validateToken(jwt);
+		const employeeId = decodedToken.employee_id;
+
+		const start: { year: number; month: number; day: number } | undefined = req
+			.query.start
+			? convertDateToYearMonthDayObject(req.query.start as string)
+			: undefined;
+		const end: { year: number; month: number; day: number } | undefined = req
+			.query.end
+			? convertDateToYearMonthDayObject(req.query.end as string)
+			: undefined;
+
+		const payrolls = await ProfileServices.getProfilePayrolls(
+			employeeId,
+			start,
+			end
+		);
+
+		res
+			.status(HttpCode.OK)
+			.header('Content-Type', 'application/json')
+			.send(JSON.stringify(payrolls));
 	} catch (err) {
 		next(err);
 	}

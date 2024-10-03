@@ -8,13 +8,13 @@ import { GiftCard } from '../models/gift-card.models';
 import { PaymentMethod } from '../models/enums';
 
 export const getGiftCards = async (start?: string, end?: string) => {
-	const whereCondition: FindOptionsWhere<GiftCard>[] = [];
+	const whereCondition: FindOptionsWhere<GiftCard> = {};
 	if (start && end) {
-		whereCondition.push({ date: Between(start, end) });
+		whereCondition.date = Between(start, end);
 	} else if (start) {
-		whereCondition.push({ date: MoreThanOrEqual(start) });
+		whereCondition.date = MoreThanOrEqual(start);
 	} else if (end) {
-		whereCondition.push({ date: LessThanOrEqual(end) });
+		whereCondition.date = LessThanOrEqual(end);
 	}
 
 	return GiftCard.find({
