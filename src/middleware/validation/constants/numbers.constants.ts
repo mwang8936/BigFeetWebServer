@@ -1,4 +1,16 @@
 const NUMBERS = {
+	acupuncture_report: {
+		year: {
+			min: 2020,
+		},
+		month: {
+			min: 1,
+			max: 12,
+		},
+		acupuncture_percentage: 1,
+		massage_percentage: 1,
+		insurance_percentage: 1,
+	},
 	employee: {
 		body_rate: 99.99,
 		feet_rate: 99.99,

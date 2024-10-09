@@ -8,6 +8,7 @@ import { Employee } from '../models/employee.models';
 import { Language } from '../models/enums';
 import { Payroll } from '../models/payroll.models';
 import { Schedule } from '../models/schedule.models';
+import { AcupunctureReport } from '../models/acupuncture-report.models';
 
 export const getProfile = async (employeeId: number) => {
 	return Employee.findOne({
@@ -93,6 +94,35 @@ export const getProfilePayrolls = async (
 			year: 'ASC',
 			month: 'ASC',
 			part: 'ASC',
+		},
+	});
+};
+
+export const getProfileAcupunctureReports = async (
+	employeeId: number,
+	start?: { year: number; month: number; day: number },
+	end?: { year: number; month: number; day: number }
+) => {
+	const whereCondition: FindOptionsWhere<AcupunctureReport> = {
+		employee_id: employeeId,
+	};
+
+	if (start && end) {
+		whereCondition.year = Between(start.year, end.year);
+		whereCondition.month = Between(start.month, end.month);
+	} else if (start) {
+		whereCondition.year = MoreThanOrEqual(start.year);
+		whereCondition.month = MoreThanOrEqual(start.month);
+	} else if (end) {
+		whereCondition.year = LessThanOrEqual(end.year);
+		whereCondition.month = LessThanOrEqual(end.month);
+	}
+
+	return AcupunctureReport.find({
+		where: whereCondition,
+		order: {
+			year: 'ASC',
+			month: 'ASC',
 		},
 	});
 };

@@ -34,6 +34,21 @@ export const GetProfilePayrollsValidation = celebrate(
 	{ mode: Modes.FULL }
 );
 
+export const GetProfileAcupunctureReportsValidation = celebrate(
+	{
+		[Segments.QUERY]: Joi.object().keys({
+			start: Joi.date().iso(),
+			end: Joi.when('start', {
+				is: Joi.exist(),
+				then: Joi.date().iso().min(Joi.ref('start')),
+				otherwise: Joi.date().iso(),
+			}),
+		}),
+	},
+	{ abortEarly: false },
+	{ mode: Modes.FULL }
+);
+
 export const UpdateProfileValidation = celebrate(
 	{
 		[Segments.BODY]: Joi.object()
