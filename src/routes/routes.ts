@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import LoginRoute from './public/login.route';
+import AcupunctureReportRoutes from './private/acupuncture-report.routes';
 import AuthenticateRoutes from './private/authenticate.routes';
 import CustomerRoutes from './private/customer.routes';
 import EmployeeRoutes from './private/employee.routes';
@@ -16,6 +17,7 @@ const router = Router();
 router.use('/login', LoginRoute);
 router.use('/authenticate', AuthenticateRoutes);
 
+router.use('/acupuncture-report', AcupunctureReportRoutes);
 router.use('/customer', CustomerRoutes);
 router.use('/employee', EmployeeRoutes);
 router.use('/gift-card', GiftCardRoutes);

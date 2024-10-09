@@ -9,6 +9,7 @@ import {
 	DeleteDateColumn,
 } from 'typeorm';
 
+import { AcupunctureReport } from './acupuncture-report.models';
 import { Gender, Language, Permissions, Role } from './enums';
 import { Schedule } from './schedule.models';
 import { Payroll } from './payroll.models';
@@ -151,4 +152,10 @@ export class Employee extends BaseEntity {
 
 	@OneToMany(() => Payroll, (payroll) => payroll.employee)
 	payrolls: Payroll[];
+
+	@OneToMany(
+		() => AcupunctureReport,
+		(acupunctureReport) => acupunctureReport.employee
+	)
+	acupuncture_reports: AcupunctureReport[];
 }
