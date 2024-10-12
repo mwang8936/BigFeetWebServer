@@ -36,6 +36,7 @@ const NUMBERS = {
 		vip: 999.99,
 		gift_card: 999.99,
 		insurance: 999.99,
+		cash_out: 999.99,
 		tips: 9999.99,
 	},
 	service: {

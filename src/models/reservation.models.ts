@@ -185,6 +185,22 @@ export class Reservation extends BaseEntity {
 
 	@Column({
 		type: 'decimal',
+		precision: 5,
+		scale: 2,
+		nullable: true,
+		transformer: {
+			to(cashOut: number | null) {
+				return cashOut;
+			},
+			from(cashOut: string | null) {
+				return cashOut === null ? null : Number(cashOut);
+			},
+		},
+	})
+	cash_out: number | null;
+
+	@Column({
+		type: 'decimal',
 		precision: 6,
 		scale: 2,
 		nullable: true,

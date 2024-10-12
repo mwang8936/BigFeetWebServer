@@ -34,6 +34,7 @@ interface DataRow {
 	total_vip: number;
 	total_gift_card: number;
 	total_insurance: number;
+	total_cash_out: number;
 	tips: number;
 	vip_amount: number;
 }
@@ -193,6 +194,10 @@ export class Payroll extends BaseEntity {
 				.map((reservation) => reservation.insurance ?? 0)
 				.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
 
+			const total_cash_out = reservations
+				.map((reservation) => reservation.cash_out ?? 0)
+				.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
+
 			const tips = reservations
 				.map((reservation) =>
 					reservation.tip_method !== TipMethod.CASH ? reservation.tips ?? 0 : 0
@@ -221,6 +226,7 @@ export class Payroll extends BaseEntity {
 				total_vip,
 				total_gift_card,
 				total_insurance,
+				total_cash_out,
 				tips,
 				vip_amount,
 			};

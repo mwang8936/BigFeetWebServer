@@ -70,6 +70,7 @@ export const updateReservation = async (
 	vip?: number | null,
 	giftCard?: number | null,
 	insurance?: number | null,
+	cashOut?: number | null,
 	tips?: number | null,
 	tipMethod?: TipMethod | null,
 	message?: string | null
@@ -202,6 +203,10 @@ export const updateReservation = async (
 
 		if (insurance !== undefined) {
 			updates.insurance = insurance;
+		}
+
+		if (cashOut !== undefined) {
+			updates.cash_out = cashOut;
 		}
 
 		if (tips !== undefined) {
