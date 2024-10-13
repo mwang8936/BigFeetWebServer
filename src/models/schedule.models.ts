@@ -10,19 +10,42 @@ import {
 	JoinTable,
 	BeforeInsert,
 	BeforeUpdate,
+	Check,
+	AfterLoad,
 } from 'typeorm';
 
 import { Employee } from './employee.models';
 import { Reservation } from './reservation.models';
 import { VipPackage } from './vip-package.models';
 
+import * as PayrollServices from '../services/payroll.services';
+
 import { DataStructureError } from '../exceptions/data-structure.error';
+import { isValidDate } from '../utils/date.utils';
+import { Payroll } from './payroll.models';
+import { PayrollPart } from './enums';
 
 @Entity('schedules')
+@Check(`"year" >= 2020`)
+@Check(`"month" >= 1 AND month <= 12`)
+@Check(`"day" >= 1 AND day <= 31`)
 export class Schedule extends BaseEntity {
-	@PrimaryColumn({
-		type: 'date',
+	@PrimaryColumn()
+	year: number;
+
+	@PrimaryColumn()
+	month: number;
+
+	@PrimaryColumn()
+	day: number;
+
+	@Column({
+		type: 'enum',
+		enum: PayrollPart,
+		nullable: true,
 	})
+	part: PayrollPart | null;
+
 	date: string;
 
 	@PrimaryColumn()
@@ -83,7 +106,9 @@ export class Schedule extends BaseEntity {
 	})
 	@JoinTable({
 		joinColumns: [
-			{ name: 'date', referencedColumnName: 'date' },
+			{ name: 'year', referencedColumnName: 'year' },
+			{ name: 'month', referencedColumnName: 'month' },
+			{ name: 'day', referencedColumnName: 'day' },
 			{ name: 'employee_id', referencedColumnName: 'employee_id' },
 		],
 		inverseJoinColumns: [
@@ -92,14 +117,38 @@ export class Schedule extends BaseEntity {
 	})
 	vip_packages: VipPackage[];
 
+	@ManyToOne(() => Payroll, (payroll) => payroll.schedules, {
+		onUpdate: 'CASCADE',
+		onDelete: 'SET NULL',
+		nullable: true,
+	})
+	@JoinColumn([
+		{ name: 'year', referencedColumnName: 'year' },
+		{ name: 'month', referencedColumnName: 'month' },
+		{ name: 'part', referencedColumnName: 'part' },
+		{ name: 'employee_id', referencedColumnName: 'employee_id' },
+	])
+	payroll: Payroll | null;
+
 	@Column({
 		default: false,
 	})
 	signed: boolean;
 
 	@BeforeInsert()
+	async beforeInsert() {
+		await this.checkStartEndValid();
+		await this.checkDateValid();
+		await this.assignPayroll();
+	}
+
 	@BeforeUpdate()
-	async checkStartEndValid() {
+	async beforeUpdate() {
+		await this.checkStartEndValid();
+		await this.checkDateValid();
+	}
+
+	private async checkStartEndValid() {
 		const { start, end } = this;
 
 		const timeStringToDate = (time: string | Date) => {
@@ -151,5 +200,40 @@ export class Schedule extends BaseEntity {
 				);
 			}
 		}
+	}
+
+	private async checkDateValid() {
+		const { year, month, day } = this;
+		if (!isValidDate(year, month, day)) {
+			throw new DataStructureError('Schedule', 'invalid date');
+		}
+	}
+
+	private async assignPayroll() {
+		const { year, month, day, employee_id } = this;
+
+		let part = PayrollPart.PART_1;
+
+		if (day >= 16 && day <= 31) {
+			part = PayrollPart.PART_2;
+		}
+
+		let payroll = await PayrollServices.getPayroll(
+			year,
+			month,
+			part,
+			employee_id
+		);
+
+		if (payroll) {
+			this.payroll = payroll;
+		}
+	}
+
+	@AfterLoad()
+	async setDate() {
+		const { year, month, day } = this;
+
+		this.date = `${year}-${month}-${day}`;
 	}
 }

@@ -2,6 +2,8 @@ import { Router } from 'express';
 import {
 	changeProfilePassword,
 	getProfile,
+	getProfileAcupunctureReports,
+	getProfilePayrolls,
 	getProfileSchedules,
 	signProfileSchedule,
 	updateProfile,
@@ -9,6 +11,9 @@ import {
 import authorize from '../../middleware/authentication.middleware';
 import {
 	ChangeProfilePasswordValidation,
+	GetProfileAcupunctureReportsValidation,
+	GetProfilePayrollsValidation,
+	GetProfileSchedulesValidation,
 	SignProfileScheduleValidation,
 	UpdateProfileValidation,
 } from '../../middleware/validation/profile.validation';
@@ -16,7 +21,19 @@ import {
 const router = Router();
 
 router.route('/').get(authorize([]), getProfile);
-router.route('/schedule').get(authorize([]), getProfileSchedules);
+router
+	.route('/schedule')
+	.get(authorize([]), GetProfileSchedulesValidation, getProfileSchedules);
+router
+	.route('/payroll')
+	.get(authorize([]), GetProfilePayrollsValidation, getProfilePayrolls);
+router
+	.route('/acupuncture-report')
+	.get(
+		authorize([]),
+		GetProfileAcupunctureReportsValidation,
+		getProfileAcupunctureReports
+	);
 router.route('/').patch(authorize([]), UpdateProfileValidation, updateProfile);
 router
 	.route('/change_password')

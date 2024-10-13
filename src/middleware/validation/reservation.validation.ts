@@ -91,6 +91,11 @@ export const UpdateReservationValidation = celebrate(
 				.precision(2)
 				.max(NUMBERS.reservation.insurance)
 				.allow(null),
+			cash_out: Joi.number()
+				.min(0)
+				.precision(2)
+				.max(NUMBERS.reservation.insurance)
+				.allow(null),
 			tips: Joi.number()
 				.min(0)
 				.precision(2)
@@ -123,6 +128,7 @@ export const UpdateReservationValidation = celebrate(
 				'vip',
 				'gift_card',
 				'insurance',
+				'cash_out',
 				'tips',
 				'tip_method',
 				'message'

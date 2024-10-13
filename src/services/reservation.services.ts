@@ -14,27 +14,29 @@ import { NotFoundError } from '../exceptions/not-found-error';
 import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
 
 export const getReservations = async (
-	fromDate?: Date,
-	toDate?: Date,
+	start?: Date,
+	end?: Date,
 	employeeIds?: number[]
 ) => {
-	const whereCondition: FindOptionsWhere<Reservation>[] = [];
-	if (fromDate && toDate) {
-		whereCondition.push({ reserved_date: Between(fromDate, toDate) });
-	} else if (fromDate) {
-		whereCondition.push({ reserved_date: MoreThanOrEqual(fromDate) });
-	} else if (toDate) {
-		whereCondition.push({ reserved_date: LessThanOrEqual(toDate) });
+	const whereCondition: FindOptionsWhere<Reservation> = {};
+
+	if (start && end) {
+		whereCondition.reserved_date = Between(start, end);
+	} else if (start) {
+		whereCondition.reserved_date = MoreThanOrEqual(start);
+	} else if (end) {
+		whereCondition.reserved_date = LessThanOrEqual(end);
 	}
-	employeeIds &&
-		whereCondition.push({
-			employee_id: In(employeeIds),
-		});
+
+	if (employeeIds) {
+		whereCondition.employee_id = In(employeeIds);
+	}
 
 	return Reservation.find({
 		where: whereCondition,
 		order: {
 			reserved_date: 'ASC',
+			employee_id: 'ASC',
 		},
 	});
 };
@@ -51,7 +53,7 @@ export const updateReservation = async (
 	reservationId: number,
 	updatedBy: string,
 	reservedDate?: Date,
-	date?: string,
+	date?: { year: number; month: number; day: number },
 	employeeId?: number,
 	serviceId?: number,
 	time?: number | null,
@@ -68,6 +70,7 @@ export const updateReservation = async (
 	vip?: number | null,
 	giftCard?: number | null,
 	insurance?: number | null,
+	cashOut?: number | null,
 	tips?: number | null,
 	tipMethod?: TipMethod | null,
 	message?: string | null
@@ -84,7 +87,9 @@ export const updateReservation = async (
 		}
 
 		if (date !== undefined) {
-			updates.date = date;
+			updates.year = date.year;
+			updates.month = date.month;
+			updates.day = date.day;
 		}
 
 		if (employeeId !== undefined) {
@@ -200,6 +205,10 @@ export const updateReservation = async (
 			updates.insurance = insurance;
 		}
 
+		if (cashOut !== undefined) {
+			updates.cash_out = cashOut;
+		}
+
 		if (tips !== undefined) {
 			updates.tips = tips;
 		}
@@ -222,7 +231,7 @@ export const updateReservation = async (
 
 export const createReservation = async (
 	reservedDate: Date,
-	date: string,
+	date: { year: number; month: number; day: number },
 	employeeId: number,
 	serviceId: number,
 	createdBy: string,
@@ -303,7 +312,9 @@ export const createReservation = async (
 
 	const reservation = Reservation.create({
 		reserved_date: reservedDate,
-		date,
+		year: date.year,
+		month: date.month,
+		day: date.day,
 		employee_id: employeeId,
 		service,
 		time,

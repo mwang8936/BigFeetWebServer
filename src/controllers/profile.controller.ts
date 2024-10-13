@@ -1,11 +1,13 @@
 import bcrypt from 'bcrypt';
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
-import * as ScheduleServices from '../services/schedule.services';
 import * as ProfileServices from '../services/profile.services';
 import { AuthorizationError } from '../exceptions/authorization-error';
 import { validateToken } from '../utils/jwt.utils';
-import { formatDateToYYYYMMDD } from '../utils/date.utils';
+import {
+	convertDateToYearMonthDayObject,
+	formatDateToYYYYMMDD,
+} from '../utils/date.utils';
 import {
 	ScheduleEventMessage,
 	schedules_channel,
@@ -66,12 +68,106 @@ export const getProfileSchedules: RequestHandler = async (
 		const decodedToken = await validateToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
-		const schedules = await ProfileServices.getProfileSchedules(employeeId);
+		const start: { year: number; month: number; day: number } | undefined = req
+			.query.start
+			? convertDateToYearMonthDayObject(req.query.start as string)
+			: undefined;
+		const end: { year: number; month: number; day: number } | undefined = req
+			.query.end
+			? convertDateToYearMonthDayObject(req.query.end as string)
+			: undefined;
+
+		const schedules = await ProfileServices.getProfileSchedules(
+			employeeId,
+			start,
+			end
+		);
 
 		res
 			.status(HttpCode.OK)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(schedules));
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const getProfilePayrolls: RequestHandler = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		let jwt = req.headers.authorization;
+		if (!jwt)
+			throw new AuthorizationError(undefined, 'No authorization found.');
+		if (jwt.toLowerCase().startsWith('bearer')) {
+			jwt = jwt.slice('bearer'.length).trim();
+		}
+
+		const decodedToken = await validateToken(jwt);
+		const employeeId = decodedToken.employee_id;
+
+		const start: { year: number; month: number; day: number } | undefined = req
+			.query.start
+			? convertDateToYearMonthDayObject(req.query.start as string)
+			: undefined;
+		const end: { year: number; month: number; day: number } | undefined = req
+			.query.end
+			? convertDateToYearMonthDayObject(req.query.end as string)
+			: undefined;
+
+		const payrolls = await ProfileServices.getProfilePayrolls(
+			employeeId,
+			start,
+			end
+		);
+
+		res
+			.status(HttpCode.OK)
+			.header('Content-Type', 'application/json')
+			.send(JSON.stringify(payrolls));
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const getProfileAcupunctureReports: RequestHandler = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		let jwt = req.headers.authorization;
+		if (!jwt)
+			throw new AuthorizationError(undefined, 'No authorization found.');
+		if (jwt.toLowerCase().startsWith('bearer')) {
+			jwt = jwt.slice('bearer'.length).trim();
+		}
+
+		const decodedToken = await validateToken(jwt);
+		const employeeId = decodedToken.employee_id;
+
+		const start: { year: number; month: number; day: number } | undefined = req
+			.query.start
+			? convertDateToYearMonthDayObject(req.query.start as string)
+			: undefined;
+		const end: { year: number; month: number; day: number } | undefined = req
+			.query.end
+			? convertDateToYearMonthDayObject(req.query.end as string)
+			: undefined;
+
+		const acupunctureReports =
+			await ProfileServices.getProfileAcupunctureReports(
+				employeeId,
+				start,
+				end
+			);
+
+		res
+			.status(HttpCode.OK)
+			.header('Content-Type', 'application/json')
+			.send(JSON.stringify(acupunctureReports));
 	} catch (err) {
 		next(err);
 	}
@@ -187,15 +283,12 @@ export const signProfileSchedule: RequestHandler = async (
 		const decodedToken = await validateToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
-		const date = formatDateToYYYYMMDD(req.params.date);
+		const date = convertDateToYearMonthDayObject(req.params.date);
 
-		let schedule = await ScheduleServices.getSchedule(date, employeeId);
-
-		if (!schedule) {
-			await ScheduleServices.createSchedule(date, employeeId);
-		}
-
-		schedule = await ProfileServices.signProfileSchedule(date, employeeId);
+		const schedule = await ProfileServices.signProfileSchedule(
+			date,
+			employeeId
+		);
 
 		if (schedule) {
 			res

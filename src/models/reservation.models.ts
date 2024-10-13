@@ -9,6 +9,7 @@ import {
 	JoinColumn,
 	BeforeUpdate,
 	BeforeInsert,
+	AfterLoad,
 } from 'typeorm';
 
 import { Customer } from './customer.models';
@@ -35,12 +36,22 @@ export class Reservation extends BaseEntity {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn([
-		{ name: 'date', referencedColumnName: 'date' },
+		{ name: 'year', referencedColumnName: 'year' },
+		{ name: 'month', referencedColumnName: 'month' },
+		{ name: 'day', referencedColumnName: 'day' },
 		{ name: 'employee_id', referencedColumnName: 'employee_id' },
 	])
 	schedule: Schedule;
 
 	@Column()
+	year: number;
+
+	@Column()
+	month: number;
+
+	@Column()
+	day: number;
+
 	date: string;
 
 	@Column()
@@ -174,6 +185,22 @@ export class Reservation extends BaseEntity {
 
 	@Column({
 		type: 'decimal',
+		precision: 5,
+		scale: 2,
+		nullable: true,
+		transformer: {
+			to(cashOut: number | null) {
+				return cashOut;
+			},
+			from(cashOut: string | null) {
+				return cashOut === null ? null : Number(cashOut);
+			},
+		},
+	})
+	cash_out: number | null;
+
+	@Column({
+		type: 'decimal',
 		precision: 6,
 		scale: 2,
 		nullable: true,
@@ -257,16 +284,29 @@ export class Reservation extends BaseEntity {
 	}
 
 	private async ensureScheduleExists() {
-		const { employee_id, date } = this;
+		const { employee_id, year, month, day } = this;
 
-		let schedule = await ScheduleServices.getSchedule(date, employee_id);
+		let schedule = await ScheduleServices.getSchedule(
+			{ year, month, day },
+			employee_id
+		);
 
 		if (!schedule) {
-			schedule = await ScheduleServices.createSchedule(date, employee_id);
+			schedule = await ScheduleServices.createSchedule(
+				{ year, month, day },
+				employee_id
+			);
 		}
 
 		if (schedule) {
 			this.schedule = schedule;
 		}
+	}
+
+	@AfterLoad()
+	async setDate() {
+		const { year, month, day } = this;
+
+		this.date = `${year}-${month}-${day}`;
 	}
 }

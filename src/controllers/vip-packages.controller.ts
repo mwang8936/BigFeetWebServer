@@ -1,7 +1,10 @@
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as VipPackagesServices from '../services/vip-package.services';
-import { formatDateToYYYYMMDD } from '../utils/date.utils';
+import {
+	convertDateToYearMonthDayObject,
+	formatDateToYYYYMMDD,
+} from '../utils/date.utils';
 import pusher from '../config/pusher.config';
 import {
 	add_vip_package_event,
@@ -17,11 +20,13 @@ export const getVipPackages: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const start: string | undefined = req.query.start
-			? formatDateToYYYYMMDD(req.query.start as string)
+		const start: { year: number; month: number; day: number } | undefined = req
+			.query.start
+			? convertDateToYearMonthDayObject(req.query.start as string)
 			: undefined;
-		const end: string | undefined = req.query.end
-			? formatDateToYYYYMMDD(req.query.end as string)
+		const end: { year: number; month: number; day: number } | undefined = req
+			.query.end
+			? convertDateToYearMonthDayObject(req.query.end as string)
 			: undefined;
 		const employeeIds: number[] | undefined = (req.query
 			.employee_ids as string[])
@@ -31,8 +36,8 @@ export const getVipPackages: RequestHandler = async (
 			: undefined;
 
 		const vipPackages = await VipPackagesServices.getVipPackages(
-			start as string | undefined,
-			end as string | undefined,
+			start,
+			end,
 			employeeIds
 		);
 
@@ -84,7 +89,9 @@ export const updateVipPackage: RequestHandler = async (
 			req.body.serial,
 			req.body.sold_amount,
 			req.body.commission_amount,
-			req.body.date ? formatDateToYYYYMMDD(req.body.date) : undefined,
+			req.body.date
+				? convertDateToYearMonthDayObject(req.body.date)
+				: undefined,
 			req.body.employee_ids
 		);
 
@@ -123,7 +130,7 @@ export const addVipPackage: RequestHandler = async (
 			req.body.serial,
 			req.body.sold_amount,
 			req.body.commission_amount,
-			formatDateToYYYYMMDD(req.body.date),
+			convertDateToYearMonthDayObject(req.body.date),
 			req.body.employee_ids
 		);
 

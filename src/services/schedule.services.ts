@@ -10,42 +10,56 @@ import { Employee } from '../models/employee.models';
 import { NotFoundError } from '../exceptions/not-found-error';
 
 export const getSchedules = async (
-	fromDate?: string,
-	toDate?: string,
+	start?: { year: number; month: number; day: number },
+	end?: { year: number; month: number; day: number },
 	employeeIds?: number[]
 ) => {
-	const whereCondition: FindOptionsWhere<Schedule>[] = [];
-	if (fromDate && toDate) {
-		whereCondition.push({ date: Between(fromDate, toDate) });
-	} else if (fromDate) {
-		whereCondition.push({ date: MoreThanOrEqual(fromDate) });
-	} else if (toDate) {
-		whereCondition.push({ date: LessThanOrEqual(toDate) });
+	const whereCondition: FindOptionsWhere<Schedule> = {};
+	if (start && end) {
+		whereCondition.year = Between(start.year, end.year);
+		whereCondition.month = Between(start.month, end.month);
+		whereCondition.day = Between(start.day, end.day);
+	} else if (start) {
+		whereCondition.year = MoreThanOrEqual(start.year);
+		whereCondition.month = MoreThanOrEqual(start.month);
+		whereCondition.day = MoreThanOrEqual(start.day);
+	} else if (end) {
+		whereCondition.year = LessThanOrEqual(end.year);
+		whereCondition.month = LessThanOrEqual(end.month);
+		whereCondition.day = LessThanOrEqual(end.day);
 	}
-	employeeIds &&
-		whereCondition.push({
-			employee_id: In(employeeIds),
-		});
+
+	if (employeeIds) {
+		whereCondition.employee_id = In(employeeIds);
+	}
 
 	return Schedule.find({
 		where: whereCondition,
 		order: {
-			date: 'ASC',
+			year: 'ASC',
+			month: 'ASC',
+			day: 'ASC',
+			employee_id: 'ASC',
 		},
 	});
 };
 
-export const getSchedule = async (date: string, employeeId: number) => {
+export const getSchedule = async (
+	date: { year: number; month: number; day: number },
+	employeeId: number
+) => {
 	return Schedule.findOne({
 		where: {
-			date,
+			year: date.year,
+			month: date.month,
+			day: date.day,
 			employee_id: employeeId,
 		},
 	});
 };
 
 export const updateSchedule = async (
-	date: string,
+	date: { year: number; month: number; day: number },
 	employeeId: number,
 	isWorking?: boolean,
 	onCall?: boolean,
@@ -91,11 +105,15 @@ export const updateSchedule = async (
 	}
 };
 
-export const signSchedule = async (date: string, employeeId: number) => {
+export const signSchedule = async (
+	date: { year: number; month: number; day: number },
+	employeeId: number
+) => {
 	const schedule = await getSchedule(date, employeeId);
 
 	if (schedule) {
 		schedule.signed = true;
+
 		return schedule.save();
 	} else {
 		return null;
@@ -103,7 +121,7 @@ export const signSchedule = async (date: string, employeeId: number) => {
 };
 
 export const createSchedule = async (
-	date: string,
+	date: { year: number; month: number; day: number },
 	employeeId: number,
 	isWorking?: boolean,
 	onCall?: boolean,
@@ -121,7 +139,10 @@ export const createSchedule = async (
 	if (!employee) throw new NotFoundError('Employee', 'employee id', employeeId);
 
 	const schedule = Schedule.create({
-		date,
+		year: date.year,
+		month: date.month,
+		day: date.day,
+		employee_id: employeeId,
 		employee,
 		is_working: isWorking,
 		on_call: onCall,
@@ -134,7 +155,10 @@ export const createSchedule = async (
 	return await schedule.save();
 };
 
-export const deleteSchedule = async (date: string, employeeId: number) => {
+export const deleteSchedule = async (
+	date: { year: number; month: number; day: number },
+	employeeId: number
+) => {
 	const schedule = await getSchedule(date, employeeId);
 
 	if (schedule) {

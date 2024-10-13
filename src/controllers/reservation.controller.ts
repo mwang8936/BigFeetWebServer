@@ -3,6 +3,7 @@ import { HttpCode } from '../exceptions/custom-error';
 import * as EmployeeServices from '../services/employee.services';
 import * as ReservationServices from '../services/reservation.services';
 import {
+	convertDateToYearMonthDayObject,
 	formatDateToYYYYMMDD,
 	validateDateTimeString,
 } from '../utils/date.utils';
@@ -86,9 +87,10 @@ export const updateReservation: RequestHandler = async (
 		const reservedDate: Date | undefined = validateDateTimeString(
 			req.body.reserved_date
 		);
-		const date: string | undefined = reservedDate
-			? formatDateToYYYYMMDD(req.body.reserved_date)
-			: undefined;
+		const date: { year: number; month: number; day: number } | undefined =
+			reservedDate
+				? convertDateToYearMonthDayObject(req.body.reserved_date)
+				: undefined;
 		const employeeId: number | undefined = req.body.employee_id;
 		const serviceId: number | undefined = req.body.service_id;
 		const customerId: number | null | undefined = req.body.customer_id;
@@ -114,6 +116,7 @@ export const updateReservation: RequestHandler = async (
 			req.body.vip,
 			req.body.gift_card,
 			req.body.insurance,
+			req.body.cash_out,
 			req.body.tips,
 			req.body.tip_method,
 			req.body.message
@@ -171,7 +174,7 @@ export const addReservation: RequestHandler = async (
 ) => {
 	try {
 		const reservedDate = new Date(req.body.reserved_date);
-		const date = formatDateToYYYYMMDD(req.body.reserved_date);
+		const date = convertDateToYearMonthDayObject(req.body.reserved_date);
 		const employeeId: number = req.body.employee_id;
 		const serviceId: number = req.body.service_id;
 		const customerId: number | null | undefined = req.body.customer_id;
