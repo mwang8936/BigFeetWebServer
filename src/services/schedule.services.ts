@@ -138,6 +138,8 @@ export const createSchedule = async (
 
 	if (!employee) throw new NotFoundError('Employee', 'employee id', employeeId);
 
+	console.log(employee);
+
 	const schedule = Schedule.create({
 		year: date.year,
 		month: date.month,

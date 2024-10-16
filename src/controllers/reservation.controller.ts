@@ -116,6 +116,8 @@ export const updateReservation: RequestHandler = async (
 			req.body.vip,
 			req.body.gift_card,
 			req.body.insurance,
+			req.body.acupuncturist_employee_id,
+			req.body.cash_out,
 			req.body.tips,
 			req.body.tip_method,
 			req.body.message

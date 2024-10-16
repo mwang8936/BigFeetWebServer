@@ -132,7 +132,7 @@ export class AcupunctureReport extends BaseEntity {
 			acupunctureReservations.forEach((reservation) => {
 				if (reservation.employee_id === employee_id) {
 					acupuncturistReservations.push(reservation);
-				} else {
+				} else if (reservation.acupuncturist?.employee_id === employee_id) {
 					nonAcupuncturistReservations.push(reservation);
 				}
 			});

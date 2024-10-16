@@ -13,13 +13,14 @@ import {
 } from 'typeorm';
 
 import { Customer } from './customer.models';
-import { Gender, TipMethod } from './enums';
+import { Gender, Role, TipMethod } from './enums';
 import { Schedule } from './schedule.models';
 import { Service } from './service.models';
 
 import { DataStructureError } from '../exceptions/data-structure.error';
 
 import * as ScheduleServices from '../services/schedule.services';
+import { Employee } from './employee.models';
 
 @Entity('reservations')
 export class Reservation extends BaseEntity {
@@ -183,6 +184,33 @@ export class Reservation extends BaseEntity {
 	})
 	insurance: number | null;
 
+	@ManyToOne(() => Employee, (employee) => employee.acupuncture_reservations, {
+		onUpdate: 'CASCADE',
+		onDelete: 'SET NULL',
+		eager: true,
+		nullable: true,
+	})
+	@JoinColumn({
+		name: 'acupuncturist_employee_id',
+	})
+	acupuncturist: Employee | null;
+
+	@Column({
+		type: 'decimal',
+		precision: 5,
+		scale: 2,
+		nullable: true,
+		transformer: {
+			to(cashOut: number | null) {
+				return cashOut;
+			},
+			from(cashOut: string | null) {
+				return cashOut === null ? null : Number(cashOut);
+			},
+		},
+	})
+	cash_out: number | null;
+
 	@Column({
 		type: 'decimal',
 		precision: 6,
@@ -232,6 +260,7 @@ export class Reservation extends BaseEntity {
 	@BeforeUpdate()
 	async beforeFunction() {
 		await this.checkEndTime();
+		// await this.checkAcupuncturist();
 		await this.ensureScheduleExists();
 	}
 
@@ -264,6 +293,36 @@ export class Reservation extends BaseEntity {
 						'en-US'
 					)}`
 				);
+		}
+	}
+
+	private async checkAcupuncturist() {
+		const { employee_id, service, acupuncturist } = this;
+
+		if (acupuncturist && acupuncturist.role !== Role.ACUPUNCTURIST) {
+			throw new DataStructureError(
+				'Reservation',
+				'Acupuncturist assigned has incorrect role.'
+			);
+		}
+
+		if (service.acupuncture > 0) {
+			const employee = await Employee.findOne({
+				where: {
+					employee_id,
+				},
+			});
+
+			if (
+				employee &&
+				employee.role !== Role.ACUPUNCTURIST &&
+				acupuncturist === null
+			) {
+				throw new DataStructureError(
+					'Reservation',
+					'Acupuncturist must be assigned to acupuncture service.'
+				);
+			}
 		}
 	}
 

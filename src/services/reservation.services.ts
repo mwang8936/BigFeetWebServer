@@ -8,6 +8,7 @@ import {
 	MoreThanOrEqual,
 	Not,
 } from 'typeorm';
+import { Employee } from '../models/employee.models';
 import { Service } from '../models/service.models';
 import { Customer } from '../models/customer.models';
 import { NotFoundError } from '../exceptions/not-found-error';
@@ -70,6 +71,8 @@ export const updateReservation = async (
 	vip?: number | null,
 	giftCard?: number | null,
 	insurance?: number | null,
+	acupuncturistEmployeeId?: number | null,
+	cashOut?: number | null,
 	tips?: number | null,
 	tipMethod?: TipMethod | null,
 	message?: string | null
@@ -202,6 +205,31 @@ export const updateReservation = async (
 
 		if (insurance !== undefined) {
 			updates.insurance = insurance;
+		}
+
+		if (acupuncturistEmployeeId !== undefined) {
+			if (acupuncturistEmployeeId === null) {
+				updates.acupuncturist = null;
+			} else {
+				const acupuncturist = await Employee.findOne({
+					where: {
+						employee_id: acupuncturistEmployeeId,
+					},
+				});
+
+				if (!acupuncturist)
+					throw new NotFoundError(
+						'Employee',
+						'employee id',
+						acupuncturistEmployeeId
+					);
+
+				updates.acupuncturist = acupuncturist;
+			}
+		}
+
+		if (cashOut !== undefined) {
+			updates.cash_out = cashOut;
 		}
 
 		if (tips !== undefined) {

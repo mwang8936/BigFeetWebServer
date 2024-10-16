@@ -91,6 +91,12 @@ export const UpdateReservationValidation = celebrate(
 				.precision(2)
 				.max(NUMBERS.reservation.insurance)
 				.allow(null),
+			acupuncturist_employee_id: Joi.number().integer().positive().allow(null),
+			cash_out: Joi.number()
+				.min(0)
+				.precision(2)
+				.max(NUMBERS.reservation.cash_out)
+				.allow(null),
 			tips: Joi.number()
 				.min(0)
 				.precision(2)
@@ -123,6 +129,8 @@ export const UpdateReservationValidation = celebrate(
 				'vip',
 				'gift_card',
 				'insurance',
+				'acupuncturist_employee_id',
+				'cash_out',
 				'tips',
 				'tip_method',
 				'message'

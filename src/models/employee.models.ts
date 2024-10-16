@@ -13,6 +13,7 @@ import { AcupunctureReport } from './acupuncture-report.models';
 import { Gender, Language, Permissions, Role } from './enums';
 import { Schedule } from './schedule.models';
 import { Payroll } from './payroll.models';
+import { Reservation } from './reservation.models';
 
 @Entity('employees')
 export class Employee extends BaseEntity {
@@ -146,6 +147,9 @@ export class Employee extends BaseEntity {
 
 	@DeleteDateColumn()
 	deleted_at?: Date;
+
+	@OneToMany(() => Reservation, (reservation) => reservation.acupuncturist)
+	acupuncture_reservations: Reservation[];
 
 	@OneToMany(() => Schedule, (schedule) => schedule.employee)
 	schedules: Schedule[];
