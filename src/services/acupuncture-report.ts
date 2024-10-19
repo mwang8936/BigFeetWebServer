@@ -1,10 +1,5 @@
-import {
-	Between,
-	FindOptionsWhere,
-	In,
-	LessThanOrEqual,
-	MoreThanOrEqual,
-} from 'typeorm';
+import AppDataSource from '../config/orm.config';
+
 import { AcupunctureReport } from '../models/acupuncture-report.models';
 
 export const getAcupunctureReports = async (
@@ -12,31 +7,41 @@ export const getAcupunctureReports = async (
 	end?: { year: number; month: number },
 	employeeIds?: number[]
 ) => {
-	const whereCondition: FindOptionsWhere<AcupunctureReport> = {};
+	const acupunctureReportsRepository =
+		AppDataSource.getRepository(AcupunctureReport);
 
-	if (start && end) {
-		whereCondition.year = Between(start.year, end.year);
-		whereCondition.month = Between(start.month, end.month);
-	} else if (start) {
-		whereCondition.year = MoreThanOrEqual(start.year);
-		whereCondition.month = MoreThanOrEqual(start.month);
-	} else if (end) {
-		whereCondition.year = LessThanOrEqual(end.year);
-		whereCondition.month = LessThanOrEqual(end.month);
+	const queryBuilder =
+		acupunctureReportsRepository.createQueryBuilder('acupuncture_report');
+
+	if (start) {
+		queryBuilder.andWhere(
+			`MAKE_DATE(acupuncture_report.year, acupuncture_report.month, 1) >= MAKE_DATE(:startYear, :startMonth, 1)`,
+			{ startYear: start.year, startMonth: start.month }
+		);
+	}
+
+	if (end) {
+		queryBuilder.andWhere(
+			`MAKE_DATE(acupuncture_report.year, acupuncture_report.month, 1) <= MAKE_DATE(:endYear, :endMonth, 1)`,
+			{ endYear: end.year, endMonth: end.month }
+		);
 	}
 
 	if (employeeIds) {
-		whereCondition.employee_id = In(employeeIds);
+		queryBuilder.andWhere(
+			'acupuncture_report.employee_id IN (:...employeeIds)',
+			{ employeeIds }
+		);
 	}
 
-	return AcupunctureReport.find({
-		where: whereCondition,
-		order: {
-			year: 'ASC',
-			month: 'ASC',
-			employee_id: 'ASC',
-		},
-	});
+	queryBuilder
+		.orderBy('acupuncture_report.year', 'ASC')
+		.addOrderBy('acupuncture_report.month', 'ASC')
+		.addOrderBy('acupuncture_report.employee_id', 'ASC');
+
+	queryBuilder.setFindOptions({ loadEagerRelations: true });
+
+	return queryBuilder.getMany();
 };
 
 export const getAcupunctureReport = async (

@@ -1,10 +1,5 @@
-import {
-	Between,
-	FindOptionsWhere,
-	In,
-	LessThanOrEqual,
-	MoreThanOrEqual,
-} from 'typeorm';
+import AppDataSource from '../config/orm.config';
+
 import { PayrollOption, PayrollPart } from '../models/enums';
 import { Payroll } from '../models/payroll.models';
 
@@ -13,32 +8,39 @@ export const getPayrolls = async (
 	end?: { year: number; month: number },
 	employeeIds?: number[]
 ) => {
-	const whereCondition: FindOptionsWhere<Payroll> = {};
+	const payrollsRepository = AppDataSource.getRepository(Payroll);
 
-	if (start && end) {
-		whereCondition.year = Between(start.year, end.year);
-		whereCondition.month = Between(start.month, end.month);
-	} else if (start) {
-		whereCondition.year = MoreThanOrEqual(start.year);
-		whereCondition.month = MoreThanOrEqual(start.month);
-	} else if (end) {
-		whereCondition.year = LessThanOrEqual(end.year);
-		whereCondition.month = LessThanOrEqual(end.month);
+	const queryBuilder = payrollsRepository.createQueryBuilder('payroll');
+
+	if (start) {
+		queryBuilder.andWhere(
+			`MAKE_DATE(payroll.year, payroll.month, 1) >= MAKE_DATE(:startYear, :startMonth, 1)`,
+			{ startYear: start.year, startMonth: start.month }
+		);
+	}
+
+	if (end) {
+		queryBuilder.andWhere(
+			`MAKE_DATE(payroll.year, payroll.month, 1) <= MAKE_DATE(:endYear, :endMonth, 1)`,
+			{ endYear: end.year, endMonth: end.month }
+		);
 	}
 
 	if (employeeIds) {
-		whereCondition.employee_id = In(employeeIds);
+		queryBuilder.andWhere('payroll.employee_id IN (:...employeeIds)', {
+			employeeIds,
+		});
 	}
 
-	return Payroll.find({
-		where: whereCondition,
-		order: {
-			year: 'ASC',
-			month: 'ASC',
-			part: 'ASC',
-			employee_id: 'ASC',
-		},
-	});
+	queryBuilder
+		.orderBy('payroll.year', 'ASC')
+		.addOrderBy('payroll.month', 'ASC')
+		.addOrderBy('payroll.part', 'ASC')
+		.addOrderBy('payroll.employee_id', 'ASC');
+
+	queryBuilder.setFindOptions({ loadEagerRelations: true });
+
+	return queryBuilder.getMany();
 };
 
 export const getPayroll = async (

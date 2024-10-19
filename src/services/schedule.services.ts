@@ -1,47 +1,48 @@
-import {
-	Between,
-	FindOptionsWhere,
-	In,
-	LessThanOrEqual,
-	MoreThanOrEqual,
-} from 'typeorm';
-import { Schedule } from '../models/schedule.models';
-import { Employee } from '../models/employee.models';
+import AppDataSource from '../config/orm.config';
+
 import { NotFoundError } from '../exceptions/not-found-error';
+
+import { Employee } from '../models/employee.models';
+import { Schedule } from '../models/schedule.models';
 
 export const getSchedules = async (
 	start?: { year: number; month: number; day: number },
 	end?: { year: number; month: number; day: number },
 	employeeIds?: number[]
 ) => {
-	const whereCondition: FindOptionsWhere<Schedule> = {};
-	if (start && end) {
-		whereCondition.year = Between(start.year, end.year);
-		whereCondition.month = Between(start.month, end.month);
-		whereCondition.day = Between(start.day, end.day);
-	} else if (start) {
-		whereCondition.year = MoreThanOrEqual(start.year);
-		whereCondition.month = MoreThanOrEqual(start.month);
-		whereCondition.day = MoreThanOrEqual(start.day);
-	} else if (end) {
-		whereCondition.year = LessThanOrEqual(end.year);
-		whereCondition.month = LessThanOrEqual(end.month);
-		whereCondition.day = LessThanOrEqual(end.day);
+	const schedulesRepository = AppDataSource.getRepository(Schedule);
+
+	const queryBuilder = schedulesRepository.createQueryBuilder('schedules');
+
+	if (start) {
+		queryBuilder.andWhere(
+			`MAKE_DATE(schedules.year, schedules.month, schedules.day) >= MAKE_DATE(:startYear, :startMonth, :startDay)`,
+			{ startYear: start.year, startMonth: start.month, startDay: start.day }
+		);
+	}
+
+	if (end) {
+		queryBuilder.andWhere(
+			`MAKE_DATE(schedules.year, schedules.month, schedules.day) <= MAKE_DATE(:endYear, :endMonth, :endDay)`,
+			{ endYear: end.year, endMonth: end.month, endDay: end.day }
+		);
 	}
 
 	if (employeeIds) {
-		whereCondition.employee_id = In(employeeIds);
+		queryBuilder.andWhere('schedules.employee_id IN (:...employeeIds)', {
+			employeeIds,
+		});
 	}
 
-	return Schedule.find({
-		where: whereCondition,
-		order: {
-			year: 'ASC',
-			month: 'ASC',
-			day: 'ASC',
-			employee_id: 'ASC',
-		},
-	});
+	queryBuilder
+		.orderBy('schedules.year', 'ASC')
+		.addOrderBy('schedules.month', 'ASC')
+		.addOrderBy('schedules.day', 'ASC')
+		.addOrderBy('schedules.employee_id', 'ASC');
+
+	queryBuilder.setFindOptions({ loadEagerRelations: true });
+
+	return queryBuilder.getMany();
 };
 
 export const getSchedule = async (
