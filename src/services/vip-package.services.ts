@@ -1,47 +1,45 @@
-import {
-	Between,
-	FindOptionsWhere,
-	In,
-	LessThanOrEqual,
-	MoreThanOrEqual,
-} from 'typeorm';
+import AppDataSource from '../config/orm.config';
+
+import * as ScheduleServices from './schedule.services';
+
 import { PaymentMethod } from '../models/enums';
 import { Schedule } from '../models/schedule.models';
 import { VipPackage } from '../models/vip-package.models';
-import * as ScheduleServices from './schedule.services';
 
 export const getVipPackages = async (
 	start?: { year: number; month: number; day: number },
 	end?: { year: number; month: number; day: number },
 	employeeIds?: number[]
 ) => {
-	const whereCondition: FindOptionsWhere<Schedule> = {};
-	if (start && end) {
-		whereCondition.year = Between(start.year, end.year);
-		whereCondition.month = Between(start.month, end.month);
-		whereCondition.day = Between(start.day, end.day);
-	} else if (start) {
-		whereCondition.year = MoreThanOrEqual(start.year);
-		whereCondition.month = MoreThanOrEqual(start.month);
-		whereCondition.day = MoreThanOrEqual(start.day);
-	} else if (end) {
-		whereCondition.year = LessThanOrEqual(end.year);
-		whereCondition.month = LessThanOrEqual(end.month);
-		whereCondition.day = LessThanOrEqual(end.day);
+	const vipPackagesRepository = AppDataSource.getRepository(VipPackage);
+
+	const queryBuilder = vipPackagesRepository
+		.createQueryBuilder('vip_packages_sold')
+		.leftJoinAndSelect('vip_packages_sold.schedules', 'schedules');
+
+	if (start) {
+		queryBuilder.andWhere(
+			`MAKE_DATE(schedules.year, schedules.month, schedules.day) >= MAKE_DATE(:startYear, :startMonth, :startDay)`,
+			{ startYear: start.year, startMonth: start.month, startDay: start.day }
+		);
+	}
+
+	if (end) {
+		queryBuilder.andWhere(
+			`MAKE_DATE(schedules.year, schedules.month, schedules.day) <= MAKE_DATE(:endYear, :endMonth, :endDay)`,
+			{ endYear: end.year, endMonth: end.month, endDay: end.day }
+		);
 	}
 
 	if (employeeIds) {
-		whereCondition.employee_id = In(employeeIds);
+		queryBuilder.andWhere('schedules.employee_id IN (:...employeeIds)', {
+			employeeIds,
+		});
 	}
 
-	return VipPackage.find({
-		where: {
-			schedules: whereCondition,
-		},
-		order: {
-			serial: 'ASC',
-		},
-	});
+	queryBuilder.orderBy('vip_packages_sold.serial', 'ASC');
+
+	return queryBuilder.getMany();
 };
 
 export const getVipPackage = async (vipPackageId: number) => {

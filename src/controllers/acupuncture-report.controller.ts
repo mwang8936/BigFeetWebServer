@@ -1,7 +1,6 @@
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as AcupunctureReportServices from '../services/acupuncture-report';
-import { PayrollPart } from '../models/enums';
 import { convertDateToYearMonthDayObject } from '../utils/date.utils';
 import { AcupunctureReport } from '../models/acupuncture-report.models';
 import {

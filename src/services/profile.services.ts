@@ -1,14 +1,10 @@
-import {
-	Between,
-	FindOptionsWhere,
-	LessThanOrEqual,
-	MoreThanOrEqual,
-} from 'typeorm';
+import AppDataSource from '../config/orm.config';
+
+import { AcupunctureReport } from '../models/acupuncture-report.models';
 import { Employee } from '../models/employee.models';
 import { Language } from '../models/enums';
 import { Payroll } from '../models/payroll.models';
 import { Schedule } from '../models/schedule.models';
-import { AcupunctureReport } from '../models/acupuncture-report.models';
 
 export const getProfile = async (employeeId: number) => {
 	return Employee.findOne({
@@ -39,32 +35,34 @@ export const getProfileSchedules = async (
 	start?: { year: number; month: number; day: number },
 	end?: { year: number; month: number; day: number }
 ) => {
-	const whereCondition: FindOptionsWhere<Schedule> = {
-		employee_id: employeeId,
-	};
+	const schedulesRepository = AppDataSource.getRepository(Schedule);
 
-	if (start && end) {
-		whereCondition.year = Between(start.year, end.year);
-		whereCondition.month = Between(start.month, end.month);
-		whereCondition.day = Between(start.day, end.day);
-	} else if (start) {
-		whereCondition.year = MoreThanOrEqual(start.year);
-		whereCondition.month = MoreThanOrEqual(start.month);
-		whereCondition.day = MoreThanOrEqual(start.day);
-	} else if (end) {
-		whereCondition.year = LessThanOrEqual(end.year);
-		whereCondition.month = LessThanOrEqual(end.month);
-		whereCondition.day = LessThanOrEqual(end.day);
+	const queryBuilder = schedulesRepository.createQueryBuilder('schedules');
+
+	queryBuilder.where(`schedules.employee_id = :employeeId`, { employeeId });
+
+	if (start) {
+		queryBuilder.andWhere(
+			`MAKE_DATE(schedules.year, schedules.month, schedules.day) >= MAKE_DATE(:startYear, :startMonth, :startDay)`,
+			{ startYear: start.year, startMonth: start.month, startDay: start.day }
+		);
 	}
 
-	return Schedule.find({
-		where: whereCondition,
-		order: {
-			year: 'ASC',
-			month: 'ASC',
-			day: 'ASC',
-		},
-	});
+	if (end) {
+		queryBuilder.andWhere(
+			`MAKE_DATE(schedules.year, schedules.month, schedules.day) <= MAKE_DATE(:endYear, :endMonth, :endDay)`,
+			{ endYear: end.year, endMonth: end.month, endDay: end.day }
+		);
+	}
+
+	queryBuilder
+		.orderBy('schedules.year', 'ASC')
+		.addOrderBy('schedules.month', 'ASC')
+		.addOrderBy('schedules.day', 'ASC');
+
+	queryBuilder.setFindOptions({ loadEagerRelations: true });
+
+	return queryBuilder.getMany();
 };
 
 export const getProfilePayrolls = async (
@@ -72,29 +70,34 @@ export const getProfilePayrolls = async (
 	start?: { year: number; month: number; day: number },
 	end?: { year: number; month: number; day: number }
 ) => {
-	const whereCondition: FindOptionsWhere<Payroll> = {
-		employee_id: employeeId,
-	};
+	const payrollsRepository = AppDataSource.getRepository(Payroll);
 
-	if (start && end) {
-		whereCondition.year = Between(start.year, end.year);
-		whereCondition.month = Between(start.month, end.month);
-	} else if (start) {
-		whereCondition.year = MoreThanOrEqual(start.year);
-		whereCondition.month = MoreThanOrEqual(start.month);
-	} else if (end) {
-		whereCondition.year = LessThanOrEqual(end.year);
-		whereCondition.month = LessThanOrEqual(end.month);
+	const queryBuilder = payrollsRepository.createQueryBuilder('payroll');
+
+	queryBuilder.where(`payroll.employee_id = :employeeId`, { employeeId });
+
+	if (start) {
+		queryBuilder.andWhere(
+			`MAKE_DATE(payroll.year, payroll.month, 1) >= MAKE_DATE(:startYear, :startMonth, 1)`,
+			{ startYear: start.year, startMonth: start.month }
+		);
 	}
 
-	return Payroll.find({
-		where: whereCondition,
-		order: {
-			year: 'ASC',
-			month: 'ASC',
-			part: 'ASC',
-		},
-	});
+	if (end) {
+		queryBuilder.andWhere(
+			`MAKE_DATE(payroll.year, payroll.month, 1) <= MAKE_DATE(:endYear, :endMonth, 1)`,
+			{ endYear: end.year, endMonth: end.month }
+		);
+	}
+
+	queryBuilder
+		.orderBy('payroll.year', 'ASC')
+		.addOrderBy('payroll.month', 'ASC')
+		.addOrderBy('payroll.part', 'ASC');
+
+	queryBuilder.setFindOptions({ loadEagerRelations: true });
+
+	return queryBuilder.getMany();
 };
 
 export const getProfileAcupunctureReports = async (
@@ -102,28 +105,37 @@ export const getProfileAcupunctureReports = async (
 	start?: { year: number; month: number; day: number },
 	end?: { year: number; month: number; day: number }
 ) => {
-	const whereCondition: FindOptionsWhere<AcupunctureReport> = {
-		employee_id: employeeId,
-	};
+	const acupunctureReportsRepository =
+		AppDataSource.getRepository(AcupunctureReport);
 
-	if (start && end) {
-		whereCondition.year = Between(start.year, end.year);
-		whereCondition.month = Between(start.month, end.month);
-	} else if (start) {
-		whereCondition.year = MoreThanOrEqual(start.year);
-		whereCondition.month = MoreThanOrEqual(start.month);
-	} else if (end) {
-		whereCondition.year = LessThanOrEqual(end.year);
-		whereCondition.month = LessThanOrEqual(end.month);
+	const queryBuilder =
+		acupunctureReportsRepository.createQueryBuilder('acupuncture_report');
+
+	queryBuilder.where(`acupuncture_report.employee_id = :employeeId`, {
+		employeeId,
+	});
+
+	if (start) {
+		queryBuilder.andWhere(
+			`MAKE_DATE(acupuncture_report.year, acupuncture_report.month, 1) >= MAKE_DATE(:startYear, :startMonth, 1)`,
+			{ startYear: start.year, startMonth: start.month }
+		);
 	}
 
-	return AcupunctureReport.find({
-		where: whereCondition,
-		order: {
-			year: 'ASC',
-			month: 'ASC',
-		},
-	});
+	if (end) {
+		queryBuilder.andWhere(
+			`MAKE_DATE(acupuncture_report.year, acupuncture_report.month, 1) <= MAKE_DATE(:endYear, :endMonth, 1)`,
+			{ endYear: end.year, endMonth: end.month }
+		);
+	}
+
+	queryBuilder
+		.orderBy('acupuncture_report.year', 'ASC')
+		.addOrderBy('acupuncture_report.month', 'ASC');
+
+	queryBuilder.setFindOptions({ loadEagerRelations: true });
+
+	return queryBuilder.getMany();
 };
 
 export const updateProfile = async (
