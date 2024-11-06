@@ -36,7 +36,7 @@ export const getEmployees: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const withDeleted = req.query.with_deleted === 'true';
+		const withDeleted = Boolean(req.query.with_deleted);
 
 		const employees = await EmployeeServices.getEmployees(withDeleted);
 
@@ -56,7 +56,7 @@ export const getEmployee: RequestHandler = async (
 ) => {
 	try {
 		const employeeId = parseInt(req.params.employee_id);
-		const withDeleted = req.query.with_deleted === 'true';
+		const withDeleted = Boolean(req.query.with_deleted);
 
 		const employee = await EmployeeServices.getEmployee(
 			employeeId,

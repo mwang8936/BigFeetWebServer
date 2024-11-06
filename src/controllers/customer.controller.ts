@@ -35,7 +35,7 @@ export const getCustomers: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
-		const withDeleted = req.query.with_deleted === 'true';
+		const withDeleted = Boolean(req.query.with_deleted);
 
 		const customers = await CustomerServices.getCustomers(withDeleted);
 
@@ -55,7 +55,7 @@ export const getCustomer: RequestHandler = async (
 ) => {
 	try {
 		const customerId = parseInt(req.params.customer_id);
-		const withDeleted = req.query.with_deleted === 'true';
+		const withDeleted = Boolean(req.query.with_deleted);
 
 		const customer = await CustomerServices.getCustomer(
 			customerId,
