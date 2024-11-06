@@ -1,15 +1,16 @@
 import { DataSource } from 'typeorm';
 import POSTGRESQL_DATA_SOURCE from './db.config';
 import ENV_VARIABLES from './env.config';
-import { Employee } from '../models/employee.models';
-import { Service } from '../models/service.models';
-import { Reservation } from '../models/reservation.models';
+import { AcupunctureReport } from '../models/acupuncture-report.models';
 import { Customer } from '../models/customer.models';
-import { Schedule } from '../models/schedule.models';
-import { VipPackage } from '../models/vip-package.models';
+import { Employee } from '../models/employee.models';
 import { GiftCard } from '../models/gift-card.models';
 import { Payroll } from '../models/payroll.models';
-import { AcupunctureReport } from '../models/acupuncture-report.models';
+import { Reservation } from '../models/reservation.models';
+import { Schedule } from '../models/schedule.models';
+import { Service } from '../models/service.models';
+import { ServiceRecord } from '../models/service-record.models';
+import { VipPackage } from '../models/vip-package.models';
 
 const AppDataSource = new DataSource({
 	type: 'postgres',
@@ -26,15 +27,16 @@ const AppDataSource = new DataSource({
 		connectionTimeoutMillis: 2000,
 	},
 	entities: [
-		Employee,
-		Schedule,
-		Reservation,
-		Service,
+		AcupunctureReport,
 		Customer,
-		VipPackage,
+		Employee,
 		GiftCard,
 		Payroll,
-		AcupunctureReport,
+		Reservation,
+		Schedule,
+		Service,
+		ServiceRecord,
+		VipPackage,
 	],
 	synchronize: false,
 	migrations:

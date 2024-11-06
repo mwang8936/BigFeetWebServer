@@ -1,4 +1,5 @@
 import { Router } from 'express';
+
 import {
 	getServices,
 	getService,
@@ -6,8 +7,15 @@ import {
 	addService,
 	deleteService,
 	recoverService,
+	addServiceRecord,
+	getServiceRecords,
+	deleteServiceRecord,
+	continueService,
+	disContinueService,
 } from '../../controllers/service.controller';
-import { Permissions } from '../../models/enums';
+
+import authorize from '../../middleware/authentication.middleware';
+
 import {
 	GetServicesValidation,
 	GetServiceValidation,
@@ -15,8 +23,14 @@ import {
 	AddServiceValidation,
 	DeleteServiceValidation,
 	RecoverServiceValidation,
+	AddServiceRecordValidation,
+	GetServiceRecordsValidation,
+	DeleteServiceRecordValidation,
+	ContinueServiceValidation,
+	DiscontinueServiceValidation,
 } from '../../middleware/validation/service.validation';
-import authorize from '../../middleware/authentication.middleware';
+
+import { Permissions } from '../../models/enums';
 
 const router = Router();
 
@@ -26,6 +40,13 @@ router
 		authorize([Permissions.PERMISSION_GET_SERVICE]),
 		GetServicesValidation,
 		getServices
+	);
+router
+	.route('/records/:date')
+	.get(
+		authorize([Permissions.PERMISSION_GET_SERVICE]),
+		GetServiceRecordsValidation,
+		getServiceRecords
 	);
 router
 	.route('/:service_id')
@@ -50,10 +71,38 @@ router
 	);
 router
 	.route('/:service_id')
+	.post(
+		authorize([Permissions.PERMISSION_UPDATE_SERVICE]),
+		AddServiceRecordValidation,
+		addServiceRecord
+	);
+router
+	.route('/:service_id/continue')
+	.patch(
+		authorize([Permissions.PERMISSION_UPDATE_SERVICE]),
+		ContinueServiceValidation,
+		continueService
+	);
+router
+	.route('/:service_id/discontinue')
+	.patch(
+		authorize([Permissions.PERMISSION_UPDATE_SERVICE]),
+		DiscontinueServiceValidation,
+		disContinueService
+	);
+router
+	.route('/:service_id')
 	.delete(
 		authorize([Permissions.PERMISSION_DELETE_SERVICE]),
 		DeleteServiceValidation,
 		deleteService
+	);
+router
+	.route('/:service_id/record/:valid_from')
+	.delete(
+		authorize([Permissions.PERMISSION_UPDATE_SERVICE]),
+		DeleteServiceRecordValidation,
+		deleteServiceRecord
 	);
 router
 	.route('/:service_id/recover')

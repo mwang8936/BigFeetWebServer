@@ -10,16 +10,20 @@ import {
 	BeforeUpdate,
 	BeforeInsert,
 	AfterLoad,
+	Brackets,
 } from 'typeorm';
 
 import { Customer } from './customer.models';
 import { Gender, TipMethod } from './enums';
 import { Schedule } from './schedule.models';
-import { Service } from './service.models';
+import { ServiceRecord } from './service-record.models';
 
 import { DataStructureError } from '../exceptions/data-structure.error';
+import { NotFoundError } from '../exceptions/not-found-error';
 
 import * as ScheduleServices from '../services/schedule.services';
+
+import { formatDate } from '../utils/date.utils';
 
 @Entity('reservations')
 export class Reservation extends BaseEntity {
@@ -57,15 +61,16 @@ export class Reservation extends BaseEntity {
 	@Column()
 	employee_id: number;
 
-	@ManyToOne(() => Service, (service) => service.reservations, {
+	@ManyToOne(() => ServiceRecord, (service) => service.reservations, {
 		onUpdate: 'CASCADE',
 		onDelete: 'CASCADE',
 		eager: true,
 	})
-	@JoinColumn({
-		name: 'service_id',
-	})
-	service: Service;
+	@JoinColumn([
+		{ name: 'service_id', referencedColumnName: 'service_id' },
+		{ name: 'service_valid_from', referencedColumnName: 'valid_from' },
+	])
+	service: ServiceRecord;
 
 	@Column({
 		type: 'integer',
@@ -248,6 +253,7 @@ export class Reservation extends BaseEntity {
 	@BeforeUpdate()
 	async beforeFunction() {
 		await this.checkEndTime();
+		await this.ensureValidService();
 		await this.ensureScheduleExists();
 	}
 
@@ -281,6 +287,34 @@ export class Reservation extends BaseEntity {
 					)}`
 				);
 		}
+	}
+
+	private async ensureValidService() {
+		const { year, month, day, service } = this;
+
+		const date = formatDate(year, month, day);
+		const serviceId = service.service_id;
+
+		const serviceRecord = await ServiceRecord.createQueryBuilder(
+			'serviceRecord'
+		)
+			.where('serviceRecord.service_id = :serviceId', { serviceId })
+			.andWhere('serviceRecord.valid_from <= :date', { date })
+			.andWhere(
+				new Brackets((qb) => {
+					qb.where('serviceRecord.valid_to IS NULL').orWhere(
+						'serviceRecord.valid_to > :date',
+						{ date }
+					);
+				})
+			)
+			.orderBy('serviceRecord.valid_from', 'ASC')
+			.getOne();
+
+		if (!serviceRecord)
+			throw new NotFoundError('Service', 'service id', serviceId);
+
+		this.service = serviceRecord;
 	}
 
 	private async ensureScheduleExists() {
