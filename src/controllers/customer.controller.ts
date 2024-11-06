@@ -71,7 +71,7 @@ export const getCustomer: RequestHandler = async (
 ) => {
 	try {
 		const customerId = parseInt(req.params.customer_id);
-		const withDeleted = req.query.with_deleted === 'true';
+		const withDeleted = Boolean(req.query.with_deleted);
 
 		const customer = await CustomerServices.getCustomer({
 			customerId,

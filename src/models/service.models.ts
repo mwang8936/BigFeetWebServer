@@ -3,102 +3,41 @@ import {
 	BaseEntity,
 	Column,
 	PrimaryGeneratedColumn,
-	OneToMany,
 	DeleteDateColumn,
 	CreateDateColumn,
 	UpdateDateColumn,
+	OneToMany,
+	AfterInsert,
+	AfterUpdate,
 } from 'typeorm';
 
 import { ServiceColor } from './enums';
-import { Reservation } from './reservation.models';
+import { ServiceRecord } from './service-record.models';
 
 @Entity('services')
 export class Service extends BaseEntity {
 	@PrimaryGeneratedColumn()
 	service_id: number;
 
+	valid_from: string;
+
 	@Column({
 		length: 30,
+		unique: true,
 	})
 	service_name: string;
 
 	@Column({
 		length: 20,
+		unique: true,
 	})
 	shorthand: string;
 
-	@Column({
-		type: 'integer',
-	})
 	time: number;
-
-	@Column({
-		type: 'decimal',
-		precision: 5,
-		scale: 2,
-		transformer: {
-			to(money: number) {
-				return money;
-			},
-			from(money: string) {
-				return Number(money);
-			},
-		},
-	})
 	money: number;
-
-	@Column({
-		type: 'decimal',
-		precision: 2,
-		scale: 1,
-		default: 0,
-		transformer: {
-			to(body: number) {
-				return body;
-			},
-			from(body: string) {
-				return Number(body);
-			},
-		},
-	})
 	body: number;
-
-	@Column({
-		type: 'decimal',
-		precision: 2,
-		scale: 1,
-		default: 0,
-		transformer: {
-			to(feet: number) {
-				return feet;
-			},
-			from(feet: string) {
-				return Number(feet);
-			},
-		},
-	})
 	feet: number;
-
-	@Column({
-		type: 'decimal',
-		precision: 2,
-		scale: 1,
-		default: 0,
-		transformer: {
-			to(acupuncture: number) {
-				return acupuncture;
-			},
-			from(acupuncture: string) {
-				return Number(acupuncture);
-			},
-		},
-	})
 	acupuncture: number;
-
-	@Column({
-		type: 'integer',
-		default: 0,
-	})
 	beds_required: number;
 
 	@Column({
@@ -116,6 +55,48 @@ export class Service extends BaseEntity {
 	@DeleteDateColumn()
 	deleted_at?: Date;
 
-	@OneToMany(() => Reservation, (reservation) => reservation.service)
-	reservations: Reservation[];
+	@OneToMany(() => ServiceRecord, (record) => record.service, {
+		eager: true,
+	})
+	records: ServiceRecord[];
+
+	@AfterUpdate()
+	async updateRecords() {
+		const { service_id, service_name, shorthand, color } = this;
+
+		ServiceRecord.update({ service_id }, { service_name, shorthand, color });
+	}
+
+	@AfterInsert()
+	async addInitialRecord() {
+		const {
+			service_id,
+			valid_from,
+			service_name,
+			shorthand,
+			time,
+			money,
+			body,
+			feet,
+			acupuncture,
+			beds_required,
+			color,
+		} = this;
+
+		const record = ServiceRecord.create({
+			service_id,
+			valid_from,
+			service_name,
+			shorthand,
+			time,
+			money,
+			body,
+			feet,
+			acupuncture,
+			beds_required,
+			color,
+		});
+
+		record.save();
+	}
 }

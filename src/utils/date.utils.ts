@@ -73,3 +73,37 @@ export function convertDateToYearMonthDayObject(isoDateString: string): {
 
 	return { year, month, day };
 }
+
+export function convertYYYYMMDDToYearMonthDayObject(dateString: string): {
+	year: number;
+	month: number;
+	day: number;
+} {
+	const [year, month, day] = dateString.split('-').map(Number);
+
+	if (!year || !month || !day) {
+		throw new Error("Invalid date format. Expected 'yyyy-mm-dd'.");
+	}
+
+	return { year, month, day };
+}
+
+export function formatDate(year: number, month: number, day: number): string {
+	const monthString = month.toString().padStart(2, '0');
+	const dayString = day.toString().padStart(2, '0');
+
+	return `${year}-${monthString}-${dayString}`;
+}
+
+export function getNextDate(dateString: string): string {
+	const [year, month, day] = dateString.split('-').map(Number);
+	const date = new Date(Date.UTC(year, month - 1, day)); // Use UTC to ensure date consistency
+
+	date.setUTCDate(date.getUTCDate() + 1); // Add one day in UTC
+
+	const nextYear = date.getUTCFullYear();
+	const nextMonth = String(date.getUTCMonth() + 1).padStart(2, '0');
+	const nextDay = String(date.getUTCDate()).padStart(2, '0');
+
+	return `${nextYear}-${nextMonth}-${nextDay}`;
+}

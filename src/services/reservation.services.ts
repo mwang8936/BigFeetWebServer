@@ -1,5 +1,3 @@
-import { Reservation } from '../models/reservation.models';
-import { Gender, TipMethod } from '../models/enums';
 import {
 	Between,
 	FindOptionsWhere,
@@ -8,10 +6,14 @@ import {
 	MoreThanOrEqual,
 	Not,
 } from 'typeorm';
-import { Service } from '../models/service.models';
-import { Customer } from '../models/customer.models';
-import { NotFoundError } from '../exceptions/not-found-error';
+
 import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
+import { NotFoundError } from '../exceptions/not-found-error';
+
+import { Customer } from '../models/customer.models';
+import { Gender, TipMethod } from '../models/enums';
+import { Reservation } from '../models/reservation.models';
+import { ServiceRecord } from '../models/service-record.models';
 
 export const getReservations = async (
 	start?: Date,
@@ -97,15 +99,9 @@ export const updateReservation = async (
 		}
 
 		if (serviceId !== undefined) {
-			const service = await Service.findOne({
-				where: {
-					service_id: serviceId,
-				},
+			updates.service = ServiceRecord.create({
+				service_id: serviceId,
 			});
-
-			if (!service) throw new NotFoundError('Service', 'service id', serviceId);
-
-			updates.service = service;
 		}
 
 		if (time !== undefined) {
@@ -302,21 +298,15 @@ export const createReservation = async (
 		});
 	}
 
-	const service = await Service.findOne({
-		where: {
-			service_id: serviceId,
-		},
-	});
-
-	if (!service) throw new NotFoundError('Service', 'service id', serviceId);
-
 	const reservation = Reservation.create({
 		reserved_date: reservedDate,
 		year: date.year,
 		month: date.month,
 		day: date.day,
 		employee_id: employeeId,
-		service,
+		service: {
+			service_id: serviceId,
+		},
 		time,
 		beds_required: bedsRequired,
 		customer,
