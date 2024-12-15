@@ -24,6 +24,7 @@ import { DataStructureError } from '../exceptions/data-structure.error';
 import { isValidDate } from '../utils/date.utils';
 import { Payroll } from './payroll.models';
 import { PayrollPart } from './enums';
+import { EmployeeRecord } from './employee-record.model';
 
 @Entity('schedules')
 @Check(`"year" >= 2020`)
@@ -51,15 +52,19 @@ export class Schedule extends BaseEntity {
 	@PrimaryColumn()
 	employee_id: number;
 
-	@ManyToOne(() => Employee, (employee) => employee.schedules, {
+	@PrimaryColumn()
+	employee_valid_from: string;
+
+	@ManyToOne(() => EmployeeRecord, (employee) => employee.schedules, {
 		onUpdate: 'CASCADE',
 		onDelete: 'CASCADE',
 		eager: true,
 	})
-	@JoinColumn({
-		name: 'employee_id',
-	})
-	employee: Employee;
+	@JoinColumn([
+		{ name: 'employee_id', referencedColumnName: 'employee_id' },
+		{ name: 'employee_valid_from', referencedColumnName: 'valid_from' },
+	])
+	employee: EmployeeRecord;
 
 	@Column({
 		name: 'working',

@@ -7,17 +7,19 @@ import {
 	PrimaryGeneratedColumn,
 	OneToMany,
 	DeleteDateColumn,
+	AfterInsert,
+	AfterUpdate,
 } from 'typeorm';
 
-import { AcupunctureReport } from './acupuncture-report.models';
+import { EmployeeRecord } from './employee-record.model';
 import { Gender, Language, Permissions, Role } from './enums';
-import { Schedule } from './schedule.models';
-import { Payroll } from './payroll.models';
 
 @Entity('employees')
 export class Employee extends BaseEntity {
 	@PrimaryGeneratedColumn()
 	employee_id: number;
+
+	valid_from: string;
 
 	@Column({
 		length: 30,
@@ -60,68 +62,9 @@ export class Employee extends BaseEntity {
 	})
 	permissions: Permissions[];
 
-	@Column({
-		type: 'decimal',
-		precision: 4,
-		scale: 2,
-		nullable: true,
-		transformer: {
-			to(bodyRate: number | null) {
-				return bodyRate;
-			},
-			from(bodyRate: string | null) {
-				return bodyRate === null ? null : Number(bodyRate);
-			},
-		},
-	})
 	body_rate: number | null;
-
-	@Column({
-		type: 'decimal',
-		precision: 4,
-		scale: 2,
-		nullable: true,
-		transformer: {
-			to(feetRate: number | null) {
-				return feetRate;
-			},
-			from(feetRate: string | null) {
-				return feetRate === null ? null : Number(feetRate);
-			},
-		},
-	})
 	feet_rate: number | null;
-
-	@Column({
-		type: 'decimal',
-		precision: 4,
-		scale: 2,
-		nullable: true,
-		transformer: {
-			to(acupunctureRate: number | null) {
-				return acupunctureRate;
-			},
-			from(acupunctureRate: string | null) {
-				return acupunctureRate === null ? null : Number(acupunctureRate);
-			},
-		},
-	})
 	acupuncture_rate: number | null;
-
-	@Column({
-		type: 'decimal',
-		precision: 4,
-		scale: 2,
-		nullable: true,
-		transformer: {
-			to(perHour: number | null) {
-				return perHour;
-			},
-			from(perHour: string | null) {
-				return perHour === null ? null : Number(perHour);
-			},
-		},
-	})
 	per_hour: number | null;
 
 	@Column({
@@ -147,15 +90,51 @@ export class Employee extends BaseEntity {
 	@DeleteDateColumn()
 	deleted_at?: Date;
 
-	@OneToMany(() => Schedule, (schedule) => schedule.employee)
-	schedules: Schedule[];
+	@OneToMany(() => EmployeeRecord, (record) => record.employee, {
+		eager: true,
+	})
+	records: EmployeeRecord[];
 
-	@OneToMany(() => Payroll, (payroll) => payroll.employee)
-	payrolls: Payroll[];
+	@AfterUpdate()
+	async updateRecords() {
+		const { employee_id, username, first_name, last_name, gender, role } = this;
 
-	@OneToMany(
-		() => AcupunctureReport,
-		(acupunctureReport) => acupunctureReport.employee
-	)
-	acupuncture_reports: AcupunctureReport[];
+		EmployeeRecord.update(
+			{ employee_id },
+			{ username, first_name, last_name, gender, role }
+		);
+	}
+
+	@AfterInsert()
+	async addInitialRecord() {
+		const {
+			employee_id,
+			valid_from,
+			username,
+			first_name,
+			last_name,
+			gender,
+			role,
+			body_rate,
+			feet_rate,
+			acupuncture_rate,
+			per_hour,
+		} = this;
+
+		const record = EmployeeRecord.create({
+			employee_id,
+			valid_from,
+			username,
+			first_name,
+			last_name,
+			gender,
+			role,
+			body_rate,
+			feet_rate,
+			acupuncture_rate,
+			per_hour,
+		});
+
+		record.save();
+	}
 }

@@ -13,11 +13,16 @@ import {
 	FindOptionsWhere,
 	Between,
 	AfterInsert,
+	BeforeInsert,
+	BeforeUpdate,
+	Brackets,
 } from 'typeorm';
 
+import { EmployeeRecord } from './employee-record.model';
 import { PayrollOption, PayrollPart, TipMethod } from './enums';
-import { Employee } from './employee.models';
 import { Schedule } from './schedule.models';
+
+import { NotFoundError } from '../exceptions/not-found-error';
 
 interface DataRow {
 	date: string;
@@ -58,15 +63,19 @@ export class Payroll extends BaseEntity {
 	@PrimaryColumn()
 	employee_id: number;
 
-	@ManyToOne(() => Employee, (employee) => employee.payrolls, {
+	@PrimaryColumn()
+	employee_valid_from: string;
+
+	@ManyToOne(() => EmployeeRecord, (employee) => employee.payrolls, {
 		onUpdate: 'CASCADE',
 		onDelete: 'CASCADE',
 		eager: true,
 	})
-	@JoinColumn({
-		name: 'employee_id',
-	})
-	employee: Employee;
+	@JoinColumn([
+		{ name: 'employee_id', referencedColumnName: 'employee_id' },
+		{ name: 'employee_valid_from', referencedColumnName: 'valid_from' },
+	])
+	employee: EmployeeRecord;
 
 	@OneToMany(() => Schedule, (schedule) => schedule.payroll)
 	schedules: Schedule[];
@@ -100,6 +109,38 @@ export class Payroll extends BaseEntity {
 
 	@UpdateDateColumn()
 	updated_at: Date;
+
+	@BeforeInsert()
+	@BeforeUpdate()
+	async ensureValidEmployee() {
+		const { year, month, employee } = this;
+
+		const employeeId = employee.employee_id;
+
+		const employeeRecord = await EmployeeRecord.createQueryBuilder(
+			'employeeRecord'
+		)
+			.where('employeeRecord.employee_id = :employeeId', { employeeId })
+			.andWhere('employeeRecord.valid_from <= MAKE_DATE(:year, :month, 1)', {
+				year,
+				month,
+			})
+			.andWhere(
+				new Brackets((qb) => {
+					qb.where('employeeRecord.valid_to IS NULL').orWhere(
+						'employeeRecord.valid_to > MAKE_DATE(:year, :month, 1)',
+						{ year, month }
+					);
+				})
+			)
+			.orderBy('employeeRecord.valid_from', 'ASC')
+			.getOne();
+
+		if (!employeeRecord)
+			throw new NotFoundError('Employee', 'employee id', employeeId);
+
+		this.employee = employeeRecord;
+	}
 
 	@AfterInsert()
 	async assignSchedules() {

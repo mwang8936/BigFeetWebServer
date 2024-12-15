@@ -9,10 +9,15 @@ import {
 	AfterLoad,
 	Column,
 	Check,
+	BeforeInsert,
+	BeforeUpdate,
+	Brackets,
 } from 'typeorm';
 
-import { Employee } from './employee.models';
+import { EmployeeRecord } from './employee-record.model';
 import { Reservation } from './reservation.models';
+
+import { NotFoundError } from '../exceptions/not-found-error';
 
 interface DataRow {
 	date: string;
@@ -34,15 +39,19 @@ export class AcupunctureReport extends BaseEntity {
 	@PrimaryColumn()
 	employee_id: number;
 
-	@ManyToOne(() => Employee, (employee) => employee.acupuncture_reports, {
+	@PrimaryColumn()
+	employee_valid_from: string;
+
+	@ManyToOne(() => EmployeeRecord, (employee) => employee.acupuncture_reports, {
 		onUpdate: 'CASCADE',
 		onDelete: 'CASCADE',
 		eager: true,
 	})
-	@JoinColumn({
-		name: 'employee_id',
-	})
-	employee: Employee;
+	@JoinColumn([
+		{ name: 'employee_id', referencedColumnName: 'employee_id' },
+		{ name: 'employee_valid_from', referencedColumnName: 'valid_from' },
+	])
+	employee: EmployeeRecord;
 
 	@Column({
 		type: 'decimal',
@@ -99,6 +108,38 @@ export class AcupunctureReport extends BaseEntity {
 
 	@UpdateDateColumn()
 	updated_at: Date;
+
+	@BeforeInsert()
+	@BeforeUpdate()
+	async ensureValidEmployee() {
+		const { year, month, employee } = this;
+
+		const employeeId = employee.employee_id;
+
+		const employeeRecord = await EmployeeRecord.createQueryBuilder(
+			'employeeRecord'
+		)
+			.where('employeeRecord.employee_id = :employeeId', { employeeId })
+			.andWhere('employeeRecord.valid_from <= MAKE_DATE(:year, :month, 1)', {
+				year,
+				month,
+			})
+			.andWhere(
+				new Brackets((qb) => {
+					qb.where('employeeRecord.valid_to IS NULL').orWhere(
+						'employeeRecord.valid_to > MAKE_DATE(:year, :month, 1)',
+						{ year, month }
+					);
+				})
+			)
+			.orderBy('employeeRecord.valid_from', 'ASC')
+			.getOne();
+
+		if (!employeeRecord)
+			throw new NotFoundError('Employee', 'employee id', employeeId);
+
+		this.employee = employeeRecord;
+	}
 
 	@AfterLoad()
 	async setData() {
