@@ -120,3 +120,20 @@ export const deletePayroll = async (
 		return null;
 	}
 };
+
+export const refreshPayroll = async (
+	year: number,
+	month: number,
+	part: PayrollPart,
+	employeeId: number
+) => {
+	const payroll = await getPayroll(year, month, part, employeeId);
+
+	if (payroll) {
+		await payroll.assignSchedules();
+
+		return payroll;
+	} else {
+		return null;
+	}
+};
