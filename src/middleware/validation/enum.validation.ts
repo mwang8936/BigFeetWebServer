@@ -1,5 +1,13 @@
 import { Joi } from 'celebrate';
 
+import { acupuncture_reports_channel } from '../../events/acupuncture-report.events';
+import { customers_channel } from '../../events/customer.events';
+import { employees_channel } from '../../events/employee.events';
+import { gift_cards_channel } from '../../events/gift-card.events';
+import { payrolls_channel } from '../../events/payroll.events';
+import { schedules_channel } from '../../events/schedule.events';
+import { services_channel } from '../../events/service.events';
+
 import {
 	Gender,
 	Language,
@@ -11,6 +19,16 @@ import {
 	ServiceColor,
 	TipMethod,
 } from '../../models/enums';
+
+export const channelValidation = Joi.string().valid(
+	acupuncture_reports_channel,
+	customers_channel,
+	employees_channel,
+	gift_cards_channel,
+	payrolls_channel,
+	schedules_channel,
+	services_channel
+);
 
 export const colorValidation = Joi.string().valid(
 	ServiceColor.RED,

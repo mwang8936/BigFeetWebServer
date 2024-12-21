@@ -13,6 +13,24 @@ import {
 	VipPackageEventMessage,
 } from '../events/vip-package.events';
 import { schedules_channel } from '../events/schedule.events';
+import { VipPackage } from '../models/vip-package.models';
+
+const sendPusherEvent = async (
+	vipPackage: VipPackage,
+	event: string,
+	socketID: string | undefined
+) => {
+	if (socketID) {
+		const message: VipPackageEventMessage = {
+			employee_ids: vipPackage.employee_ids,
+			serial: vipPackage.serial,
+		};
+
+		pusher.trigger(schedules_channel, event, message, {
+			socket_id: socketID,
+		});
+	}
+};
 
 export const getVipPackages: RequestHandler = async (
 	req: Request,
@@ -101,14 +119,11 @@ export const updateVipPackage: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(vipPackage));
 
-			const message: VipPackageEventMessage = {
-				employee_ids: vipPackage.employee_ids,
-				serial: vipPackage.serial,
-			};
-
-			pusher.trigger(schedules_channel, update_vip_package_event, message, {
-				socket_id: req.body.socket_id,
-			});
+			sendPusherEvent(
+				vipPackage,
+				update_vip_package_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -139,14 +154,11 @@ export const addVipPackage: RequestHandler = async (
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(vipPackage));
 
-		const message: VipPackageEventMessage = {
-			employee_ids: vipPackage.employee_ids,
-			serial: vipPackage.serial,
-		};
-
-		pusher.trigger(schedules_channel, add_vip_package_event, message, {
-			socket_id: req.body.socket_id,
-		});
+		sendPusherEvent(
+			vipPackage,
+			add_vip_package_event,
+			req.headers['x-socket-id'] as string | undefined
+		);
 	} catch (err) {
 		next(err);
 	}
@@ -168,14 +180,11 @@ export const deleteVipPackage: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(vipPackage));
 
-			const message: VipPackageEventMessage = {
-				employee_ids: vipPackage.employee_ids,
-				serial: vipPackage.serial,
-			};
-
-			pusher.trigger(schedules_channel, delete_vip_package_event, message, {
-				socket_id: req.body.socket_id,
-			});
+			sendPusherEvent(
+				vipPackage,
+				delete_vip_package_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)

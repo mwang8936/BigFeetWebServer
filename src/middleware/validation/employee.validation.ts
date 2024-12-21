@@ -78,21 +78,7 @@ export const UpdateEmployeeValidation = celebrate(
 				.min(0)
 				.max(NUMBERS.employee.per_hour)
 				.allow(null),
-		})
-			.or(
-				'username',
-				'password',
-				'first_name',
-				'last_name',
-				'gender',
-				'role',
-				'permissions',
-				'body_rate',
-				'feet_rate',
-				'acupuncture_rate',
-				'per_hour'
-			)
-			.append({ socket_id: Joi.string() }),
+		}).min(1),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -147,7 +133,7 @@ export const AddEmployeeValidation = celebrate(
 				.min(0)
 				.max(NUMBERS.employee.per_hour)
 				.allow(null),
-		}).append({ socket_id: Joi.string() }),
+		}),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -158,9 +144,6 @@ export const DeleteEmployeeValidation = celebrate(
 		[Segments.PARAMS]: Joi.object().keys({
 			employee_id: Joi.number().integer().positive().required(),
 		}),
-		[Segments.BODY]: Joi.object().keys({
-			socket_id: Joi.string(),
-		}),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -170,9 +153,6 @@ export const RecoverEmployeeValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
 			employee_id: Joi.number().integer().positive().required(),
-		}),
-		[Segments.BODY]: Joi.object().keys({
-			socket_id: Joi.string(),
 		}),
 	},
 	{ abortEarly: false },

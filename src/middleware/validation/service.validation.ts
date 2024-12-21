@@ -49,19 +49,7 @@ export const UpdateServiceValidation = celebrate(
 				.max(NUMBERS.service.acupuncture),
 			beds_required: Joi.number().integer().min(0),
 			color: colorValidation,
-		})
-			.or(
-				'service_name',
-				'shorthand',
-				'time',
-				'money',
-				'body',
-				'feet',
-				'acupuncture',
-				'beds_required',
-				'color'
-			)
-			.append({ socket_id: Joi.string() }),
+		}).min(1),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -98,9 +86,7 @@ export const AddServiceValidation = celebrate(
 				.max(NUMBERS.service.acupuncture),
 			beds_required: Joi.number().integer().min(0).required(),
 			color: colorValidation.required(),
-		})
-			.or('body', 'feet', 'acupuncture')
-			.append({ socket_id: Joi.string() }),
+		}).or('body', 'feet', 'acupuncture'),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -111,9 +97,6 @@ export const DeleteServiceValidation = celebrate(
 		[Segments.PARAMS]: Joi.object().keys({
 			service_id: Joi.number().integer().positive().required(),
 		}),
-		[Segments.BODY]: Joi.object().keys({
-			socket_id: Joi.string(),
-		}),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -123,9 +106,6 @@ export const RecoverServiceValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
 			service_id: Joi.number().integer().positive().required(),
-		}),
-		[Segments.BODY]: Joi.object().keys({
-			socket_id: Joi.string(),
 		}),
 	},
 	{ abortEarly: false },

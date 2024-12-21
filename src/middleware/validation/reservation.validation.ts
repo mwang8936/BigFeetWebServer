@@ -109,31 +109,7 @@ export const UpdateReservationValidation = celebrate(
 				.max(LENGTHS.reservation.updated_by)
 				.alphanum()
 				.required(),
-		})
-			.or(
-				'reserved_date',
-				'employee_id',
-				'service_id',
-				'time',
-				'beds_required',
-				'customer_id',
-				'phone_number',
-				'vip_serial',
-				'customer_name',
-				'notes',
-				'requested_gender',
-				'requested_employee',
-				'cash',
-				'machine',
-				'vip',
-				'gift_card',
-				'insurance',
-				'cash_out',
-				'tips',
-				'tip_method',
-				'message'
-			)
-			.append({ socket_id: Joi.string() }),
+		}).min(2),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -174,16 +150,13 @@ export const AddReservationValidation = celebrate({
 			.max(LENGTHS.reservation.created_by)
 			.alphanum()
 			.required(),
-	}).append({ socket_id: Joi.string() }),
+	}),
 });
 
 export const DeleteReservationValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
 			reservation_id: Joi.number().integer().positive().required(),
-		}),
-		[Segments.BODY]: Joi.object().keys({
-			socket_id: Joi.string(),
 		}),
 	},
 	{ abortEarly: false },

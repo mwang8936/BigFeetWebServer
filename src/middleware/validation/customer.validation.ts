@@ -46,9 +46,7 @@ export const UpdateCustomerValidation = celebrate(
 				.max(LENGTHS.customer.customer_name)
 				.allow(null),
 			notes: Joi.string().trim().min(1).allow(null),
-		})
-			.or('phone_number', 'vip_serial', 'customer_name', 'notes')
-			.append({ socket_id: Joi.string() }),
+		}).min(1),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -71,9 +69,7 @@ export const AddCustomerValidation = celebrate(
 				.max(LENGTHS.customer.customer_name)
 				.allow(null),
 			notes: Joi.string().trim().min(1).allow(null),
-		})
-			.or('phone_number', 'vip_serial')
-			.append({ socket_id: Joi.string() }),
+		}).or('phone_number', 'vip_serial'),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -84,9 +80,6 @@ export const DeleteCustomerValidation = celebrate(
 		[Segments.PARAMS]: Joi.object().keys({
 			customer_id: Joi.number().integer().positive().required(),
 		}),
-		[Segments.BODY]: Joi.object().keys({
-			socket_id: Joi.string(),
-		}),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -96,9 +89,6 @@ export const RecoverCustomerValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
 			customer_id: Joi.number().integer().positive().required(),
-		}),
-		[Segments.BODY]: Joi.object().keys({
-			socket_id: Joi.string(),
 		}),
 	},
 	{ abortEarly: false },
