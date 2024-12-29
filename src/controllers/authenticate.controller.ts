@@ -9,6 +9,8 @@ import { employees_channel } from '../events/employee.events';
 import { gift_cards_channel } from '../events/gift-card.events';
 import { schedules_channel } from '../events/schedule.events';
 import { services_channel } from '../events/service.events';
+import { acupuncture_reports_channel } from '../events/acupuncture-report.events';
+import { payrolls_channel } from '../events/payroll.events';
 
 export const authenticate: RequestHandler = async (
 	req: Request,
@@ -44,6 +46,16 @@ export const authenticatePusher: RequestHandler = async (
 		const channel: string = req.body.channel_name;
 
 		if (
+			channel === acupuncture_reports_channel &&
+			!permissions.includes(Permissions.PERMISSION_GET_PAYROLL)
+		) {
+			throw new AuthorizationError(
+				undefined,
+				'Pusher acupuncture-report authorization not found.'
+			);
+		}
+
+		if (
 			channel === customers_channel &&
 			!permissions.includes(Permissions.PERMISSION_GET_CUSTOMER)
 		) {
@@ -70,6 +82,16 @@ export const authenticatePusher: RequestHandler = async (
 			throw new AuthorizationError(
 				undefined,
 				'Pusher gift-card authorization not found.'
+			);
+		}
+
+		if (
+			channel === payrolls_channel &&
+			!permissions.includes(Permissions.PERMISSION_GET_PAYROLL)
+		) {
+			throw new AuthorizationError(
+				undefined,
+				'Pusher payroll authorization not found.'
 			);
 		}
 

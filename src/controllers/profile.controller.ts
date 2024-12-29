@@ -17,6 +17,27 @@ import pusher from '../config/pusher.config';
 import { getEmployeeHashedPassword } from '../services/employee.services';
 import saltRounds from '../config/password.config';
 import { IncorrectPasswordError } from '../exceptions/incorrect-password-error';
+import { Schedule } from '../models/schedule.models';
+
+const sendPusherEvent = async (
+	schedule: Schedule,
+	event: string,
+	socketID: string | undefined
+) => {
+	if (
+		socketID &&
+		schedule.date === formatDateToYYYYMMDD(new Date().toISOString())
+	) {
+		const message: ScheduleEventMessage = {
+			employee_id: schedule.employee.employee_id,
+			username: schedule.employee.username,
+		};
+
+		pusher.trigger(schedules_channel, event, message, {
+			socket_id: socketID,
+		});
+	}
+};
 
 export const getProfile: RequestHandler = async (
 	req: Request,
@@ -296,16 +317,11 @@ export const signProfileSchedule: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(schedule));
 
-			const message: ScheduleEventMessage = {
-				employee_id: schedule.employee.employee_id,
-				username: schedule.employee.username,
-			};
-
-			if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-				pusher.trigger(schedules_channel, sign_schedule_event, message, {
-					socket_id: req.body.socket_id,
-				});
-			}
+			sendPusherEvent(
+				schedule,
+				sign_schedule_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)

@@ -10,6 +10,23 @@ import {
 	services_channel,
 	update_service_event,
 } from '../events/service.events';
+import { Service } from '../models/service.models';
+
+const sendPusherEvent = async (
+	service: Service,
+	event: string,
+	socketID: string | undefined
+) => {
+	if (socketID) {
+		const message: ServiceEventMessage = {
+			service_name: service.service_name,
+		};
+
+		pusher.trigger(services_channel, event, message, {
+			socket_id: socketID,
+		});
+	}
+};
 
 export const getServices: RequestHandler = async (
 	req: Request,
@@ -84,13 +101,11 @@ export const updateService: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(service));
 
-			const message: ServiceEventMessage = {
-				service_name: service.service_name,
-			};
-
-			pusher.trigger(services_channel, update_service_event, message, {
-				socket_id: req.body.socket_id,
-			});
+			sendPusherEvent(
+				service,
+				update_service_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -125,13 +140,11 @@ export const addService: RequestHandler = async (
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(service));
 
-		const message: ServiceEventMessage = {
-			service_name: service.service_name,
-		};
-
-		pusher.trigger(services_channel, add_service_event, message, {
-			socket_id: req.body.socket_id,
-		});
+		sendPusherEvent(
+			service,
+			add_service_event,
+			req.headers['x-socket-id'] as string | undefined
+		);
 	} catch (err) {
 		next(err);
 	}
@@ -153,13 +166,11 @@ export const deleteService: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(service));
 
-			const message: ServiceEventMessage = {
-				service_name: service.service_name,
-			};
-
-			pusher.trigger(services_channel, delete_service_event, message, {
-				socket_id: req.body.socket_id,
-			});
+			sendPusherEvent(
+				service,
+				delete_service_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -187,13 +198,11 @@ export const recoverService: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(service));
 
-			const message: ServiceEventMessage = {
-				service_name: service.service_name,
-			};
-
-			pusher.trigger(services_channel, recover_service_event, message, {
-				socket_id: req.body.socket_id,
-			});
+			sendPusherEvent(
+				service,
+				recover_service_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)

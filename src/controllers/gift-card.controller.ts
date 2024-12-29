@@ -9,6 +9,22 @@ import {
 	gift_cards_channel,
 	update_gift_card_event,
 } from '../events/gift-card.events';
+import { GiftCard } from '../models/gift-card.models';
+
+const sendPusherEvent = async (
+	giftCard: GiftCard,
+	event: string,
+	socketID: string | undefined
+) => {
+	if (
+		socketID &&
+		giftCard.date === formatDateToYYYYMMDD(new Date().toISOString())
+	) {
+		pusher.trigger(gift_cards_channel, event, undefined, {
+			socket_id: socketID,
+		});
+	}
+};
 
 export const getGiftCards: RequestHandler = async (
 	req: Request,
@@ -81,11 +97,11 @@ export const updateGiftCard: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(giftCard));
 
-			if (giftCard.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-				pusher.trigger(gift_cards_channel, update_gift_card_event, undefined, {
-					socket_id: req.body.socket_id,
-				});
-			}
+			sendPusherEvent(
+				giftCard,
+				update_gift_card_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -115,11 +131,11 @@ export const addGiftCard: RequestHandler = async (
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(giftCard));
 
-		if (giftCard.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-			pusher.trigger(gift_cards_channel, add_gift_card_event, undefined, {
-				socket_id: req.body.socket_id,
-			});
-		}
+		sendPusherEvent(
+			giftCard,
+			add_gift_card_event,
+			req.headers['x-socket-id'] as string | undefined
+		);
 	} catch (err) {
 		next(err);
 	}
@@ -141,11 +157,11 @@ export const deleteGiftCard: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(giftCard));
 
-			if (giftCard.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-				pusher.trigger(gift_cards_channel, delete_gift_card_event, undefined, {
-					socket_id: req.body.socket_id,
-				});
-			}
+			sendPusherEvent(
+				giftCard,
+				delete_gift_card_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)

@@ -10,6 +10,24 @@ import {
 	recover_customer_event,
 	update_customer_event,
 } from '../events/customer.events';
+import { Customer } from '../models/customer.models';
+
+const sendPusherEvent = async (
+	customer: Customer,
+	event: string,
+	socketID: string | undefined
+) => {
+	if (socketID) {
+		const message: CustomerEventMessage = {
+			phone_number: customer.phone_number,
+			vip_serial: customer.vip_serial,
+		};
+
+		pusher.trigger(customers_channel, event, message, {
+			socket_id: socketID,
+		});
+	}
+};
 
 export const getCustomers: RequestHandler = async (
 	req: Request,
@@ -82,14 +100,11 @@ export const updateCustomer: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(customer));
 
-			const message: CustomerEventMessage = {
-				phone_number: customer.phone_number,
-				vip_serial: customer.vip_serial,
-			};
-
-			pusher.trigger(customers_channel, update_customer_event, message, {
-				socket_id: req.body.socket_id,
-			});
+			sendPusherEvent(
+				customer,
+				update_customer_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -119,14 +134,11 @@ export const addCustomer: RequestHandler = async (
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(customer));
 
-		const message: CustomerEventMessage = {
-			phone_number: customer.phone_number,
-			vip_serial: customer.vip_serial,
-		};
-
-		pusher.trigger(customers_channel, add_customer_event, message, {
-			socket_id: req.body.socket_id,
-		});
+		sendPusherEvent(
+			customer,
+			add_customer_event,
+			req.headers['x-socket-id'] as string | undefined
+		);
 	} catch (err) {
 		next(err);
 	}
@@ -148,14 +160,11 @@ export const deleteCustomer: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(customer));
 
-			const message: CustomerEventMessage = {
-				phone_number: customer.phone_number,
-				vip_serial: customer.vip_serial,
-			};
-
-			pusher.trigger(customers_channel, delete_customer_event, message, {
-				socket_id: req.body.socket_id,
-			});
+			sendPusherEvent(
+				customer,
+				delete_customer_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -183,14 +192,11 @@ export const recoverCustomer: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(customer));
 
-			const message: CustomerEventMessage = {
-				phone_number: customer.phone_number,
-				vip_serial: customer.vip_serial,
-			};
-
-			pusher.trigger(customers_channel, recover_customer_event, message, {
-				socket_id: req.body.socket_id,
-			});
+			sendPusherEvent(
+				customer,
+				recover_customer_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)

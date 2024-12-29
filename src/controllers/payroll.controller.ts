@@ -3,6 +3,31 @@ import { HttpCode } from '../exceptions/custom-error';
 import * as PayrollServices from '../services/payroll.services';
 import { PayrollPart } from '../models/enums';
 import { convertDateToYearMonthDayObject } from '../utils/date.utils';
+import { Payroll } from '../models/payroll.models';
+import {
+	add_payroll_event,
+	delete_payroll_event,
+	PayrollEventMessage,
+	payrolls_channel,
+	update_payroll_event,
+} from '../events/payroll.events';
+import pusher from '../config/pusher.config';
+
+const sendPusherEvent = async (
+	payroll: Payroll,
+	event: string,
+	socketID: string | undefined
+) => {
+	if (socketID) {
+		const message: PayrollEventMessage = {
+			username: payroll.employee.username,
+		};
+
+		pusher.trigger(payrolls_channel, event, message, {
+			socket_id: socketID,
+		});
+	}
+};
 
 export const getPayrolls: RequestHandler = async (
 	req: Request,
@@ -96,6 +121,12 @@ export const updatePayroll: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(payroll));
+
+			sendPusherEvent(
+				payroll,
+				update_payroll_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -126,6 +157,12 @@ export const addPayroll: RequestHandler = async (
 			.status(HttpCode.CREATED)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(payroll));
+
+		sendPusherEvent(
+			payroll,
+			add_payroll_event,
+			req.headers['x-socket-id'] as string | undefined
+		);
 	} catch (err) {
 		next(err);
 	}
@@ -154,6 +191,12 @@ export const deletePayroll: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(payroll));
+
+			sendPusherEvent(
+				payroll,
+				delete_payroll_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -188,6 +231,12 @@ export const refreshPayroll: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(payroll));
+
+			sendPusherEvent(
+				payroll,
+				update_payroll_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)

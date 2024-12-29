@@ -18,6 +18,27 @@ import {
 } from '../events/schedule.events';
 import { getEmployeeHashedPassword } from '../services/employee.services';
 import { IncorrectPasswordError } from '../exceptions/incorrect-password-error';
+import { Schedule } from '../models/schedule.models';
+
+const sendPusherEvent = async (
+	schedule: Schedule,
+	event: string,
+	socketID: string | undefined
+) => {
+	if (
+		socketID &&
+		schedule.date === formatDateToYYYYMMDD(new Date().toISOString())
+	) {
+		const message: ScheduleEventMessage = {
+			employee_id: schedule.employee.employee_id,
+			username: schedule.employee.username,
+		};
+
+		pusher.trigger(schedules_channel, event, message, {
+			socket_id: socketID,
+		});
+	}
+};
 
 export const getSchedules: RequestHandler = async (
 	req: Request,
@@ -117,16 +138,11 @@ export const updateSchedule: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(schedule));
 
-			const message: ScheduleEventMessage = {
-				employee_id: schedule.employee.employee_id,
-				username: schedule.employee.username,
-			};
-
-			if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-				pusher.trigger(schedules_channel, update_schedule_event, message, {
-					socket_id: req.body.socket_id,
-				});
-			}
+			sendPusherEvent(
+				schedule,
+				update_schedule_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)
@@ -165,16 +181,11 @@ export const signSchedule: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(schedule));
 
-			const message: ScheduleEventMessage = {
-				employee_id: schedule.employee.employee_id,
-				username: schedule.employee.username,
-			};
-
-			if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-				pusher.trigger(schedules_channel, sign_schedule_event, message, {
-					socket_id: req.body.socket_id,
-				});
-			}
+			sendPusherEvent(
+				schedule,
+				sign_schedule_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)
@@ -219,16 +230,11 @@ export const addSchedule: RequestHandler = async (
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(schedule));
 
-		const message: ScheduleEventMessage = {
-			employee_id: schedule.employee.employee_id,
-			username: schedule.employee.username,
-		};
-
-		if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-			pusher.trigger(schedules_channel, add_schedule_event, message, {
-				socket_id: req.body.socket_id,
-			});
-		}
+		sendPusherEvent(
+			schedule,
+			add_schedule_event,
+			req.headers['x-socket-id'] as string | undefined
+		);
 	} catch (err) {
 		next(err);
 	}
@@ -251,16 +257,11 @@ export const deleteSchedule: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(schedule));
 
-			const message: ScheduleEventMessage = {
-				employee_id: schedule.employee.employee_id,
-				username: schedule.employee.username,
-			};
-
-			if (schedule.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-				pusher.trigger(schedules_channel, delete_schedule_event, message, {
-					socket_id: req.body.socket_id,
-				});
-			}
+			sendPusherEvent(
+				schedule,
+				delete_schedule_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)

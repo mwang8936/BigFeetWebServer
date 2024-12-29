@@ -15,6 +15,40 @@ import {
 	update_reservation_event,
 } from '../events/reservation.events';
 import { schedules_channel } from '../events/schedule.events';
+import { Reservation } from '../models/reservation.models';
+
+const sendPusherEvent = async (
+	reservation: Reservation,
+	event: string,
+	customersUpdate: boolean,
+	socketID: string | undefined
+) => {
+	if (
+		socketID &&
+		reservation.date === formatDateToYYYYMMDD(new Date().toISOString())
+	) {
+		const employee = await EmployeeServices.getEmployee(
+			reservation.employee_id
+		);
+
+		const message: ReservationEventMessage = {
+			time: reservation.reserved_date.toLocaleTimeString('en-US', {
+				timeZone: 'America/Los_Angeles',
+				hour12: true,
+				hour: '2-digit',
+				minute: '2-digit',
+			}),
+			employee_id: reservation.employee_id,
+			username: employee?.username ?? 'Employee Not Found',
+			created_by: reservation.updated_by,
+			update_customers: customersUpdate,
+		};
+
+		pusher.trigger(schedules_channel, event, message, {
+			socket_id: socketID,
+		});
+	}
+};
 
 export const getReservations: RequestHandler = async (
 	req: Request,
@@ -128,34 +162,18 @@ export const updateReservation: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(reservation));
 
-			const employee = await EmployeeServices.getEmployee(
-				reservation.employee_id
-			);
-
 			const customersUpdate =
 				req.body.phone_number !== undefined ||
 				req.body.vip_serial !== undefined ||
 				req.body.customer_name !== undefined ||
 				req.body.notes !== undefined;
 
-			const message: ReservationEventMessage = {
-				time: reservation.reserved_date.toLocaleTimeString('en-US', {
-					timeZone: 'America/Los_Angeles',
-					hour12: true,
-					hour: '2-digit',
-					minute: '2-digit',
-				}),
-				employee_id: reservation.employee_id,
-				username: employee?.username ?? 'Employee Not Found',
-				created_by: reservation.updated_by,
-				update_customers: customersUpdate,
-			};
-
-			if (reservation.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-				pusher.trigger(schedules_channel, update_reservation_event, message, {
-					socket_id: req.body.socket_id,
-				});
-			}
+			sendPusherEvent(
+				reservation,
+				update_reservation_event,
+				customersUpdate,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)
@@ -202,34 +220,18 @@ export const addReservation: RequestHandler = async (
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(reservation));
 
-		const employee = await EmployeeServices.getEmployee(
-			reservation.employee_id
-		);
-
 		const customersUpdate =
 			req.body.phone_number !== undefined ||
 			req.body.vip_serial !== undefined ||
 			req.body.customer_name !== undefined ||
 			req.body.notes !== undefined;
 
-		const message: ReservationEventMessage = {
-			time: reservation.reserved_date.toLocaleTimeString('en-US', {
-				timeZone: 'America/Los_Angeles',
-				hour12: true,
-				hour: '2-digit',
-				minute: '2-digit',
-			}),
-			employee_id: reservation.employee_id,
-			username: employee?.username ?? 'Employee Not Found',
-			created_by: reservation.updated_by,
-			update_customers: customersUpdate,
-		};
-
-		if (reservation.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-			pusher.trigger(schedules_channel, add_reservation_event, message, {
-				socket_id: req.body.socket_id,
-			});
-		}
+		sendPusherEvent(
+			reservation,
+			add_reservation_event,
+			customersUpdate,
+			req.headers['x-socket-id'] as string | undefined
+		);
 	} catch (err) {
 		next(err);
 	}
@@ -253,28 +255,12 @@ export const deleteReservation: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(reservation));
 
-			const employee = await EmployeeServices.getEmployee(
-				reservation.employee_id
+			sendPusherEvent(
+				reservation,
+				update_reservation_event,
+				false,
+				req.headers['x-socket-id'] as string | undefined
 			);
-
-			const message: ReservationEventMessage = {
-				time: reservation.reserved_date.toLocaleTimeString('en-US', {
-					timeZone: 'America/Los_Angeles',
-					hour12: true,
-					hour: '2-digit',
-					minute: '2-digit',
-				}),
-				employee_id: reservation.employee_id,
-				username: employee?.username ?? 'Employee Not Found',
-				created_by: reservation.updated_by,
-				update_customers: false,
-			};
-
-			if (reservation.date === formatDateToYYYYMMDD(new Date().toISOString())) {
-				pusher.trigger(schedules_channel, delete_reservation_event, message, {
-					socket_id: req.body.socket_id,
-				});
-			}
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)

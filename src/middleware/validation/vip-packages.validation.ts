@@ -56,10 +56,9 @@ export const UpdateVipPackageValidation = celebrate(
 				.min(1)
 				.unique(),
 		})
-			.or('serial', 'sold_amount', 'commission_amount', 'date', 'employee_ids')
+			.min(1)
 			.with('date', 'employee_ids')
-			.with('employee_ids', 'date')
-			.append({ socket_id: Joi.string() }),
+			.with('employee_ids', 'date'),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -88,7 +87,7 @@ export const AddVipPackageValidation = celebrate(
 				.min(1)
 				.unique()
 				.required(),
-		}).append({ socket_id: Joi.string() }),
+		}),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
@@ -98,9 +97,6 @@ export const DeleteVipPackageValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
 			vip_package_id: Joi.number().integer().positive().required(),
-		}),
-		[Segments.BODY]: Joi.object().keys({
-			socket_id: Joi.string(),
 		}),
 	},
 	{ abortEarly: false },

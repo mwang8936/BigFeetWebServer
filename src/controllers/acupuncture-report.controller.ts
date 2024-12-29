@@ -3,6 +3,31 @@ import { HttpCode } from '../exceptions/custom-error';
 import * as AcupunctureReportServices from '../services/acupuncture-report';
 import { PayrollPart } from '../models/enums';
 import { convertDateToYearMonthDayObject } from '../utils/date.utils';
+import { AcupunctureReport } from '../models/acupuncture-report.models';
+import {
+	acupuncture_reports_channel,
+	AcupunctureReportEventMessage,
+	add_acupuncture_report_event,
+	delete_acupuncture_report_event,
+	update_acupuncture_report_event,
+} from '../events/acupuncture-report.events';
+import pusher from '../config/pusher.config';
+
+const sendPusherEvent = async (
+	acupunctureReport: AcupunctureReport,
+	event: string,
+	socketID: string | undefined
+) => {
+	if (socketID) {
+		const message: AcupunctureReportEventMessage = {
+			username: acupunctureReport.employee.username,
+		};
+
+		pusher.trigger(acupuncture_reports_channel, event, message, {
+			socket_id: socketID,
+		});
+	}
+};
 
 export const getAcupunctureReports: RequestHandler = async (
 	req: Request,
@@ -100,6 +125,12 @@ export const updateAcupunctureReport: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(acupunctureReport));
+
+			sendPusherEvent(
+				acupunctureReport,
+				update_acupuncture_report_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -131,6 +162,12 @@ export const addAcupunctureReport: RequestHandler = async (
 			.status(HttpCode.CREATED)
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(acupunctureReport));
+
+		sendPusherEvent(
+			acupunctureReport,
+			add_acupuncture_report_event,
+			req.headers['x-socket-id'] as string | undefined
+		);
 	} catch (err) {
 		next(err);
 	}
@@ -158,6 +195,12 @@ export const deleteAcupunctureReport: RequestHandler = async (
 				.status(HttpCode.OK)
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(acupunctureReport));
+
+			sendPusherEvent(
+				acupunctureReport,
+				delete_acupuncture_report_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)

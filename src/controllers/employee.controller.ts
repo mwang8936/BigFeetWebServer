@@ -12,6 +12,23 @@ import {
 	update_employee_event,
 } from '../events/employee.events';
 import saltRounds from '../config/password.config';
+import { Employee } from '../models/employee.models';
+
+const sendPusherEvent = async (
+	employee: Employee,
+	event: string,
+	socketID: string | undefined
+) => {
+	if (socketID) {
+		const message: EmployeeEventMessage = {
+			username: employee.username,
+		};
+
+		pusher.trigger(employees_channel, event, message, {
+			socket_id: socketID,
+		});
+	}
+};
 
 export const getEmployees: RequestHandler = async (
 	req: Request,
@@ -99,13 +116,11 @@ export const updateEmployee: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(respEmployee));
 
-			const message: EmployeeEventMessage = {
-				username: employee.username,
-			};
-
-			pusher.trigger(employees_channel, update_employee_event, message, {
-				socket_id: req.body.socket_id,
-			});
+			sendPusherEvent(
+				employee,
+				update_employee_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -147,13 +162,11 @@ export const addEmployee: RequestHandler = async (
 			.header('Content-Type', 'application/json')
 			.send(JSON.stringify(respEmployee));
 
-		const message: EmployeeEventMessage = {
-			username: employee.username,
-		};
-
-		pusher.trigger(employees_channel, add_employee_event, message, {
-			socket_id: req.body.socket_id,
-		});
+		sendPusherEvent(
+			employee,
+			add_employee_event,
+			req.headers['x-socket-id'] as string | undefined
+		);
 	} catch (err) {
 		next(err);
 	}
@@ -175,13 +188,11 @@ export const deleteEmployee: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(employee));
 
-			const message: EmployeeEventMessage = {
-				username: employee.username,
-			};
-
-			pusher.trigger(employees_channel, delete_employee_event, message, {
-				socket_id: req.body.socket_id,
-			});
+			sendPusherEvent(
+				employee,
+				delete_employee_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -209,13 +220,11 @@ export const recoverEmployee: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(employee));
 
-			const message: EmployeeEventMessage = {
-				username: employee.username,
-			};
-
-			pusher.trigger(employees_channel, recover_employee_event, message, {
-				socket_id: req.body.socket_id,
-			});
+			sendPusherEvent(
+				employee,
+				recover_employee_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
