@@ -6,6 +6,7 @@ import {
 	DeletePayrollValidation,
 	GetPayrollsValidation,
 	GetPayrollValidation,
+	RefreshPayrollValidation,
 	UpdatePayrollValidation,
 } from '../../middleware/validation/payroll.validation';
 import {
@@ -13,6 +14,7 @@ import {
 	deletePayroll,
 	getPayroll,
 	getPayrolls,
+	refreshPayroll,
 	updatePayroll,
 } from '../../controllers/payroll.controller';
 
@@ -53,5 +55,8 @@ router
 		DeletePayrollValidation,
 		deletePayroll
 	);
+router
+	.route('/refresh/:year/:month/:part/employee/:employee_id')
+	.patch(authorize([]), RefreshPayrollValidation, refreshPayroll);
 
 export default router;

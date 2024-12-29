@@ -5,7 +5,6 @@ import {
 	payrollPartValidation,
 } from './enum.validation';
 import NUMBERS from './constants/numbers.constants';
-import { PayrollOption } from '../../models/enums';
 
 export const GetPayrollsValidation = celebrate(
 	{
@@ -107,6 +106,28 @@ export const AddPayrollValidation = celebrate(
 );
 
 export const DeletePayrollValidation = celebrate(
+	{
+		[Segments.PARAMS]: Joi.object().keys({
+			year: Joi.number()
+				.integer()
+				.positive()
+				.min(NUMBERS.payroll.year.min)
+				.required(),
+			month: Joi.number()
+				.integer()
+				.positive()
+				.min(NUMBERS.payroll.month.min)
+				.max(NUMBERS.payroll.month.max)
+				.required(),
+			part: payrollPartValidation.required(),
+			employee_id: Joi.number().integer().positive().required(),
+		}),
+	},
+	{ abortEarly: false },
+	{ mode: Modes.FULL }
+);
+
+export const RefreshPayrollValidation = celebrate(
 	{
 		[Segments.PARAMS]: Joi.object().keys({
 			year: Joi.number()

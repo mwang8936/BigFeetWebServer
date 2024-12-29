@@ -164,3 +164,37 @@ export const deletePayroll: RequestHandler = async (
 		next(err);
 	}
 };
+
+export const refreshPayroll: RequestHandler = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const year = parseInt(req.params.year);
+		const month = parseInt(req.params.month);
+		const part: PayrollPart = parseInt(req.params.part);
+		const employeeId = parseInt(req.params.employee_id);
+
+		const payroll = await PayrollServices.refreshPayroll(
+			year,
+			month,
+			part,
+			employeeId
+		);
+
+		if (payroll) {
+			res
+				.status(HttpCode.OK)
+				.header('Content-Type', 'application/json')
+				.send(JSON.stringify(payroll));
+		} else {
+			res
+				.status(HttpCode.NOT_FOUND)
+				.header('Content-Type', 'application/json')
+				.send();
+		}
+	} catch (err) {
+		next(err);
+	}
+};
