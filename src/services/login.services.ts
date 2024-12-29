@@ -16,7 +16,6 @@ export const getUserInfo = async (username: string) => {
 			acupuncture_rate: true,
 			per_hour: true,
 			language: true,
-			dark_mode: true,
 			created_at: true,
 			updated_at: true,
 		},

@@ -54,7 +54,6 @@ export const UpdateProfileValidation = celebrate(
 		[Segments.BODY]: Joi.object()
 			.keys({
 				language: languageValidation,
-				dark_mode: Joi.boolean(),
 			})
 			.min(1),
 	},
