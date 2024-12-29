@@ -14,11 +14,14 @@ import {
 	AfterLoad,
 } from 'typeorm';
 
+import { DateTime } from 'luxon';
+
 import { Employee } from './employee.models';
 import { Reservation } from './reservation.models';
 import { VipPackage } from './vip-package.models';
 
 import * as PayrollServices from '../services/payroll.services';
+import * as ReservationServices from '../services/reservation.services';
 
 import { DataStructureError } from '../exceptions/data-structure.error';
 import { isValidDate } from '../utils/date.utils';
@@ -95,6 +98,8 @@ export class Schedule extends BaseEntity {
 	})
 	add_award: boolean;
 
+	award: number;
+
 	@OneToMany(() => Reservation, (reservation) => reservation.schedule, {
 		eager: true,
 	})
@@ -134,6 +139,39 @@ export class Schedule extends BaseEntity {
 		default: false,
 	})
 	signed: boolean;
+
+	@AfterLoad()
+	async attachAward() {
+		const { year, month, day, add_award } = this;
+
+		if (add_award) {
+			const start = DateTime.fromObject(
+				{ year, month, day },
+				{ zone: 'America/Los_Angeles' }
+			).startOf('day');
+			const end = DateTime.fromObject(
+				{ year, month, day },
+				{ zone: 'America/Los_Angeles' }
+			).endOf('day');
+
+			const reservations = await ReservationServices.getReservations(
+				start.toJSDate(),
+				end.toJSDate()
+			);
+
+			const totalSessions = reservations
+				.flatMap((reservation) => [
+					reservation.service.acupuncture * 1.5,
+					reservation.service.feet,
+					reservation.service.body,
+				])
+				.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
+
+			this.award = totalSessions;
+		} else {
+			this.award = 0;
+		}
+	}
 
 	@BeforeInsert()
 	async beforeInsert() {
