@@ -25,7 +25,6 @@ export const getProfile = async (employeeId: number) => {
 			acupuncture_rate: true,
 			per_hour: true,
 			language: true,
-			dark_mode: true,
 			created_at: true,
 			updated_at: true,
 		},
@@ -129,8 +128,7 @@ export const getProfileAcupunctureReports = async (
 
 export const updateProfile = async (
 	employeeId: number,
-	language?: Language,
-	darkMode?: boolean
+	language?: Language
 ) => {
 	const profile = await getProfile(employeeId);
 
@@ -139,10 +137,6 @@ export const updateProfile = async (
 
 		if (language !== undefined) {
 			updates.language = language;
-		}
-
-		if (darkMode !== undefined) {
-			updates.dark_mode = darkMode;
 		}
 
 		Object.assign(profile, updates);
