@@ -3,7 +3,7 @@ import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import * as ProfileServices from '../services/profile.services';
 import { AuthorizationError } from '../exceptions/authorization-error';
-import { validateToken } from '../utils/jwt.utils';
+import { validateAccessToken } from '../utils/jwt.utils';
 import {
 	convertDateToYearMonthDayObject,
 	formatDateToYYYYMMDD,
@@ -52,7 +52,7 @@ export const getProfile: RequestHandler = async (
 			jwt = jwt.slice('bearer'.length).trim();
 		}
 
-		const decodedToken = await validateToken(jwt);
+		const decodedToken = await validateAccessToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
 		const employee = await ProfileServices.getProfile(employeeId);
@@ -86,7 +86,7 @@ export const getProfileSchedules: RequestHandler = async (
 			jwt = jwt.slice('bearer'.length).trim();
 		}
 
-		const decodedToken = await validateToken(jwt);
+		const decodedToken = await validateAccessToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
 		const start: { year: number; month: number; day: number } | undefined = req
@@ -126,7 +126,7 @@ export const getProfilePayrolls: RequestHandler = async (
 			jwt = jwt.slice('bearer'.length).trim();
 		}
 
-		const decodedToken = await validateToken(jwt);
+		const decodedToken = await validateAccessToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
 		const start: { year: number; month: number; day: number } | undefined = req
@@ -166,7 +166,7 @@ export const getProfileAcupunctureReports: RequestHandler = async (
 			jwt = jwt.slice('bearer'.length).trim();
 		}
 
-		const decodedToken = await validateToken(jwt);
+		const decodedToken = await validateAccessToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
 		const start: { year: number; month: number; day: number } | undefined = req
@@ -207,7 +207,7 @@ export const updateProfile: RequestHandler = async (
 			jwt = jwt.slice('bearer'.length).trim();
 		}
 
-		const decodedToken = await validateToken(jwt);
+		const decodedToken = await validateAccessToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
 		const profile = await ProfileServices.updateProfile(
@@ -244,7 +244,7 @@ export const changeProfilePassword: RequestHandler = async (
 			jwt = jwt.slice('bearer'.length).trim();
 		}
 
-		const decodedToken = await validateToken(jwt);
+		const decodedToken = await validateAccessToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
 		const account = await getEmployeeHashedPassword(employeeId);
@@ -300,7 +300,7 @@ export const signProfileSchedule: RequestHandler = async (
 			jwt = jwt.slice('bearer'.length).trim();
 		}
 
-		const decodedToken = await validateToken(jwt);
+		const decodedToken = await validateAccessToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
 		const date = convertDateToYearMonthDayObject(req.params.date);

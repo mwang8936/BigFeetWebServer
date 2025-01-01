@@ -1,4 +1,5 @@
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
@@ -12,6 +13,7 @@ import routes from '../routes/routes';
 function createServer() {
 	const app = express();
 
+	app.use(cookieParser());
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({ extended: true }));
 

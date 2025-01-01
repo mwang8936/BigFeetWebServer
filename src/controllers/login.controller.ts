@@ -5,7 +5,17 @@ import { HttpCode } from '../exceptions/custom-error';
 import { LoginError } from '../exceptions/login-error';
 import { TooManyRequestsError } from '../exceptions/too-many-requests-error';
 import { getUserInfo } from '../services/login.services';
-import { generateToken } from '../utils/jwt.utils';
+import {
+	addRefreshToken,
+	deleteRefreshToken,
+	replaceRefreshToken,
+} from '../services/refresh-token.services';
+import {
+	generateAccessToken,
+	generateRefreshToken,
+	validateRefreshToken,
+} from '../utils/jwt.utils';
+import saltRounds from '../config/password.config';
 
 export const login: RequestHandler = async (
 	req: Request,
@@ -35,10 +45,67 @@ export const login: RequestHandler = async (
 
 		rateLimiter.delete(req.ip);
 
+		const oldRefreshToken = req.cookies.refresh_token;
+		const newRefreshToken = generateRefreshToken(employeeId);
+
+		res.cookie('refresh_token', newRefreshToken, {
+			httpOnly: true, // Makes cookie inaccessible to JavaScript (more secure)
+			secure: process.env.NODE_ENV !== 'development', // Use only with HTTPS
+			maxAge: 1000 * 60 * 60 * 24 * 7, // Expiration time (7 days)
+			sameSite: 'strict', // CSRF protection
+		});
+
+		const newHashedRefreshToken = await bcrypt.hash(
+			newRefreshToken,
+			saltRounds
+		);
+		const newRefreshTokenExpiryDate = new Date(
+			new Date().getTime() + 1000 * 60 * 60 * 24 * 7
+		);
+
+		if (oldRefreshToken) {
+			const oldHashedRefreshToken = await bcrypt.hash(
+				oldRefreshToken,
+				saltRounds
+			);
+			await replaceRefreshToken(
+				employeeId,
+				oldHashedRefreshToken,
+				newRefreshToken,
+				newRefreshTokenExpiryDate
+			);
+		} else {
+			await addRefreshToken(
+				employeeId,
+				newHashedRefreshToken,
+				newRefreshTokenExpiryDate
+			);
+		}
+
 		res.status(HttpCode.OK).json({
 			user,
-			accessToken: generateToken(employeeId, permissions),
+			accessToken: generateAccessToken(employeeId, permissions),
 		});
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const logout: RequestHandler = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const refreshToken = req.cookies.refresh_token;
+		if (refreshToken) {
+			const decodedToken = await validateRefreshToken(refreshToken);
+
+			const hashedRefreshToken = await bcrypt.hash(refreshToken, saltRounds);
+			await deleteRefreshToken(decodedToken.employee_id, hashedRefreshToken);
+		}
+
+		res.status(HttpCode.OK).send();
 	} catch (err) {
 		next(err);
 	}

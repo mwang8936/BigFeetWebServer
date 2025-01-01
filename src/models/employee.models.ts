@@ -13,6 +13,7 @@ import { AcupunctureReport } from './acupuncture-report.models';
 import { Gender, Language, Permissions, Role } from './enums';
 import { Schedule } from './schedule.models';
 import { Payroll } from './payroll.models';
+import { RefreshToken } from './refresh-token.models';
 
 @Entity('employees')
 export class Employee extends BaseEntity {
@@ -152,4 +153,7 @@ export class Employee extends BaseEntity {
 		(acupunctureReport) => acupunctureReport.employee
 	)
 	acupuncture_reports: AcupunctureReport[];
+
+	@OneToMany(() => RefreshToken, (refreshToken) => refreshToken.employee)
+	refresh_tokens: RefreshToken[];
 }
