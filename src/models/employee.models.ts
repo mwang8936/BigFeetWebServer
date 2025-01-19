@@ -132,12 +132,6 @@ export class Employee extends BaseEntity {
 	})
 	language: Language;
 
-	@Column({
-		select: false,
-		default: false,
-	})
-	dark_mode: boolean;
-
 	@CreateDateColumn()
 	created_at: Date;
 

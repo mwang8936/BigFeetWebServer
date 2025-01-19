@@ -212,8 +212,7 @@ export const updateProfile: RequestHandler = async (
 
 		const profile = await ProfileServices.updateProfile(
 			employeeId,
-			req.body.language,
-			req.body.dark_mode
+			req.body.language
 		);
 
 		if (profile) {
