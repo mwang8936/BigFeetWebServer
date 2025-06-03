@@ -71,10 +71,15 @@ export const UpdateAcupunctureReportValidation = celebrate(
 				.precision(4)
 				.min(0)
 				.max(NUMBERS.acupuncture_report.insurance_percentage),
+			non_acupuncturist_insurance_percentage: Joi.number()
+				.precision(4)
+				.min(0)
+				.max(NUMBERS.acupuncture_report.insurance_percentage),
 		}).or(
 			'acupuncture_percentage',
 			'massage_percentage',
-			'insurance_percentage'
+			'insurance_percentage',
+			'non_acupuncturist_insurance_percentage'
 		),
 	},
 	{ abortEarly: false },
@@ -107,6 +112,11 @@ export const AddAcupunctureReportValidation = celebrate(
 				.max(NUMBERS.acupuncture_report.massage_percentage)
 				.required(),
 			insurance_percentage: Joi.number()
+				.precision(4)
+				.min(0)
+				.max(NUMBERS.acupuncture_report.insurance_percentage)
+				.required(),
+			non_acupuncturist_insurance_percentage: Joi.number()
 				.precision(4)
 				.min(0)
 				.max(NUMBERS.acupuncture_report.insurance_percentage)

@@ -19,6 +19,7 @@ interface DataRow {
 	acupuncture: number;
 	massage: number;
 	insurance: number;
+	non_acupuncturist_insurance: number;
 }
 
 @Check(`"year" >= 2020`)
@@ -92,6 +93,22 @@ export class AcupunctureReport extends BaseEntity {
 	})
 	insurance_percentage: number;
 
+	@Column({
+		type: 'decimal',
+		precision: 5,
+		scale: 4,
+		default: 0.7,
+		transformer: {
+			to(non_acupunturist_insurance_percentage: number) {
+				return non_acupunturist_insurance_percentage;
+			},
+			from(non_acupunturist_insurance_percentage: string) {
+				return Number(non_acupunturist_insurance_percentage);
+			},
+		},
+	})
+	non_acupuncturist_insurance_percentage: number;
+
 	data: DataRow[];
 
 	@CreateDateColumn()
@@ -159,11 +176,16 @@ export class AcupunctureReport extends BaseEntity {
 				.map((reservation) => reservation.insurance ?? 0)
 				.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
 
+			const nonAcupuncturistInsurance = nonAcupuncturistReservations
+				.map((reservation) => reservation.insurance ?? 0)
+				.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
+
 			const dataRow: DataRow = {
 				date,
 				acupuncture,
 				massage,
 				insurance,
+				non_acupuncturist_insurance: nonAcupuncturistInsurance,
 			};
 
 			this.data.push(dataRow);

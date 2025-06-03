@@ -59,7 +59,8 @@ export const updateAcupunctureReport = async (
 	employeeId: number,
 	acupuncturePercentage?: number,
 	massagePercentage?: number,
-	insurancePercentage?: number
+	insurancePercentage?: number,
+	nonAcupuncturistInsurancePercentage?: number
 ) => {
 	const acupunctureReport = await getAcupunctureReport(year, month, employeeId);
 
@@ -78,6 +79,11 @@ export const updateAcupunctureReport = async (
 			updates.insurance_percentage = insurancePercentage;
 		}
 
+		if (nonAcupuncturistInsurancePercentage !== undefined) {
+			updates.non_acupuncturist_insurance_percentage =
+				nonAcupuncturistInsurancePercentage;
+		}
+
 		Object.assign(acupunctureReport, updates);
 
 		return acupunctureReport.save();
@@ -92,7 +98,8 @@ export const createAcupunctureReport = async (
 	employeeId: number,
 	acupuncturePercentage: number,
 	massagePercentage: number,
-	insurancePercentage: number
+	insurancePercentage: number,
+	nonAcupuncturistInsurancePercentage: number
 ) => {
 	const acupunctureReport = AcupunctureReport.create({
 		year,
@@ -101,6 +108,7 @@ export const createAcupunctureReport = async (
 		acupuncture_percentage: acupuncturePercentage,
 		massage_percentage: massagePercentage,
 		insurance_percentage: insurancePercentage,
+		non_acupuncturist_insurance_percentage: nonAcupuncturistInsurancePercentage,
 	});
 
 	return acupunctureReport.save();

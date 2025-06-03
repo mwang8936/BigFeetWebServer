@@ -117,7 +117,8 @@ export const updateAcupunctureReport: RequestHandler = async (
 				employeeId,
 				req.body.acupuncture_percentage,
 				req.body.massage_percentage,
-				req.body.insurance_percentage
+				req.body.insurance_percentage,
+				req.body.non_acupuncturist_insurance_percentage
 			);
 
 		if (acupunctureReport) {
@@ -155,7 +156,8 @@ export const addAcupunctureReport: RequestHandler = async (
 				req.body.employee_id,
 				req.body.acupuncture_percentage,
 				req.body.massage_percentage,
-				req.body.insurance_percentage
+				req.body.insurance_percentage,
+				req.body.non_acupuncturist_insurance_percentage
 			);
 
 		res
