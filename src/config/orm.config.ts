@@ -10,6 +10,7 @@ import { VipPackage } from '../models/vip-package.models';
 import { GiftCard } from '../models/gift-card.models';
 import { Payroll } from '../models/payroll.models';
 import { AcupunctureReport } from '../models/acupuncture-report.models';
+import { Device } from '../models/device.models';
 
 const AppDataSource = new DataSource({
 	type: 'postgres',
@@ -35,6 +36,7 @@ const AppDataSource = new DataSource({
 		GiftCard,
 		Payroll,
 		AcupunctureReport,
+		Device,
 	],
 	synchronize: false,
 	migrations:

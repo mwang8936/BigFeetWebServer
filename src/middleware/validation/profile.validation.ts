@@ -89,3 +89,13 @@ export const SignProfileScheduleValidation = celebrate(
 	{ abortEarly: false },
 	{ mode: Modes.FULL }
 );
+
+export const LogoutValidation = celebrate(
+	{
+		[Segments.BODY]: Joi.object().keys({
+			device_id: Joi.string().trim().min(1),
+		}),
+	},
+	{ abortEarly: false },
+	{ mode: Modes.FULL }
+);

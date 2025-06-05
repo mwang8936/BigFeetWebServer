@@ -1,5 +1,7 @@
 import { RequestHandler, Request, Response, NextFunction } from 'express';
+import Expo from 'expo-server-sdk';
 import { HttpCode } from '../exceptions/custom-error';
+import * as DeviceServices from '../services/device.services';
 import * as EmployeeServices from '../services/employee.services';
 import * as ReservationServices from '../services/reservation.services';
 import {
@@ -16,6 +18,66 @@ import {
 } from '../events/reservation.events';
 import { schedules_channel } from '../events/schedule.events';
 import { Reservation } from '../models/reservation.models';
+import Logger from '../utils/logger.utils';
+
+const expo = new Expo();
+
+const getNotificationMessage = (reservation: Reservation, event: string) => {
+	const serviceName = reservation.service.service_name;
+	const time = reservation.reserved_date.toLocaleTimeString('en-US', {
+		timeZone: 'America/Los_Angeles',
+		hour12: true,
+		hour: '2-digit',
+		minute: '2-digit',
+	});
+
+	switch (event) {
+		case add_reservation_event:
+			return `Reservation for ${serviceName} at ${time} has been added`;
+		case delete_reservation_event:
+			return `Reservation for ${serviceName} at ${time} has been deleted`;
+		case update_reservation_event:
+		default:
+			return `Reservation for ${serviceName} at ${time} has been updated`;
+	}
+};
+
+const sendPushNotification = async (
+	reservation: Reservation,
+	event: string
+) => {
+	const messages = [];
+	const devices = await DeviceServices.getDevices(
+		[reservation.employee_id],
+		true
+	);
+
+	for (const device of devices) {
+		const pushToken = device.push_token;
+		if (!Expo.isExpoPushToken(pushToken)) {
+			Logger.error(
+				`Push token ${pushToken} is not a valid Expo push token for device ${device.device_id}`
+			);
+			continue;
+		}
+
+		messages.push({
+			to: pushToken,
+			title: 'New Reservation Alert',
+			body: getNotificationMessage(reservation, event),
+			sound: 'default',
+		});
+	}
+
+	const chunks = expo.chunkPushNotifications(messages);
+	for (const chunk of chunks) {
+		try {
+			await expo.sendPushNotificationsAsync(chunk);
+		} catch (error) {
+			Logger.error('Error sending push notification:', error);
+		}
+	}
+};
 
 const sendPusherEvent = async (
 	reservation: Reservation,
@@ -23,11 +85,7 @@ const sendPusherEvent = async (
 	customersUpdate: boolean,
 	socketID: string | undefined
 ) => {
-	if (
-		socketID &&
-		formatDateToYYYYMMDD(reservation.reserved_date.toISOString()) ===
-			formatDateToYYYYMMDD(new Date().toISOString())
-	) {
+	if (socketID) {
 		const employee = await EmployeeServices.getEmployee(
 			reservation.employee_id
 		);
@@ -49,6 +107,13 @@ const sendPusherEvent = async (
 			socket_id: socketID,
 		});
 	}
+};
+
+const isCurrentDate = (reservation: Reservation): boolean => {
+	return (
+		formatDateToYYYYMMDD(reservation.reserved_date.toISOString()) ===
+		formatDateToYYYYMMDD(new Date().toISOString())
+	);
 };
 
 export const getReservations: RequestHandler = async (
@@ -169,12 +234,15 @@ export const updateReservation: RequestHandler = async (
 				req.body.customer_name !== undefined ||
 				req.body.notes !== undefined;
 
-			sendPusherEvent(
-				reservation,
-				update_reservation_event,
-				customersUpdate,
-				req.headers['x-socket-id'] as string | undefined
-			);
+			if (isCurrentDate(reservation)) {
+				sendPusherEvent(
+					reservation,
+					update_reservation_event,
+					customersUpdate,
+					req.headers['x-socket-id'] as string | undefined
+				);
+				sendPushNotification(reservation, update_reservation_event);
+			}
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)
@@ -227,12 +295,15 @@ export const addReservation: RequestHandler = async (
 			req.body.customer_name !== undefined ||
 			req.body.notes !== undefined;
 
-		sendPusherEvent(
-			reservation,
-			add_reservation_event,
-			customersUpdate,
-			req.headers['x-socket-id'] as string | undefined
-		);
+		if (isCurrentDate(reservation)) {
+			sendPusherEvent(
+				reservation,
+				add_reservation_event,
+				customersUpdate,
+				req.headers['x-socket-id'] as string | undefined
+			);
+			sendPushNotification(reservation, add_reservation_event);
+		}
 	} catch (err) {
 		next(err);
 	}
@@ -256,12 +327,15 @@ export const deleteReservation: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(reservation));
 
-			sendPusherEvent(
-				reservation,
-				delete_reservation_event,
-				false,
-				req.headers['x-socket-id'] as string | undefined
-			);
+			if (isCurrentDate(reservation)) {
+				sendPusherEvent(
+					reservation,
+					delete_reservation_event,
+					false,
+					req.headers['x-socket-id'] as string | undefined
+				);
+				sendPushNotification(reservation, delete_reservation_event);
+			}
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)
