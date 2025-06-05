@@ -25,7 +25,8 @@ const sendPusherEvent = async (
 ) => {
 	if (
 		socketID &&
-		reservation.date === formatDateToYYYYMMDD(new Date().toISOString())
+		formatDateToYYYYMMDD(reservation.reserved_date.toISOString()) ===
+			formatDateToYYYYMMDD(new Date().toISOString())
 	) {
 		const employee = await EmployeeServices.getEmployee(
 			reservation.employee_id
@@ -257,7 +258,7 @@ export const deleteReservation: RequestHandler = async (
 
 			sendPusherEvent(
 				reservation,
-				update_reservation_event,
+				delete_reservation_event,
 				false,
 				req.headers['x-socket-id'] as string | undefined
 			);
