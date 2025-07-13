@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const isDevelopment = process.env.NODE_ENV === 'development';
+const requireDBSSL = process.env.REQUIRE_DB_SSL === 'true';
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
@@ -17,11 +17,11 @@ const POSTGRESQL_DATA_SOURCE = {
 	DB_PASSWORD: parsedUrl.password,
 	DB_PORT: parsedUrl.port ? parseInt(parsedUrl.port) : 5432,
 	DB_DATABASE: parsedUrl.pathname.slice(1),
-	DB_SSL: isDevelopment
-		? false
-		: {
+	DB_SSL: requireDBSSL
+		? {
 				rejectUnauthorized: false,
-		  },
+		  }
+		: false,
 	DB_POOL_SIZE: process.env.DATABASE_POOL_SIZE
 		? parseInt(process.env.DATABASE_POOL_SIZE)
 		: 10,
