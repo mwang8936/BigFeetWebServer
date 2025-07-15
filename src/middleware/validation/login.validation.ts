@@ -16,6 +16,10 @@ export const LoginValidation = celebrate(
 				.min(1)
 				.max(LENGTHS.employee.password)
 				.required(),
+			device_id: Joi.string().trim().min(1),
+			device_name: Joi.string().trim().min(1),
+			device_model: Joi.string().trim().min(1),
+			push_token: Joi.string().trim().min(1),
 		}),
 	},
 	{ abortEarly: false },

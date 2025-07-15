@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { validateToken } from '../utils/jwt.utils';
+import { validateAccessToken } from '../utils/jwt.utils';
 import { Permissions } from '../models/enums';
 import { AuthorizationError } from '../exceptions/authorization-error';
 import { ForbiddenError } from '../exceptions/forbidden-error';
@@ -17,7 +17,7 @@ const authorize =
 				jwt = jwt.slice('bearer'.length).trim();
 			}
 
-			const decodedToken = await validateToken(jwt);
+			const decodedToken = await validateAccessToken(jwt);
 
 			if (requiredPermissions.length > 0) {
 				const hasAccessToEndpoint = requiredPermissions.every(

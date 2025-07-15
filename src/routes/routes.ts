@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import LoginRoute from './public/login.route';
+import LoginRoute from './public/login.routes';
+import RefreshRoute from './public/refresh.routes';
 import AcupunctureReportRoutes from './private/acupuncture-report.routes';
 import AuthenticateRoutes from './private/authenticate.routes';
 import CustomerRoutes from './private/customer.routes';
@@ -15,6 +16,8 @@ import VipPackageRoutes from './private/vip-package.routes';
 const router = Router();
 
 router.use('/login', LoginRoute);
+router.use('/refresh', RefreshRoute);
+
 router.use('/authenticate', AuthenticateRoutes);
 
 router.use('/acupuncture-report', AcupunctureReportRoutes);

@@ -1,4 +1,5 @@
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
@@ -15,10 +16,21 @@ function createServer() {
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({ extended: true }));
 
+	app.use(cookieParser());
+
 	app.use(morganMiddleware);
 	app.use(compression());
 	app.use(helmet());
-	app.use(cors());
+	app.use(
+		cors({
+			origin: (origin, callback) => {
+				// Allow requests with no origin (like mobile apps or curl)
+				// or reflect the origin back
+				callback(null, origin || true);
+			},
+			credentials: true,
+		})
+	);
 
 	app.use('/api/', routes);
 

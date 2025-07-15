@@ -1,9 +1,11 @@
 import bcrypt from 'bcrypt';
 import { RequestHandler, Request, Response, NextFunction } from 'express';
+import { REFRESH_TOKEN_EXPIRATION } from '../constants/time.constants';
 import { HttpCode } from '../exceptions/custom-error';
+import * as DeviceServices from '../services/device.services';
 import * as ProfileServices from '../services/profile.services';
 import { AuthorizationError } from '../exceptions/authorization-error';
-import { validateToken } from '../utils/jwt.utils';
+import { generateRefreshToken, validateAccessToken } from '../utils/jwt.utils';
 import {
 	convertDateToYearMonthDayObject,
 	formatDateToYYYYMMDD,
@@ -52,7 +54,7 @@ export const getProfile: RequestHandler = async (
 			jwt = jwt.slice('bearer'.length).trim();
 		}
 
-		const decodedToken = await validateToken(jwt);
+		const decodedToken = await validateAccessToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
 		const employee = await ProfileServices.getProfile(employeeId);
@@ -86,7 +88,7 @@ export const getProfileSchedules: RequestHandler = async (
 			jwt = jwt.slice('bearer'.length).trim();
 		}
 
-		const decodedToken = await validateToken(jwt);
+		const decodedToken = await validateAccessToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
 		const start: { year: number; month: number; day: number } | undefined = req
@@ -126,7 +128,7 @@ export const getProfilePayrolls: RequestHandler = async (
 			jwt = jwt.slice('bearer'.length).trim();
 		}
 
-		const decodedToken = await validateToken(jwt);
+		const decodedToken = await validateAccessToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
 		const start: { year: number; month: number; day: number } | undefined = req
@@ -166,7 +168,7 @@ export const getProfileAcupunctureReports: RequestHandler = async (
 			jwt = jwt.slice('bearer'.length).trim();
 		}
 
-		const decodedToken = await validateToken(jwt);
+		const decodedToken = await validateAccessToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
 		const start: { year: number; month: number; day: number } | undefined = req
@@ -207,7 +209,7 @@ export const updateProfile: RequestHandler = async (
 			jwt = jwt.slice('bearer'.length).trim();
 		}
 
-		const decodedToken = await validateToken(jwt);
+		const decodedToken = await validateAccessToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
 		const profile = await ProfileServices.updateProfile(
@@ -244,7 +246,7 @@ export const changeProfilePassword: RequestHandler = async (
 			jwt = jwt.slice('bearer'.length).trim();
 		}
 
-		const decodedToken = await validateToken(jwt);
+		const decodedToken = await validateAccessToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
 		const account = await getEmployeeHashedPassword(employeeId);
@@ -300,7 +302,7 @@ export const signProfileSchedule: RequestHandler = async (
 			jwt = jwt.slice('bearer'.length).trim();
 		}
 
-		const decodedToken = await validateToken(jwt);
+		const decodedToken = await validateAccessToken(jwt);
 		const employeeId = decodedToken.employee_id;
 
 		const date = convertDateToYearMonthDayObject(req.params.date);
@@ -327,6 +329,38 @@ export const signProfileSchedule: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send();
 		}
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const logout: RequestHandler = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		let jwt = req.headers.authorization;
+		if (!jwt)
+			throw new AuthorizationError(undefined, 'No authorization found.');
+		if (jwt.toLowerCase().startsWith('bearer')) {
+			jwt = jwt.slice('bearer'.length).trim();
+		}
+
+		const { employee_id } = await validateAccessToken(jwt);
+		const deviceId = req.body.device_id;
+
+		if (deviceId) {
+			await DeviceServices.unregisterDevice(deviceId, employee_id);
+		}
+
+		res.clearCookie('refresh_token', {
+			httpOnly: true,
+			secure: process.env.NODE_ENV !== 'development',
+			sameSite: 'lax',
+		});
+
+		res.status(HttpCode.OK).header('Content-Type', 'application/json').send();
 	} catch (err) {
 		next(err);
 	}

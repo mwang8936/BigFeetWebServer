@@ -2,7 +2,7 @@ import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { HttpCode } from '../exceptions/custom-error';
 import pusher from '../config/pusher.config';
 import { AuthorizationError } from '../exceptions/authorization-error';
-import { validateToken } from '../utils/jwt.utils';
+import { validateAccessToken } from '../utils/jwt.utils';
 import { customers_channel } from '../events/customer.events';
 import { Permissions } from '../models/enums';
 import { employees_channel } from '../events/employee.events';
@@ -37,7 +37,7 @@ export const authenticatePusher: RequestHandler = async (
 			jwt = jwt.slice('bearer'.length).trim();
 		}
 
-		const decodedToken = await validateToken(jwt);
+		const decodedToken = await validateAccessToken(jwt);
 
 		const employeeId = decodedToken.employee_id;
 		const permissions = decodedToken.permissions;

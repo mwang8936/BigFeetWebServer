@@ -5,6 +5,7 @@ import {
 	getProfileAcupunctureReports,
 	getProfilePayrolls,
 	getProfileSchedules,
+	logout,
 	signProfileSchedule,
 	updateProfile,
 } from '../../controllers/profile.controller';
@@ -14,32 +15,30 @@ import {
 	GetProfileAcupunctureReportsValidation,
 	GetProfilePayrollsValidation,
 	GetProfileSchedulesValidation,
+	LogoutValidation,
 	SignProfileScheduleValidation,
 	UpdateProfileValidation,
 } from '../../middleware/validation/profile.validation';
 
 const router = Router();
 
-router.route('/').get(authorize([]), getProfile);
+router.use(authorize([]));
+
+router.route('/').get(getProfile);
 router
 	.route('/schedule')
-	.get(authorize([]), GetProfileSchedulesValidation, getProfileSchedules);
-router
-	.route('/payroll')
-	.get(authorize([]), GetProfilePayrollsValidation, getProfilePayrolls);
+	.get(GetProfileSchedulesValidation, getProfileSchedules);
+router.route('/payroll').get(GetProfilePayrollsValidation, getProfilePayrolls);
 router
 	.route('/acupuncture-report')
-	.get(
-		authorize([]),
-		GetProfileAcupunctureReportsValidation,
-		getProfileAcupunctureReports
-	);
-router.route('/').patch(authorize([]), UpdateProfileValidation, updateProfile);
+	.get(GetProfileAcupunctureReportsValidation, getProfileAcupunctureReports);
+router.route('/').patch(UpdateProfileValidation, updateProfile);
 router
 	.route('/change_password')
-	.patch(authorize([]), ChangeProfilePasswordValidation, changeProfilePassword);
+	.patch(ChangeProfilePasswordValidation, changeProfilePassword);
 router
 	.route('/sign/:date')
-	.patch(authorize([]), SignProfileScheduleValidation, signProfileSchedule);
+	.patch(SignProfileScheduleValidation, signProfileSchedule);
+router.route('/logout').post(LogoutValidation, logout);
 
 export default router;
