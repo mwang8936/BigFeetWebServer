@@ -26,9 +26,12 @@ const sendPusherEvent = async (
 	event: string,
 	socketID: string | undefined
 ) => {
+	const currDate = new Date();
 	if (
 		socketID &&
-		schedule.date === formatDateToYYYYMMDD(new Date().toISOString())
+		schedule.year === currDate.getFullYear() &&
+		schedule.month === currDate.getMonth() + 1 &&
+		schedule.day === currDate.getDate()
 	) {
 		const message: ScheduleEventMessage = {
 			employee_id: schedule.employee.employee_id,
