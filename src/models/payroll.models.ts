@@ -35,6 +35,7 @@ interface DataRow {
 	total_gift_card: number;
 	total_insurance: number;
 	total_cash_out: number;
+	award_amount: number;
 	tips: number;
 	vip_amount: number;
 }
@@ -204,6 +205,8 @@ export class Payroll extends BaseEntity {
 				)
 				.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
 
+			const award_amount = Math.max(schedule.award - 40, 0);
+
 			const vip_amount = vip_packages
 				.map(
 					(vipPackage) =>
@@ -228,6 +231,7 @@ export class Payroll extends BaseEntity {
 				total_insurance,
 				total_cash_out,
 				tips,
+				award_amount,
 				vip_amount,
 			};
 
