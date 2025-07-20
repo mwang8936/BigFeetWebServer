@@ -126,6 +126,7 @@ export const refresh: RequestHandler = async (
 			employee_id,
 			undefined,
 			undefined,
+			undefined,
 			newHashedRefreshToken
 		);
 
