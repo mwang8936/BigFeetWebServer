@@ -5,6 +5,9 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 
+import i18next from 'i18next';
+import Backend from 'i18next-fs-backend';
+
 import { BadRouteError } from '../exceptions/bad-route-error';
 import ErrorHandler from '../middleware/error-handler.middleware';
 import morganMiddleware from '../middleware/logger.middleware';
@@ -12,6 +15,15 @@ import routes from '../routes/routes';
 
 function createServer() {
 	const app = express();
+
+	i18next.use(Backend).init({
+		fallbackLng: 'en',
+		preload: ['en', 'cn_simp', 'cn_trad'],
+		backend: {
+			loadPath: './src/locales/{{lng}}/translation.json',
+		},
+		debug: process.env.NODE_ENV !== 'production',
+	});
 
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({ extended: true }));

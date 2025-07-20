@@ -128,7 +128,6 @@ export class Employee extends BaseEntity {
 	@Column({
 		type: 'enum',
 		enum: Language,
-		select: false,
 		default: Language.ENGLISH,
 	})
 	language: Language;

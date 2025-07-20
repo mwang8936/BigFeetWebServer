@@ -1,0 +1,7 @@
+{
+	"Reservation Alert": "Reservation Alert",
+
+	"Reservation Added": "Reservation: {{serviceName}} was added at {{time}}.",
+	"Reservation Updated": "Reservation: {{serviceName}} at {{time}}, was updated.",
+	"Reservation Deleted": "Reservation: {{serviceName}} at {{time}}, was deleted."
+}

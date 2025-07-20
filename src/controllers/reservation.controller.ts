@@ -1,5 +1,6 @@
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import Expo from 'expo-server-sdk';
+import i18next from 'i18next';
 import { HttpCode } from '../exceptions/custom-error';
 import * as DeviceServices from '../services/device.services';
 import * as EmployeeServices from '../services/employee.services';
@@ -19,33 +20,40 @@ import {
 import { schedules_channel } from '../events/schedule.events';
 import { Reservation } from '../models/reservation.models';
 import Logger from '../utils/logger.utils';
+import { Employee } from '../models/employee.models';
+import { Language } from '../models/enums';
 
 const expo = new Expo();
 
-const getNotificationMessage = (reservation: Reservation, event: string) => {
-	const serviceName = reservation.service.service_name;
-	const time = reservation.reserved_date.toLocaleTimeString('en-US', {
-		timeZone: 'America/Los_Angeles',
-		hour12: true,
-		hour: '2-digit',
-		minute: '2-digit',
-	});
-
-	switch (event) {
-		case add_reservation_event:
-			return `Reservation for ${serviceName} at ${time} has been added`;
-		case delete_reservation_event:
-			return `Reservation for ${serviceName} at ${time} has been deleted`;
-		case update_reservation_event:
-		default:
-			return `Reservation for ${serviceName} at ${time} has been updated`;
-	}
-};
-
 const sendPushNotification = async (
 	reservation: Reservation,
-	event: string
+	event: string,
+	language: string = 'en'
 ) => {
+	const t = i18next.getFixedT(language);
+
+	const getNotificationMessage = (reservation: Reservation, event: string) => {
+		const serviceName = reservation.service.service_name;
+		const time = reservation.reserved_date.toLocaleTimeString('en-US', {
+			timeZone: 'America/Los_Angeles',
+			hour12: true,
+			hour: '2-digit',
+			minute: '2-digit',
+		});
+
+		switch (event) {
+			case add_reservation_event:
+				return t('Reservation Added', { serviceName, time });
+			case delete_reservation_event:
+				return t('Reservation Deleted', { serviceName, time });
+			case update_reservation_event:
+			default:
+				return t('Reservation Updated', { serviceName, time });
+		}
+	};
+
+	const title = t('Reservation Alert');
+	const body = getNotificationMessage(reservation, event);
 	const messages = [];
 	const devices = await DeviceServices.getDevices(
 		[reservation.employee_id],
@@ -63,8 +71,9 @@ const sendPushNotification = async (
 
 		messages.push({
 			to: pushToken,
-			title: 'New Reservation Alert',
-			body: getNotificationMessage(reservation, event),
+			title,
+			body,
+			data: { reservation },
 			sound: 'default',
 		});
 	}
@@ -81,15 +90,12 @@ const sendPushNotification = async (
 
 const sendPusherEvent = async (
 	reservation: Reservation,
+	employee: Employee | null,
 	event: string,
 	customersUpdate: boolean,
 	socketID: string | undefined
 ) => {
 	if (socketID) {
-		const employee = await EmployeeServices.getEmployee(
-			reservation.employee_id
-		);
-
 		const message: ReservationEventMessage = {
 			time: reservation.reserved_date.toLocaleTimeString('en-US', {
 				timeZone: 'America/Los_Angeles',
@@ -114,6 +120,32 @@ const isCurrentDate = (reservation: Reservation): boolean => {
 		formatDateToYYYYMMDD(reservation.reserved_date.toISOString()) ===
 		formatDateToYYYYMMDD(new Date().toISOString())
 	);
+};
+
+const sendEvents = async (
+	reservation: Reservation,
+	event: string,
+	customersUpdate: boolean,
+	socketID: string | undefined
+) => {
+	if (isCurrentDate(reservation)) {
+		const employee = await EmployeeServices.getEmployee(
+			reservation.employee_id
+		);
+		sendPusherEvent(reservation, employee, event, customersUpdate, socketID);
+
+		let language = 'en';
+		switch (employee?.language) {
+			case Language.SIMPLIFIED_CHINESE:
+				language = 'cn_simp';
+				break;
+			case Language.TRADITIONAL_CHINESE:
+				language = 'cn_trad';
+				break;
+		}
+
+		sendPushNotification(reservation, event, language);
+	}
 };
 
 export const getReservations: RequestHandler = async (
@@ -234,15 +266,12 @@ export const updateReservation: RequestHandler = async (
 				req.body.customer_name !== undefined ||
 				req.body.notes !== undefined;
 
-			if (isCurrentDate(reservation)) {
-				sendPusherEvent(
-					reservation,
-					update_reservation_event,
-					customersUpdate,
-					req.headers['x-socket-id'] as string | undefined
-				);
-				sendPushNotification(reservation, update_reservation_event);
-			}
+			sendEvents(
+				reservation,
+				update_reservation_event,
+				customersUpdate,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)
@@ -295,15 +324,12 @@ export const addReservation: RequestHandler = async (
 			req.body.customer_name !== undefined ||
 			req.body.notes !== undefined;
 
-		if (isCurrentDate(reservation)) {
-			sendPusherEvent(
-				reservation,
-				add_reservation_event,
-				customersUpdate,
-				req.headers['x-socket-id'] as string | undefined
-			);
-			sendPushNotification(reservation, add_reservation_event);
-		}
+		sendEvents(
+			reservation,
+			add_reservation_event,
+			customersUpdate,
+			req.headers['x-socket-id'] as string | undefined
+		);
 	} catch (err) {
 		next(err);
 	}
@@ -327,15 +353,12 @@ export const deleteReservation: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(reservation));
 
-			if (isCurrentDate(reservation)) {
-				sendPusherEvent(
-					reservation,
-					delete_reservation_event,
-					false,
-					req.headers['x-socket-id'] as string | undefined
-				);
-				sendPushNotification(reservation, delete_reservation_event);
-			}
+			sendEvents(
+				reservation,
+				delete_reservation_event,
+				false,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)

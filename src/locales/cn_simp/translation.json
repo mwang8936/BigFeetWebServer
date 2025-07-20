@@ -1,0 +1,7 @@
+{
+	"Reservation Alert": "预约提醒",
+
+	"Reservation Added": "预约：{{serviceName}} 已添加，时间为 {{time}}。",
+	"Reservation Updated": "预约：{{serviceName}}，时间为 {{time}}，已更新。",
+	"Reservation Deleted": "预约：{{serviceName}}，时间为 {{time}}，已删除。"
+}
