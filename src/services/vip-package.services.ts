@@ -5,6 +5,7 @@ import {
 	LessThanOrEqual,
 	MoreThanOrEqual,
 } from 'typeorm';
+import { PaymentMethod } from '../models/enums';
 import { Schedule } from '../models/schedule.models';
 import { VipPackage } from '../models/vip-package.models';
 import * as ScheduleServices from './schedule.services';
@@ -54,6 +55,7 @@ export const getVipPackage = async (vipPackageId: number) => {
 export const updateVipPackage = async (
 	vipPackageId: number,
 	serial?: string,
+	paymentMethod?: PaymentMethod,
 	soldAmount?: number,
 	commissionAmount?: number,
 	date?: { year: number; month: number; day: number },
@@ -66,6 +68,10 @@ export const updateVipPackage = async (
 
 		if (serial !== undefined) {
 			updates.serial = serial;
+		}
+
+		if (paymentMethod !== undefined) {
+			updates.payment_method = paymentMethod;
 		}
 
 		if (soldAmount !== undefined) {
@@ -116,6 +122,7 @@ export const updateVipPackage = async (
 
 export const createVipPackage = async (
 	serial: string,
+	paymentMethod: PaymentMethod,
 	soldAmount: number,
 	commissionAmount: number,
 	date: { year: number; month: number; day: number },
@@ -137,6 +144,7 @@ export const createVipPackage = async (
 
 	const vipPackage = VipPackage.create({
 		serial,
+		payment_method: paymentMethod,
 		sold_amount: soldAmount,
 		commission_amount: commissionAmount,
 		employee_ids: employeeIds,

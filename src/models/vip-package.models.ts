@@ -8,6 +8,7 @@ import {
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 
+import { PaymentMethod } from './enums';
 import { Schedule } from './schedule.models';
 
 @Entity('vip_packages_sold')
@@ -19,6 +20,12 @@ export class VipPackage extends BaseEntity {
 		length: 6,
 	})
 	serial: string;
+
+	@Column({
+		type: 'enum',
+		enum: PaymentMethod,
+	})
+	payment_method: PaymentMethod;
 
 	@Column({
 		type: 'decimal',

@@ -4,6 +4,8 @@ import LENGTHS from './constants/lengths.constants';
 import PATTERNS from './constants/patterns.constants';
 import NUMBERS from './constants/numbers.constants';
 
+import { paymentMethodValidation } from './enum.validation';
+
 export const GetVipPackagesValidation = celebrate(
 	{
 		[Segments.QUERY]: Joi.object().keys({
@@ -42,6 +44,7 @@ export const UpdateVipPackageValidation = celebrate(
 			serial: Joi.string()
 				.length(LENGTHS.vip_package.serial)
 				.pattern(PATTERNS.vip_package.serial),
+			payment_method: paymentMethodValidation,
 			sold_amount: Joi.number()
 				.min(0)
 				.precision(2)
@@ -71,6 +74,7 @@ export const AddVipPackageValidation = celebrate(
 				.length(LENGTHS.vip_package.serial)
 				.pattern(PATTERNS.vip_package.serial)
 				.required(),
+			payment_method: paymentMethodValidation.required(),
 			sold_amount: Joi.number()
 				.min(0)
 				.precision(2)

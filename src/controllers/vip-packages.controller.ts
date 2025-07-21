@@ -105,6 +105,7 @@ export const updateVipPackage: RequestHandler = async (
 		const vipPackage = await VipPackagesServices.updateVipPackage(
 			vipPackageId,
 			req.body.serial,
+			req.body.payment_method,
 			req.body.sold_amount,
 			req.body.commission_amount,
 			req.body.date
@@ -143,6 +144,7 @@ export const addVipPackage: RequestHandler = async (
 	try {
 		const vipPackage = await VipPackagesServices.createVipPackage(
 			req.body.serial,
+			req.body.payment_method,
 			req.body.sold_amount,
 			req.body.commission_amount,
 			convertDateToYearMonthDayObject(req.body.date),
