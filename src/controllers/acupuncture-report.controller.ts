@@ -23,9 +23,19 @@ const sendPusherEvent = async (
 			username: acupunctureReport.employee.username,
 		};
 
-		pusher.trigger(acupuncture_reports_channel, event, message, {
-			socket_id: socketID,
-		});
+		try {
+			pusher.trigger(acupuncture_reports_channel, event, message, {
+				socket_id: socketID,
+			});
+		} catch (err) {
+			if (
+				err instanceof Error &&
+				(err.message?.includes('Invalid socket id') ||
+					err.message?.includes('Invalid channel name'))
+			) {
+				console.error(err.message);
+			}
+		}
 	}
 };
 

@@ -20,9 +20,19 @@ const sendPusherEvent = async (
 		socketID &&
 		giftCard.date === formatDateToYYYYMMDD(new Date().toISOString())
 	) {
-		pusher.trigger(gift_cards_channel, event, undefined, {
-			socket_id: socketID,
-		});
+		try {
+			pusher.trigger(gift_cards_channel, event, undefined, {
+				socket_id: socketID,
+			});
+		} catch (err) {
+			if (
+				err instanceof Error &&
+				(err.message?.includes('Invalid socket id') ||
+					err.message?.includes('Invalid channel name'))
+			) {
+				console.error(err.message);
+			}
+		}
 	}
 };
 
