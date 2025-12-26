@@ -10,10 +10,19 @@ import {
 	services_channel,
 	update_service_event,
 } from '../events/service.events';
+
+import { HttpCode } from '../exceptions/custom-error';
+
 import { Service } from '../models/service.models';
+import { ServiceRecord } from '../models/service-record.models';
+
+import * as ServiceServices from '../services/service.services';
+import * as ServiceRecordServices from '../services/service-record.services';
+
+import { formatDateToYYYYMMDD } from '../utils/date.utils';
 
 const sendPusherEvent = async (
-	service: Service,
+	service: Service | ServiceRecord,
 	event: string,
 	socketID: string | undefined
 ) => {
@@ -33,13 +42,6 @@ const sendPusherEvent = async (
 		}
 	}
 };
-
-import { HttpCode } from '../exceptions/custom-error';
-
-import * as ServiceServices from '../services/service.services';
-import * as ServiceRecordServices from '../services/service-record.services';
-
-import { formatDateToYYYYMMDD } from '../utils/date.utils';
 
 export const getServices: RequestHandler = async (
 	req: Request,
@@ -216,13 +218,11 @@ export const addServiceRecord: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(service));
 
-			const message: ServiceEventMessage = {
-				service_name: service.service_name,
-			};
-
-			pusher.trigger(services_channel, update_service_event, message, {
-				socket_id: req.body.socket_id,
-			});
+			sendPusherEvent(
+				service,
+				update_service_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_MODIFIED)
@@ -252,13 +252,11 @@ export const continueService: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(serviceRecord));
 
-			const message: ServiceEventMessage = {
-				service_name: serviceRecord.service_name,
-			};
-
-			pusher.trigger(services_channel, update_service_event, message, {
-				socket_id: req.body.socket_id,
-			});
+			sendPusherEvent(
+				serviceRecord,
+				update_service_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -290,13 +288,11 @@ export const disContinueService: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(serviceRecord));
 
-			const message: ServiceEventMessage = {
-				service_name: serviceRecord.service_name,
-			};
-
-			pusher.trigger(services_channel, update_service_event, message, {
-				socket_id: req.body.socket_id,
-			});
+			sendPusherEvent(
+				serviceRecord,
+				update_service_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
@@ -364,13 +360,11 @@ export const deleteServiceRecord: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send(JSON.stringify(serviceRecord));
 
-			const message: ServiceEventMessage = {
-				service_name: serviceRecord.service_name,
-			};
-
-			pusher.trigger(services_channel, update_service_event, message, {
-				socket_id: req.body.socket_id,
-			});
+			sendPusherEvent(
+				serviceRecord,
+				delete_service_event,
+				req.headers['x-socket-id'] as string | undefined
+			);
 		} else {
 			res
 				.status(HttpCode.NOT_FOUND)
