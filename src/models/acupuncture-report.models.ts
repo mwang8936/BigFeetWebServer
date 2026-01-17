@@ -6,15 +6,13 @@ import {
 	PrimaryColumn,
 	ManyToOne,
 	JoinColumn,
-	AfterLoad,
 	Column,
 	Check,
 } from 'typeorm';
 
 import { Employee } from './employee.models';
-import { Reservation } from './reservation.models';
 
-interface DataRow {
+export interface AcupunctureReportDataRow {
 	date: string;
 	acupuncture: number;
 	massage: number;
@@ -109,7 +107,7 @@ export class AcupunctureReport extends BaseEntity {
 	})
 	non_acupuncturist_insurance_percentage: number;
 
-	data: DataRow[];
+	data: AcupunctureReportDataRow[];
 
 	@CreateDateColumn()
 	created_at: Date;
@@ -117,104 +115,4 @@ export class AcupunctureReport extends BaseEntity {
 	@UpdateDateColumn()
 	updated_at: Date;
 
-	@AfterLoad()
-	async setData() {
-		const { year, month, employee_id } = this;
-
-		const reservations = await Reservation.find({
-			where: {
-				year,
-				month,
-			},
-			order: {
-				day: 'ASC',
-			},
-		});
-
-		const reservationsByDate: Reservation[][] =
-			this.groupReservationsByDate(reservations);
-
-		this.data = [];
-
-		reservationsByDate.forEach((reservations) => {
-			const date = reservations[0].date;
-
-			const acupunctureReservations = reservations.filter(
-				(reservation) => reservation.service.acupuncture > 0
-			);
-
-			const acupuncturistReservations: Reservation[] = [];
-			const nonAcupuncturistReservations: Reservation[] = [];
-
-			acupunctureReservations.forEach((reservation) => {
-				if (reservation.employee_id === employee_id) {
-					acupuncturistReservations.push(reservation);
-				} else {
-					nonAcupuncturistReservations.push(reservation);
-				}
-			});
-
-			const acupuncture = acupuncturistReservations
-				.flatMap((reservation) => [
-					reservation.cash ?? 0,
-					reservation.machine ?? 0,
-					reservation.vip ?? 0,
-					reservation.gift_card ?? 0,
-				])
-				.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
-
-			const massage = nonAcupuncturistReservations
-				.flatMap((reservation) => [
-					reservation.cash ?? 0,
-					reservation.machine ?? 0,
-					reservation.vip ?? 0,
-					reservation.gift_card ?? 0,
-				])
-				.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
-
-			const insurance = acupuncturistReservations
-				.map((reservation) => reservation.insurance ?? 0)
-				.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
-
-			const nonAcupuncturistInsurance = nonAcupuncturistReservations
-				.map((reservation) => reservation.insurance ?? 0)
-				.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
-
-			const dataRow: DataRow = {
-				date,
-				acupuncture,
-				massage,
-				insurance,
-				non_acupuncturist_insurance: nonAcupuncturistInsurance,
-			};
-
-			this.data.push(dataRow);
-		});
-	}
-
-	private groupReservationsByDate(
-		reservations: Reservation[]
-	): Reservation[][] {
-		const groupedReservations: Reservation[][] = [];
-
-		// Create a map to group reservations by day
-		const reservationMap = new Map<number, Reservation[]>();
-
-		// Group reservations by day
-		reservations.forEach((reservation) => {
-			const day = reservation.day;
-
-			if (!reservationMap.has(day)) {
-				reservationMap.set(day, []);
-			}
-			reservationMap.get(day)!.push(reservation);
-		});
-
-		// Convert the map to a 2-D array
-		reservationMap.forEach((dayReservations) => {
-			groupedReservations.push(dayReservations);
-		});
-
-		return groupedReservations;
-	}
 }

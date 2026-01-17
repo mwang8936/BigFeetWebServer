@@ -5,7 +5,104 @@ import {
 	LessThanOrEqual,
 	MoreThanOrEqual,
 } from 'typeorm';
-import { AcupunctureReport } from '../models/acupuncture-report.models';
+import {
+	AcupunctureReport,
+	AcupunctureReportDataRow,
+} from '../models/acupuncture-report.models';
+import { Reservation } from '../models/reservation.models';
+
+// Groups reservations by day
+const groupReservationsByDate = (
+	reservations: Reservation[]
+): Map<number, Reservation[]> => {
+	const reservationMap = new Map<number, Reservation[]>();
+
+	reservations.forEach((reservation) => {
+		const day = reservation.day;
+		if (!reservationMap.has(day)) {
+			reservationMap.set(day, []);
+		}
+		reservationMap.get(day)!.push(reservation);
+	});
+
+	return reservationMap;
+};
+
+// Computes report data from pre-fetched reservations (no additional queries)
+export const computeAcupunctureReportData = (
+	report: AcupunctureReport,
+	reservations: Reservation[]
+): void => {
+	const { year, month, employee_id } = report;
+
+	// Filter reservations for this report's year/month
+	const reportReservations = reservations.filter(
+		(r) => r.year === year && r.month === month
+	);
+
+	const reservationsByDate = groupReservationsByDate(reportReservations);
+
+	report.data = [];
+
+	reservationsByDate.forEach((dayReservations) => {
+		const date = dayReservations[0].date;
+
+		const validReservations = dayReservations.filter(
+			(reservation) => reservation.service !== null
+		);
+
+		const acupunctureReservations = validReservations.filter(
+			(reservation) => reservation.service.acupuncture > 0
+		);
+
+		const acupuncturistReservations: Reservation[] = [];
+		const nonAcupuncturistReservations: Reservation[] = [];
+
+		acupunctureReservations.forEach((reservation) => {
+			if (reservation.employee_id === employee_id) {
+				acupuncturistReservations.push(reservation);
+			} else {
+				nonAcupuncturistReservations.push(reservation);
+			}
+		});
+
+		const acupuncture = acupuncturistReservations
+			.flatMap((reservation) => [
+				reservation.cash ?? 0,
+				reservation.machine ?? 0,
+				reservation.vip ?? 0,
+				reservation.gift_card ?? 0,
+			])
+			.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
+
+		const massage = nonAcupuncturistReservations
+			.flatMap((reservation) => [
+				reservation.cash ?? 0,
+				reservation.machine ?? 0,
+				reservation.vip ?? 0,
+				reservation.gift_card ?? 0,
+			])
+			.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
+
+		const insurance = acupuncturistReservations
+			.map((reservation) => reservation.insurance ?? 0)
+			.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
+
+		const nonAcupuncturistInsurance = nonAcupuncturistReservations
+			.map((reservation) => reservation.insurance ?? 0)
+			.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
+
+		const dataRow: AcupunctureReportDataRow = {
+			date,
+			acupuncture,
+			massage,
+			insurance,
+			non_acupuncturist_insurance: nonAcupuncturistInsurance,
+		};
+
+		report.data.push(dataRow);
+	});
+};
 
 export const getAcupunctureReports = async (
 	start?: { year: number; month: number },
@@ -29,7 +126,7 @@ export const getAcupunctureReports = async (
 		whereCondition.employee_id = In(employeeIds);
 	}
 
-	return AcupunctureReport.find({
+	const reports = await AcupunctureReport.find({
 		where: whereCondition,
 		order: {
 			year: 'ASC',
@@ -37,6 +134,30 @@ export const getAcupunctureReports = async (
 			employee_id: 'ASC',
 		},
 	});
+
+	if (reports.length === 0) {
+		return reports;
+	}
+
+	// Batch fetch all reservations for all year/month combinations
+	const reservationWhereConditions = [
+		...new Map(
+			reports.map((r) => [`${r.year}-${r.month}`, { year: r.year, month: r.month }])
+		).values(),
+	];
+
+	const reservations = await Reservation.find({
+		where: reservationWhereConditions,
+		order: { day: 'ASC' },
+		withDeleted: true,
+	});
+
+	// Compute data for each report
+	for (const report of reports) {
+		computeAcupunctureReportData(report, reservations);
+	}
+
+	return reports;
 };
 
 export const getAcupunctureReport = async (
@@ -44,13 +165,24 @@ export const getAcupunctureReport = async (
 	month: number,
 	employeeId: number
 ) => {
-	return AcupunctureReport.findOne({
+	const report = await AcupunctureReport.findOne({
 		where: {
 			year,
 			month,
 			employee_id: employeeId,
 		},
 	});
+
+	if (report) {
+		const reservations = await Reservation.find({
+			where: { year, month },
+			order: { day: 'ASC' },
+			withDeleted: true,
+		});
+		computeAcupunctureReportData(report, reservations);
+	}
+
+	return report;
 };
 
 export const updateAcupunctureReport = async (

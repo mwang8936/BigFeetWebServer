@@ -9,6 +9,9 @@ import { Language } from '../models/enums';
 import { Payroll } from '../models/payroll.models';
 import { Schedule } from '../models/schedule.models';
 import { AcupunctureReport } from '../models/acupuncture-report.models';
+import { Reservation } from '../models/reservation.models';
+import { PAYROLL_RELATIONS, computePayrollData } from './payroll.services';
+import { computeAcupunctureReportData } from './acupuncture-report';
 
 export const getProfile = async (employeeId: number) => {
 	return Employee.findOne({
@@ -87,14 +90,22 @@ export const getProfilePayrolls = async (
 		whereCondition.month = LessThanOrEqual(end.month);
 	}
 
-	return Payroll.find({
+	const payrolls = await Payroll.find({
 		where: whereCondition,
+		relations: PAYROLL_RELATIONS,
+		withDeleted: true,
 		order: {
 			year: 'ASC',
 			month: 'ASC',
 			part: 'ASC',
 		},
 	});
+
+	for (const payroll of payrolls) {
+		computePayrollData(payroll);
+	}
+
+	return payrolls;
 };
 
 export const getProfileAcupunctureReports = async (
@@ -117,13 +128,37 @@ export const getProfileAcupunctureReports = async (
 		whereCondition.month = LessThanOrEqual(end.month);
 	}
 
-	return AcupunctureReport.find({
+	const reports = await AcupunctureReport.find({
 		where: whereCondition,
 		order: {
 			year: 'ASC',
 			month: 'ASC',
 		},
 	});
+
+	if (reports.length === 0) {
+		return reports;
+	}
+
+	// Batch fetch all reservations for all year/month combinations
+	const reservationWhereConditions = [
+		...new Map(
+			reports.map((r) => [`${r.year}-${r.month}`, { year: r.year, month: r.month }])
+		).values(),
+	];
+
+	const reservations = await Reservation.find({
+		where: reservationWhereConditions,
+		order: { day: 'ASC' },
+		withDeleted: true,
+	});
+
+	// Compute data for each report
+	for (const report of reports) {
+		computeAcupunctureReportData(report, reservations);
+	}
+
+	return reports;
 };
 
 export const updateProfile = async (
