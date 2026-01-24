@@ -110,16 +110,12 @@ const sendPusherEvent = async (
 		};
 
 		try {
-			pusher.trigger(schedules_channel, event, message, {
+			await pusher.trigger(schedules_channel, event, message, {
 				socket_id: socketID,
 			});
 		} catch (err) {
-			if (
-				err instanceof Error &&
-				(err.message?.includes('Invalid socket id') ||
-					err.message?.includes('Invalid channel name'))
-			) {
-				console.error(err.message);
+			if (err instanceof Error) {
+				console.error('Pusher error:', err.message);
 			}
 		}
 	}
