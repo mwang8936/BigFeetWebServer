@@ -41,14 +41,24 @@ export const getCustomers: RequestHandler = async (
 	next: NextFunction
 ) => {
 	try {
+		const page = req.query.page ? parseInt(req.query.page as string) : undefined;
+		const pageSize = req.query.page_size
+			? parseInt(req.query.page_size as string)
+			: undefined;
+		const search = req.query.search as string | undefined;
 		const withDeleted = req.query.with_deleted === 'true';
 
-		const customers = await CustomerServices.getCustomers(withDeleted);
+		const result = await CustomerServices.getCustomers({
+			page,
+			pageSize,
+			search,
+			withDeleted,
+		});
 
 		res
 			.status(HttpCode.OK)
 			.header('Content-Type', 'application/json')
-			.send(JSON.stringify(customers));
+			.send(JSON.stringify(result));
 	} catch (err) {
 		next(err);
 	}
@@ -63,10 +73,10 @@ export const getCustomer: RequestHandler = async (
 		const customerId = parseInt(req.params.customer_id);
 		const withDeleted = req.query.with_deleted === 'true';
 
-		const customer = await CustomerServices.getCustomer(
+		const customer = await CustomerServices.getCustomer({
 			customerId,
-			withDeleted
-		);
+			withDeleted,
+		});
 
 		if (customer) {
 			res
@@ -79,6 +89,31 @@ export const getCustomer: RequestHandler = async (
 				.header('Content-Type', 'application/json')
 				.send();
 		}
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const searchCustomer: RequestHandler = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const phoneNumber = req.query.phone_number as string | undefined;
+		const vipSerial = req.query.vip_serial as string | undefined;
+		const withDeleted = req.query.with_deleted === 'true';
+
+		const customer = await CustomerServices.getCustomer({
+			phoneNumber,
+			vipSerial,
+			withDeleted,
+		});
+
+		res
+			.status(HttpCode.OK)
+			.header('Content-Type', 'application/json')
+			.send(JSON.stringify(customer));
 	} catch (err) {
 		next(err);
 	}

@@ -3,6 +3,7 @@ import { Permissions } from '../../models/enums';
 import {
 	getCustomers,
 	getCustomer,
+	searchCustomer,
 	updateCustomer,
 	addCustomer,
 	deleteCustomer,
@@ -11,6 +12,7 @@ import {
 import {
 	GetCustomersValidation,
 	GetCustomerValidation,
+	SearchCustomerValidation,
 	UpdateCustomerValidation,
 	AddCustomerValidation,
 	DeleteCustomerValidation,
@@ -26,6 +28,13 @@ router
 		authorize([Permissions.PERMISSION_GET_CUSTOMER]),
 		GetCustomersValidation,
 		getCustomers
+	);
+router
+	.route('/search')
+	.get(
+		authorize([Permissions.PERMISSION_GET_CUSTOMER]),
+		SearchCustomerValidation,
+		searchCustomer
 	);
 router
 	.route('/:customer_id')

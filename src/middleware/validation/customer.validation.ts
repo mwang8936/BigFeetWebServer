@@ -6,6 +6,9 @@ import PATTERNS from './constants/patterns.constants';
 export const GetCustomersValidation = celebrate(
 	{
 		[Segments.QUERY]: Joi.object().keys({
+			page: Joi.number().integer().positive().default(1),
+			page_size: Joi.number().integer().positive().max(100).default(50),
+			search: Joi.string().trim().max(100),
 			with_deleted: Joi.boolean().default(false),
 		}),
 	},
@@ -21,6 +24,24 @@ export const GetCustomerValidation = celebrate(
 		[Segments.QUERY]: Joi.object().keys({
 			with_deleted: Joi.boolean().default(false),
 		}),
+	},
+	{ abortEarly: false },
+	{ mode: Modes.FULL }
+);
+
+export const SearchCustomerValidation = celebrate(
+	{
+		[Segments.QUERY]: Joi.object()
+			.keys({
+				phone_number: Joi.string()
+					.length(LENGTHS.customer.phone_number)
+					.pattern(PATTERNS.customer.phone_number),
+				vip_serial: Joi.string()
+					.length(LENGTHS.customer.vip_serial)
+					.pattern(PATTERNS.customer.vip_serial),
+				with_deleted: Joi.boolean().default(false),
+			})
+			.xor('phone_number', 'vip_serial'),
 	},
 	{ abortEarly: false },
 	{ mode: Modes.FULL }

@@ -1,28 +1,90 @@
-import { Not } from 'typeorm';
+import { ILike, Not } from 'typeorm';
 import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
 import { Customer } from '../models/customer.models';
 
-export const getCustomers = async (withDeleted?: boolean) => {
-	return Customer.find({
+export interface GetCustomersParams {
+	page?: number;
+	pageSize?: number;
+	search?: string;
+	withDeleted?: boolean;
+}
+
+export interface PaginatedCustomers {
+	data: Customer[];
+	total: number;
+	page: number;
+	pageSize: number;
+	totalPages: number;
+}
+
+export const getCustomers = async (
+	params: GetCustomersParams = {}
+): Promise<PaginatedCustomers> => {
+	const { page = 1, pageSize = 50, search, withDeleted } = params;
+
+	const skip = (page - 1) * pageSize;
+
+	const whereConditions = search
+		? [
+				{ customer_name: ILike(`%${search}%`) },
+				{ phone_number: ILike(`%${search}%`) },
+				{ vip_serial: ILike(`%${search}%`) },
+		  ]
+		: undefined;
+
+	const [data, total] = await Customer.findAndCount({
+		where: whereConditions,
 		withDeleted,
 		order: {
 			customer_name: 'ASC',
 			phone_number: 'ASC',
 			vip_serial: 'ASC',
 		},
+		skip,
+		take: pageSize,
 	});
+
+	return {
+		data,
+		total,
+		page,
+		pageSize,
+		totalPages: Math.ceil(total / pageSize),
+	};
 };
 
-export const getCustomer = async (
-	customerId: number,
-	withDeleted?: boolean
-) => {
-	return Customer.findOne({
-		where: {
-			customer_id: customerId,
-		},
-		withDeleted,
-	});
+export interface GetCustomerParams {
+	customerId?: number;
+	phoneNumber?: string;
+	vipSerial?: string;
+	withDeleted?: boolean;
+}
+
+export const getCustomer = async (params: GetCustomerParams) => {
+	const { customerId, phoneNumber, vipSerial, withDeleted } = params;
+
+	if (customerId) {
+		return Customer.findOne({
+			where: { customer_id: customerId },
+			withDeleted,
+		});
+	}
+
+	if (phoneNumber) {
+		return Customer.findOne({
+			where: { phone_number: phoneNumber },
+			withDeleted,
+		});
+	}
+
+	if (vipSerial) {
+		return Customer.findOne({
+			where: { vip_serial: vipSerial },
+			withDeleted,
+		});
+	}
+
+	return null;
 };
 
 export const updateCustomer = async (
@@ -32,7 +94,7 @@ export const updateCustomer = async (
 	customerName?: string | null,
 	notes?: string | null
 ) => {
-	const customer = await getCustomer(customerId);
+	const customer = await getCustomer({ customerId });
 
 	if (customer) {
 		const updates: Partial<Customer> = {};
@@ -94,7 +156,7 @@ export const createCustomer = async (
 };
 
 export const deleteCustomer = async (customerId: number) => {
-	const customer = await getCustomer(customerId, false);
+	const customer = await getCustomer({ customerId, withDeleted: false });
 
 	if (customer) {
 		return customer.softRemove();
@@ -104,7 +166,7 @@ export const deleteCustomer = async (customerId: number) => {
 };
 
 export const recoverCustomer = async (customerId: number) => {
-	const customer = await getCustomer(customerId, true);
+	const customer = await getCustomer({ customerId, withDeleted: true });
 
 	if (customer) {
 		if (customer.phone_number) {
