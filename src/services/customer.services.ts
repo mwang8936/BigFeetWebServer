@@ -1,6 +1,8 @@
-import { ILike, Not } from 'typeorm';
+import { In, Not } from 'typeorm';
 import { DuplicateIdentifierError } from '../exceptions/duplicate-identifier-error';
 import { Customer } from '../models/customer.models';
+import { Employee } from '../models/employee.models';
+import { VipPackage } from '../models/vip-package.models';
 
 export interface GetCustomersParams {
 	page?: number;
@@ -10,7 +12,7 @@ export interface GetCustomersParams {
 }
 
 export interface PaginatedCustomers {
-	data: Customer[];
+	data: (Customer & { vip_packages: VipPackage[] })[];
 	total: number;
 	page: number;
 	pageSize: number;
@@ -24,25 +26,62 @@ export const getCustomers = async (
 
 	const skip = (page - 1) * pageSize;
 
-	const whereConditions = search
-		? [
-				{ customer_name: ILike(`%${search}%`) },
-				{ phone_number: ILike(`%${search}%`) },
-				{ vip_serial: ILike(`%${search}%`) },
-		  ]
-		: undefined;
+	// Use QueryBuilder to explicitly control joins and avoid circular
+	// references from eager relations (Reservation eagerly loads Customer)
+	const qb = Customer.createQueryBuilder('customer')
+		.leftJoinAndSelect('customer.reservations', 'reservation')
+		.leftJoinAndSelect('reservation.service', 'service')
+		.leftJoinAndMapOne(
+			'reservation.employee',
+			Employee,
+			'employee',
+			'employee.employee_id = reservation.employee_id'
+		)
+		.orderBy('customer.customer_name', 'ASC')
+		.addOrderBy('customer.phone_number', 'ASC')
+		.addOrderBy('customer.vip_serial', 'ASC')
+		.skip(skip)
+		.take(pageSize);
 
-	const [data, total] = await Customer.findAndCount({
-		where: whereConditions,
-		withDeleted,
-		order: {
-			customer_name: 'ASC',
-			phone_number: 'ASC',
-			vip_serial: 'ASC',
-		},
-		skip,
-		take: pageSize,
-	});
+	if (withDeleted) {
+		qb.withDeleted();
+	}
+
+	if (search) {
+		qb.where(
+			'customer.customer_name ILIKE :search OR customer.phone_number ILIKE :search OR customer.vip_serial ILIKE :search',
+			{ search: `%${search}%` }
+		);
+	}
+
+	const [customers, total] = await qb.getManyAndCount();
+
+	// Fetch VIP packages matching customer vip_serials
+	const vipSerials = customers
+		.map((c) => c.vip_serial)
+		.filter((s): s is string => s !== null);
+
+	const vipPackagesMap = new Map<string, VipPackage[]>();
+
+	if (vipSerials.length > 0) {
+		const vipPackages = await VipPackage.find({
+			where: { serial: In(vipSerials) },
+		});
+
+		for (const pkg of vipPackages) {
+			const existing = vipPackagesMap.get(pkg.serial) || [];
+			existing.push(pkg);
+			vipPackagesMap.set(pkg.serial, existing);
+		}
+	}
+
+	const data = customers.map((customer) =>
+		Object.assign(customer, {
+			vip_packages: customer.vip_serial
+				? vipPackagesMap.get(customer.vip_serial) || []
+				: [],
+		})
+	);
 
 	return {
 		data,
