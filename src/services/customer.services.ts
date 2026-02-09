@@ -11,8 +11,62 @@ export interface GetCustomersParams {
 	withDeleted?: boolean;
 }
 
+export interface CustomerWithDetails {
+	customer_id: number;
+	phone_number: string | null;
+	vip_serial: string | null;
+	customer_name: string | null;
+	notes: string | null;
+	created_at: Date;
+	updated_at: Date;
+	deleted_at?: Date;
+	reservations: {
+		reservation_id: number;
+		reserved_date: Date;
+		year: number;
+		month: number;
+		day: number;
+		date: string;
+		employee_id: number;
+		employee: Employee | null;
+		service: {
+			service_id: number;
+			service_name: string;
+			shorthand: string;
+			time: number;
+			money: number;
+			body: number;
+			feet: number;
+			acupuncture: number;
+			beds_required: number;
+			color: string;
+			created_at: Date;
+			updated_at: Date;
+			deleted_at?: Date;
+		};
+		time: number | null;
+		beds_required: number | null;
+		requested_gender: string | null;
+		requested_employee: boolean;
+		cash: number | null;
+		machine: number | null;
+		vip: number | null;
+		gift_card: number | null;
+		insurance: number | null;
+		cash_out: number | null;
+		tips: number | null;
+		tip_method: string | null;
+		message: string | null;
+		created_by: string;
+		created_at: Date;
+		updated_by: string;
+		updated_at: Date;
+	}[];
+	vip_packages: VipPackage[];
+}
+
 export interface PaginatedCustomers {
-	data: (Customer & { vip_packages: VipPackage[] })[];
+	data: CustomerWithDetails[];
 	total: number;
 	page: number;
 	pageSize: number;
@@ -20,7 +74,7 @@ export interface PaginatedCustomers {
 }
 
 export const getCustomers = async (
-	params: GetCustomersParams = {}
+	params: GetCustomersParams = {},
 ): Promise<PaginatedCustomers> => {
 	const { page = 1, pageSize = 50, search, withDeleted } = params;
 
@@ -31,12 +85,6 @@ export const getCustomers = async (
 	const qb = Customer.createQueryBuilder('customer')
 		.leftJoinAndSelect('customer.reservations', 'reservation')
 		.leftJoinAndSelect('reservation.service', 'service')
-		.leftJoinAndMapOne(
-			'reservation.employee',
-			Employee,
-			'employee',
-			'employee.employee_id = reservation.employee_id'
-		)
 		.orderBy('customer.customer_name', 'ASC')
 		.addOrderBy('customer.phone_number', 'ASC')
 		.addOrderBy('customer.vip_serial', 'ASC')
@@ -50,11 +98,32 @@ export const getCustomers = async (
 	if (search) {
 		qb.where(
 			'customer.customer_name ILIKE :search OR customer.phone_number ILIKE :search OR customer.vip_serial ILIKE :search',
-			{ search: `%${search}%` }
+			{ search: `%${search}%` },
 		);
 	}
 
 	const [customers, total] = await qb.getManyAndCount();
+
+	// Collect unique employee IDs from all reservations
+	const employeeIds = [
+		...new Set(
+			customers.flatMap((c) => c.reservations.map((r) => r.employee_id)),
+		),
+	];
+
+	// Fetch employees (including soft-deleted) and build lookup map
+	const employeesMap = new Map<number, Employee>();
+
+	if (employeeIds.length > 0) {
+		const employees = await Employee.find({
+			where: { employee_id: In(employeeIds) },
+			withDeleted: true,
+		});
+
+		for (const emp of employees) {
+			employeesMap.set(emp.employee_id, emp);
+		}
+	}
 
 	// Fetch VIP packages matching customer vip_serials
 	const vipSerials = customers
@@ -75,13 +144,17 @@ export const getCustomers = async (
 		}
 	}
 
-	const data = customers.map((customer) =>
-		Object.assign(customer, {
-			vip_packages: customer.vip_serial
-				? vipPackagesMap.get(customer.vip_serial) || []
-				: [],
-		})
-	);
+	// Attach employees to reservations and vip_packages to customers
+	const data = customers.map((customer) => ({
+		...customer,
+		reservations: customer.reservations.map((reservation) => ({
+			...reservation,
+			employee: employeesMap.get(reservation.employee_id) || null,
+		})),
+		vip_packages: customer.vip_serial
+			? vipPackagesMap.get(customer.vip_serial) || []
+			: [],
+	}));
 
 	return {
 		data,
@@ -131,7 +204,7 @@ export const updateCustomer = async (
 	phoneNumber: string | null,
 	vipSerial: string | null,
 	customerName?: string | null,
-	notes?: string | null
+	notes?: string | null,
 ) => {
 	const customer = await getCustomer({ customerId });
 
@@ -174,7 +247,7 @@ export const createCustomer = async (
 	phoneNumber?: string,
 	vipSerial?: string,
 	customerName?: string,
-	notes?: string
+	notes?: string,
 ) => {
 	if (phoneNumber !== undefined) {
 		await duplicatePhoneNumberChecker(phoneNumber);
@@ -224,7 +297,7 @@ export const recoverCustomer = async (customerId: number) => {
 
 const duplicatePhoneNumberChecker = async (
 	phoneNumber: string,
-	customerId?: number
+	customerId?: number,
 ) => {
 	const duplicates = await Customer.find({
 		where: {
@@ -240,7 +313,7 @@ const duplicatePhoneNumberChecker = async (
 
 const duplicateVipSerialChecker = async (
 	vipSerial: string,
-	customerId?: number
+	customerId?: number,
 ) => {
 	const duplicates = await Customer.find({
 		where: {
