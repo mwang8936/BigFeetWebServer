@@ -21,16 +21,12 @@ const sendPusherEvent = async (
 		giftCard.date === formatDateToYYYYMMDD(new Date().toISOString())
 	) {
 		try {
-			pusher.trigger(gift_cards_channel, event, undefined, {
+			await pusher.trigger(gift_cards_channel, event, undefined, {
 				socket_id: socketID,
 			});
 		} catch (err) {
-			if (
-				err instanceof Error &&
-				(err.message?.includes('Invalid socket id') ||
-					err.message?.includes('Invalid channel name'))
-			) {
-				console.error(err.message);
+			if (err instanceof Error) {
+				console.error('Pusher error:', err.message);
 			}
 		}
 	}
