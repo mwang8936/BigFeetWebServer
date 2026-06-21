@@ -151,13 +151,13 @@ export class ServiceRecord extends BaseEntity {
 
 	@BeforeInsert()
 	async beforeInsert() {
-		this.checkValidDates();
-		this.ensureServiceExists();
+		await this.checkValidDates();
+		await this.ensureServiceExists();
 	}
 
 	@BeforeUpdate()
 	async beforeUpdate() {
-		this.checkValidDates();
+		await this.checkValidDates();
 	}
 
 	private async checkValidDates() {

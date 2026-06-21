@@ -64,7 +64,7 @@ export class Service extends BaseEntity {
 	async updateRecords() {
 		const { service_id, service_name, shorthand, color } = this;
 
-		ServiceRecord.update({ service_id }, { service_name, shorthand, color });
+		await ServiceRecord.update({ service_id }, { service_name, shorthand, color });
 	}
 
 	@AfterInsert()
@@ -97,6 +97,6 @@ export class Service extends BaseEntity {
 			color,
 		});
 
-		record.save();
+		await record.save();
 	}
 }

@@ -252,8 +252,8 @@ export class Reservation extends BaseEntity {
 	@BeforeInsert()
 	@BeforeUpdate()
 	async beforeFunction() {
-		await this.checkEndTime();
 		await this.ensureValidService();
+		await this.checkEndTime();
 		await this.ensureScheduleExists();
 	}
 

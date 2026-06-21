@@ -11,7 +11,10 @@ export class ServiceVersioningSystem1730875148583
 			`CREATE TABLE "service_history" ("service_id" integer NOT NULL, "valid_from" date NOT NULL, "valid_to" date, "service_name" character varying(30) NOT NULL, "shorthand" character varying(20) NOT NULL, "time" integer NOT NULL, "money" numeric(5,2) NOT NULL, "body" numeric(2,1) NOT NULL DEFAULT '0', "feet" numeric(2,1) NOT NULL DEFAULT '0', "acupuncture" numeric(2,1) NOT NULL DEFAULT '0', "beds_required" integer NOT NULL DEFAULT '0', "color" "public"."services_color_enum" NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, CONSTRAINT "PK_b237712f2977799cd0df29ad905" PRIMARY KEY ("service_id", "valid_from"))`
 		);
 
-		// Add current history in
+		// Add current history in.
+		// ASSUMPTION: No reservation exists before 2000-01-01. If the production
+		// DB has reservations older than this date, lower this epoch so that every
+		// reservation has a covering service_history record.
 		await queryRunner.query(`
             INSERT INTO "service_history" (
                 "service_id",
@@ -30,9 +33,9 @@ export class ServiceVersioningSystem1730875148583
                 "updated_at",
                 "deleted_at"
             )
-            SELECT 
+            SELECT
                 "service_id",
-                '2020-01-01'::date AS "valid_from",
+                '2000-01-01'::date AS "valid_from",
                 NULL AS "valid_to",
                 "service_name",
                 "shorthand",
@@ -77,9 +80,9 @@ export class ServiceVersioningSystem1730875148583
 			`ALTER TABLE "reservations" ADD "service_valid_from" date`
 		);
 
-		// Add date into service valid from
+		// Back-fill to match the epoch used for service_history above.
 		await queryRunner.query(
-			`UPDATE "reservations" SET "service_valid_from" = '2020-01-01'`
+			`UPDATE "reservations" SET "service_valid_from" = '2000-01-01'`
 		);
 		await queryRunner.query(
 			`ALTER TABLE "reservations" ALTER COLUMN "service_valid_from" SET NOT NULL`

@@ -33,6 +33,8 @@ export const getServiceRecordsByDate = async (
 			})
 		)
 		.distinctOn(['service_history.service_id'])
+		.orderBy('service_history.service_id', 'ASC')
+		.addOrderBy('service_history.valid_from', 'DESC')
 		.getMany();
 };
 
@@ -170,12 +172,12 @@ const updateServiceRecord = async (
 		valid_to: currentServiceRecord.valid_to,
 		service_name: currentServiceRecord.service_name,
 		shorthand: currentServiceRecord.shorthand,
-		time,
-		money,
-		body,
-		feet,
-		acupuncture,
-		beds_required: bedsRequired,
+		time: time ?? currentServiceRecord.time,
+		money: money ?? currentServiceRecord.money,
+		body: body ?? currentServiceRecord.body,
+		feet: feet ?? currentServiceRecord.feet,
+		acupuncture: acupuncture ?? currentServiceRecord.acupuncture,
+		beds_required: bedsRequired ?? currentServiceRecord.beds_required,
 		color: currentServiceRecord.color,
 	});
 
