@@ -9,7 +9,7 @@ export function generateAccessToken(
 
 	const signInOptions: SignOptions = {
 		algorithm: 'RS256',
-		expiresIn: '24h',
+		expiresIn: '7d',
 	};
 
 	return sign({ employee_id, permissions }, privateKey, signInOptions);
