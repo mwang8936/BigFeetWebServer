@@ -56,6 +56,35 @@ export function formatDateToYYYYMMDD(isoDateString: string): string {
 	return `${year}-${month}-${day}`;
 }
 
+/**
+ * Returns the current year, month and day in PST, since the store always
+ * operates on PST days regardless of where the server is running.
+ */
+export function getCurrentPSTDate(): {
+	year: number;
+	month: number;
+	day: number;
+} {
+	return convertDateToYearMonthDayObject(new Date().toISOString());
+}
+
+/**
+ * Checks whether a PST calendar date has already ended, meaning it falls before
+ * the day that is currently in progress in PST. The day is over at 12AM PST.
+ */
+export function isPastPSTDate(date: {
+	year: number;
+	month: number;
+	day: number;
+}): boolean {
+	const today = getCurrentPSTDate();
+
+	const dateValue = date.year * 10000 + date.month * 100 + date.day;
+	const todayValue = today.year * 10000 + today.month * 100 + today.day;
+
+	return dateValue < todayValue;
+}
+
 export function convertDateToYearMonthDayObject(isoDateString: string): {
 	year: number;
 	month: number;

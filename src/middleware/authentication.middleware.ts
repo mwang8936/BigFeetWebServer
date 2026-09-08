@@ -19,6 +19,11 @@ const authorize =
 
 			const decodedToken = await validateAccessToken(jwt);
 
+			// Expose the caller to any middleware or controller further down the
+			// chain so that permissions do not have to be decoded a second time.
+			res.locals.employee_id = decodedToken.employee_id;
+			res.locals.permissions = decodedToken.permissions;
+
 			if (requiredPermissions.length > 0) {
 				const hasAccessToEndpoint = requiredPermissions.every(
 					(reqPermission) => {

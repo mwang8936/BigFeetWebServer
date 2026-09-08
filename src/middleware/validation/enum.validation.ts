@@ -96,6 +96,7 @@ export const permissionsValidation = Joi.array().items(
 		Permissions.PERMISSION_UPDATE_RESERVATION,
 		Permissions.PERMISSION_ADD_RESERVATION,
 		Permissions.PERMISSION_DELETE_RESERVATION,
+		Permissions.PERMISSION_EDIT_PAST_RESERVATION,
 		Permissions.PERMISSION_GET_VIP_PACKAGE,
 		Permissions.PERMISSION_UPDATE_VIP_PACKAGE,
 		Permissions.PERMISSION_ADD_VIP_PACKAGE,

@@ -7,6 +7,11 @@ import {
 	updateReservation,
 } from '../../controllers/reservation.controller';
 import authorize from '../../middleware/authentication.middleware';
+import {
+	authorizeAddPastReservation,
+	authorizeDeletePastReservation,
+	authorizeUpdatePastReservation,
+} from '../../middleware/past-reservation.middleware';
 import { Permissions } from '../../models/enums';
 import {
 	AddReservationValidation,
@@ -37,6 +42,7 @@ router
 	.patch(
 		authorize([Permissions.PERMISSION_UPDATE_RESERVATION]),
 		UpdateReservationValidation,
+		authorizeUpdatePastReservation,
 		updateReservation
 	);
 router
@@ -44,6 +50,7 @@ router
 	.post(
 		authorize([Permissions.PERMISSION_ADD_RESERVATION]),
 		AddReservationValidation,
+		authorizeAddPastReservation,
 		addReservation
 	);
 router
@@ -51,6 +58,7 @@ router
 	.delete(
 		authorize([Permissions.PERMISSION_DELETE_RESERVATION]),
 		DeleteReservationValidation,
+		authorizeDeletePastReservation,
 		deleteReservation
 	);
 
