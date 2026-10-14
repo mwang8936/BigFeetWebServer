@@ -5,7 +5,7 @@ import {
 	LessThanOrEqual,
 	MoreThanOrEqual,
 } from 'typeorm';
-import { Schedule } from '../models/schedule.models';
+import { Schedule, ScheduleBreak } from '../models/schedule.models';
 import { Employee } from '../models/employee.models';
 import { NotFoundError } from '../exceptions/not-found-error';
 
@@ -65,6 +65,7 @@ export const updateSchedule = async (
 	onCall?: boolean,
 	start?: Date | null,
 	end?: Date | null,
+	breaks?: ScheduleBreak[],
 	priority?: number | null,
 	addAward?: boolean
 ) => {
@@ -87,6 +88,10 @@ export const updateSchedule = async (
 
 		if (end !== undefined) {
 			updates.end = end;
+		}
+
+		if (breaks !== undefined) {
+			updates.breaks = breaks;
 		}
 
 		if (priority !== undefined) {
@@ -127,6 +132,7 @@ export const createSchedule = async (
 	onCall?: boolean,
 	start?: Date | null,
 	end?: Date | null,
+	breaks?: ScheduleBreak[],
 	priority?: number | null,
 	addAward?: boolean
 ) => {
@@ -148,6 +154,7 @@ export const createSchedule = async (
 		on_call: onCall,
 		start,
 		end,
+		breaks,
 		priority,
 		add_award: addAward,
 	});

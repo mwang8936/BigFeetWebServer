@@ -5,6 +5,7 @@ import * as ScheduleServices from '../services/schedule.services';
 import {
 	convertDateToYearMonthDayObject,
 	formatDateToYYYYMMDD,
+	formatTimeToHHMMSS,
 	validateDateString,
 } from '../utils/date.utils';
 import pusher from '../config/pusher.config';
@@ -18,7 +19,20 @@ import {
 } from '../events/schedule.events';
 import { getEmployeeHashedPassword } from '../services/employee.services';
 import { IncorrectPasswordError } from '../exceptions/incorrect-password-error';
-import { Schedule } from '../models/schedule.models';
+import { Schedule, ScheduleBreak } from '../models/schedule.models';
+
+// Joi has already coerced each break time into a Date; the jsonb column stores the
+// same 'HH:mm:ss' shape the  columns hand back, so both clients parse them alike.
+const parseBreaks = (breaks: unknown): ScheduleBreak[] | undefined =>
+	Array.isArray(breaks)
+		? breaks
+				.map((scheduleBreak: { start: Date; end: Date }) => ({
+					start: formatTimeToHHMMSS(scheduleBreak.start),
+					end: formatTimeToHHMMSS(scheduleBreak.end),
+				}))
+				// Store chronologically so clients never have to sort.
+				.sort((a, b) => a.start.localeCompare(b.start))
+		: undefined;
 
 const sendPusherEvent = async (
 	schedule: Schedule,
@@ -137,6 +151,7 @@ export const updateSchedule: RequestHandler = async (
 			req.body.on_call,
 			start,
 			end,
+			parseBreaks(req.body.breaks),
 			req.body.priority,
 			req.body.add_award
 		);
@@ -230,6 +245,7 @@ export const addSchedule: RequestHandler = async (
 			req.body.on_call,
 			start,
 			end,
+			parseBreaks(req.body.breaks),
 			req.body.priority,
 			req.body.add_award
 		);

@@ -42,6 +42,14 @@ export const UpdateScheduleValidation = celebrate(
 			on_call: Joi.boolean(),
 			start: Joi.date().iso().allow(null),
 			end: Joi.date().iso().allow(null),
+			breaks: Joi.array()
+				.items(
+					Joi.object({
+						start: Joi.date().iso().required(),
+						end: Joi.date().iso().min(Joi.ref('start')).required(),
+					})
+				)
+				.max(3),
 			priority: Joi.number().integer().positive().allow(null),
 			add_award: Joi.boolean(),
 		}).min(1),
@@ -76,6 +84,14 @@ export const AddScheduleValidation = celebrate({
 		on_call: Joi.boolean().default(false),
 		start: Joi.date().iso().allow(null),
 		end: Joi.date().iso().min(Joi.ref('start')).allow(null),
+		breaks: Joi.array()
+			.items(
+				Joi.object({
+					start: Joi.date().iso().required(),
+					end: Joi.date().iso().min(Joi.ref('start')).required(),
+				})
+			)
+			.max(3),
 		priority: Joi.number().integer().positive().allow(null),
 		add_award: Joi.boolean().default(false),
 	}).with('end', 'start'),

@@ -102,3 +102,16 @@ export function convertDateToYearMonthDayObject(isoDateString: string): {
 
 	return { year, month, day };
 }
+
+/**
+ * Formats a Date into the 'HH:mm:ss' string used by the `time` columns. Needed for
+ * values stored inside jsonb, where TypeORM does not do the conversion for us. Reads
+ * the local clock fields, matching what validateDateString above hands back.
+ */
+export function formatTimeToHHMMSS(date: Date): string {
+	const hours = String(date.getHours()).padStart(2, '0');
+	const minutes = String(date.getMinutes()).padStart(2, '0');
+	const seconds = String(date.getSeconds()).padStart(2, '0');
+
+	return `${hours}:${minutes}:${seconds}`;
+}
