@@ -8,6 +8,7 @@ import * as ReservationServices from '../services/reservation.services';
 import {
 	convertDateToYearMonthDayObject,
 	formatDateToYYYYMMDD,
+	getBCTimeZone,
 	validateDateTimeString,
 } from '../utils/date.utils';
 import pusher from '../config/pusher.config';
@@ -35,7 +36,7 @@ const sendPushNotification = async (
 	const getNotificationMessage = (reservation: Reservation, event: string) => {
 		const serviceName = reservation.service.service_name;
 		const time = reservation.reserved_date.toLocaleTimeString('en-US', {
-			timeZone: 'America/Los_Angeles',
+			timeZone: getBCTimeZone(reservation.reserved_date),
 			hour12: true,
 			hour: '2-digit',
 			minute: '2-digit',
@@ -98,7 +99,7 @@ const sendPusherEvent = async (
 	if (socketID) {
 		const message: ReservationEventMessage = {
 			time: reservation.reserved_date.toLocaleTimeString('en-US', {
-				timeZone: 'America/Los_Angeles',
+				timeZone: getBCTimeZone(reservation.reserved_date),
 				hour12: true,
 				hour: '2-digit',
 				minute: '2-digit',

@@ -24,7 +24,7 @@ import * as PayrollServices from '../services/payroll.services';
 import * as ReservationServices from '../services/reservation.services';
 
 import { DataStructureError } from '../exceptions/data-structure.error';
-import { isValidDate } from '../utils/date.utils';
+import { getBCTimeZoneForDay, isValidDate } from '../utils/date.utils';
 import { Payroll } from './payroll.models';
 import { PayrollPart } from './enums';
 
@@ -204,11 +204,11 @@ export class Schedule extends BaseEntity {
 		if (add_award) {
 			const start = DateTime.fromObject(
 				{ year, month, day },
-				{ zone: 'America/Los_Angeles' }
+				{ zone: getBCTimeZoneForDay({ year, month, day }) }
 			).startOf('day');
 			const end = DateTime.fromObject(
 				{ year, month, day },
-				{ zone: 'America/Los_Angeles' }
+				{ zone: getBCTimeZoneForDay({ year, month, day }) }
 			).endOf('day');
 
 			const reservations = await ReservationServices.getReservations(

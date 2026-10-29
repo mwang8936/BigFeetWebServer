@@ -9,6 +9,7 @@ import { generateRefreshToken, validateAccessToken } from '../utils/jwt.utils';
 import {
 	convertDateToYearMonthDayObject,
 	formatDateToYYYYMMDD,
+	getCurrentPSTDate,
 } from '../utils/date.utils';
 import {
 	ScheduleEventMessage,
@@ -26,12 +27,13 @@ const sendPusherEvent = async (
 	event: string,
 	socketID: string | undefined
 ) => {
-	const currDate = new Date();
+	// Compare against today in BC, not the server's clock, which runs in UTC.
+	const today = getCurrentPSTDate();
 	if (
 		socketID &&
-		schedule.year === currDate.getFullYear() &&
-		schedule.month === currDate.getMonth() + 1 &&
-		schedule.day === currDate.getDate()
+		schedule.year === today.year &&
+		schedule.month === today.month &&
+		schedule.day === today.day
 	) {
 		const message: ScheduleEventMessage = {
 			employee_id: schedule.employee.employee_id,

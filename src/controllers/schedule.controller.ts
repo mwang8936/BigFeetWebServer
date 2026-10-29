@@ -6,6 +6,7 @@ import {
 	convertDateToYearMonthDayObject,
 	formatDateToYYYYMMDD,
 	formatTimeToHHMMSS,
+	getCurrentPSTDate,
 	validateDateString,
 } from '../utils/date.utils';
 import pusher from '../config/pusher.config';
@@ -22,13 +23,19 @@ import { IncorrectPasswordError } from '../exceptions/incorrect-password-error';
 import { Schedule, ScheduleBreak } from '../models/schedule.models';
 
 // Joi has already coerced each break time into a Date; the jsonb column stores the
-// same 'HH:mm:ss' shape the  columns hand back, so both clients parse them alike.
+// same 'HH:mm:ss' shape the time columns hand back, so both clients parse them alike.
+// Each time goes through validateDateString first, like start and end do, so the
+// BC wall clock time is stored rather than the server's.
 const parseBreaks = (breaks: unknown): ScheduleBreak[] | undefined =>
 	Array.isArray(breaks)
 		? breaks
 				.map((scheduleBreak: { start: Date; end: Date }) => ({
-					start: formatTimeToHHMMSS(scheduleBreak.start),
-					end: formatTimeToHHMMSS(scheduleBreak.end),
+					start: formatTimeToHHMMSS(
+						validateDateString(scheduleBreak.start.toISOString())!
+					),
+					end: formatTimeToHHMMSS(
+						validateDateString(scheduleBreak.end.toISOString())!
+					),
 				}))
 				// Store chronologically so clients never have to sort.
 				.sort((a, b) => a.start.localeCompare(b.start))
@@ -39,12 +46,13 @@ const sendPusherEvent = async (
 	event: string,
 	socketID: string | undefined
 ) => {
-	const currDate = new Date();
+	// Compare against today in BC, not the server's clock, which runs in UTC.
+	const today = getCurrentPSTDate();
 	if (
 		socketID &&
-		schedule.year === currDate.getFullYear() &&
-		schedule.month === currDate.getMonth() + 1 &&
-		schedule.day === currDate.getDate()
+		schedule.year === today.year &&
+		schedule.month === today.month &&
+		schedule.day === today.day
 	) {
 		const message: ScheduleEventMessage = {
 			employee_id: schedule.employee.employee_id,

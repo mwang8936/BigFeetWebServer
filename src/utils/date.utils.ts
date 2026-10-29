@@ -1,3 +1,41 @@
+/**
+ * BC stopped changing its clocks in 2026 and now stays on UTC-7 all year, while
+ * America/Los_Angeles keeps falling back to UTC-8. Older tz data (Node 16 ships
+ * 2022 data) still has America/Vancouver falling back at 2AM on 2026-11-01, so
+ * from that moment on a fixed UTC-7 zone is used instead of trusting the tz
+ * database. Before it, America/Vancouver is correct with any tz data.
+ */
+const BC_PERMANENT_TIME_START = Date.UTC(2026, 10, 1, 9); // 2026-11-01 2AM UTC-7
+
+// The Etc/GMT zones invert the sign, so this is UTC-7.
+const BC_PERMANENT_TIME_ZONE = 'Etc/GMT+7';
+
+const BC_HISTORICAL_TIME_ZONE = 'America/Vancouver';
+
+/**
+ * Returns the time zone to use for a given instant in BC.
+ */
+export function getBCTimeZone(date: Date = new Date()): string {
+	return date.getTime() >= BC_PERMANENT_TIME_START
+		? BC_PERMANENT_TIME_ZONE
+		: BC_HISTORICAL_TIME_ZONE;
+}
+
+/**
+ * Returns the time zone to use for a BC calendar day, for when the day is known
+ * but the instant is not yet (e.g. finding the start and end of that day).
+ */
+export function getBCTimeZoneForDay(date: {
+	year: number;
+	month: number;
+	day: number;
+}): string {
+	return Date.UTC(date.year, date.month - 1, date.day) >=
+		Date.UTC(2026, 10, 1)
+		? BC_PERMANENT_TIME_ZONE
+		: BC_HISTORICAL_TIME_ZONE;
+}
+
 export function validateDateTimeString(
 	isoDateString: string | undefined
 ): Date | undefined {
@@ -27,7 +65,7 @@ export function validateDateString(
 		return undefined;
 	} else {
 		const pstDate = new Date(
-			date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })
+			date.toLocaleString('en-US', { timeZone: getBCTimeZone(date) })
 		);
 
 		return pstDate;
@@ -47,7 +85,7 @@ export function formatDateToYYYYMMDD(isoDateString: string): string {
 	const date = new Date(isoDateString);
 
 	const pstDate = new Date(
-		date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })
+		date.toLocaleString('en-US', { timeZone: getBCTimeZone(date) })
 	);
 
 	const year = pstDate.getFullYear();
@@ -93,7 +131,7 @@ export function convertDateToYearMonthDayObject(isoDateString: string): {
 	const date = new Date(isoDateString);
 
 	const pstDate = new Date(
-		date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })
+		date.toLocaleString('en-US', { timeZone: getBCTimeZone(date) })
 	);
 
 	const year = pstDate.getFullYear();
